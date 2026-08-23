@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 /**
- * teste o geramento de pix para ver se tem erros e veja se esta gerando o pagamento
+ * remova essa alteraçao e pare de mexer e adicionar textos no codigo do site pare de mexer em qualquer tipi de texto, quero que voce teste o geramento de pagamento da api
  */
 import { useEffect, useRef, useState } from "react";
 
