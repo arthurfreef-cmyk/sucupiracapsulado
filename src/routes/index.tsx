@@ -898,8 +898,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FAQ() {
   const items: { q: string; a: string }[] = [
-    { q: "Por que o pagamento é prioritário via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h. Também aceitamos Cartão de Crédito." },
-    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX ou Cartão." },
+    { q: "Quais são as formas de pagamento?", a: "Para garantir a melhor agilidade no envio e os menores preços, aceitamos pagamentos via PIX. A aprovação é instantânea e o envio ocorre em até 24h." },
+    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX." },
 
 
     { q: "Em quanto tempo faz efeito?", a: "A maioria dos usuários relata alívio das dores já nas primeiras 24h. Para resultados completos, recomendamos uso contínuo por pelo menos 30 dias." },
