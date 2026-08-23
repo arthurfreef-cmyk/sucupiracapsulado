@@ -60,6 +60,7 @@ export async function createMangofyPix(payload: {
   });
 
   const rawData = await response.json();
+  console.log("Mangofy API Response:", JSON.stringify(rawData, null, 2));
 
   if (!response.ok) {
     throw new Error(rawData.message || `Erro Mangofy (${response.status}): ${JSON.stringify(rawData)}`);
@@ -68,6 +69,10 @@ export async function createMangofyPix(payload: {
   const parsed = PixResponseSchema.safeParse(rawData);
   if (!parsed.success) {
     console.error("Mangofy Response Schema Error:", parsed.error);
+    // Tenta retornar mesmo assim se tiver os campos básicos para depuração
+    if (rawData.pix?.pix_qrcode_text) {
+      return rawData;
+    }
     throw new Error("Resposta da Mangofy em formato inesperado.");
   }
 
