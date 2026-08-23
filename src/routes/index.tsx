@@ -862,7 +862,7 @@ function Pricing() {
                 Escolher Esse Kit →
               </Link>
               <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
-                ⚡ <strong>Pagamento via PIX ou Cartão</strong> com Aprovação Rápida
+                ⚡ <strong>Pagamento via PIX</strong> com Aprovação Instantânea
               </p>
             </div>
           ))}
@@ -871,7 +871,7 @@ function Pricing() {
 
         <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
           <span>🔒 Compra Segura</span>
-          <span>⚡ Pagamento via PIX / Cartão</span>
+          <span>⚡ Pagamento via PIX</span>
           <span>🚚 Frete Grátis</span>
           <span>✅ Garantia 30 Dias</span>
         </div>
