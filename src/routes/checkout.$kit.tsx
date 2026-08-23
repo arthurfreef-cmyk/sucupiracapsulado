@@ -1,6 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
+import { generatePix } from "@/lib/mangofy.functions";
+
 
 
 const KITS = {
@@ -228,11 +230,19 @@ function CheckoutPage() {
       });
     }
     try {
-      // BuckPay integration removed per user request. 
-      // This is a placeholder for the new checkout flow or API call.
-      throw new Error("Integração com BuckPay removida. Por favor, configure o novo fluxo de pagamento.");
+      const result = await generatePix({
+        data: {
+          name: form.name,
+          email: form.email,
+          document: form.document,
+          phone: form.phone,
+          amount: totalCents,
+          kit: effectiveKitId,
+        }
+      });
+      setResult(result);
     } catch (err: any) {
-      setError(err?.message || "Erro inesperado.");
+      setError(err?.message || "Erro inesperado ao processar o pagamento.");
     } finally {
       setLoading(false);
     }
