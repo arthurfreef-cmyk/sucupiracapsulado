@@ -16,20 +16,21 @@ export const generatePix = createServerFn({ method: "POST" })
   .inputValidator((data) => PixInputSchema.parse(data))
   .handler(async ({ data }) => {
     const apiToken = process.env['MANGOFY_TOKEN'];
+    const storeCode = process.env['MANGOFY_STORE_CODE'];
     
-    if (!apiToken) {
-      throw new Error("Configuração incompleta: MANGOFY_TOKEN não encontrado.");
+    if (!apiToken || !storeCode) {
+      throw new Error("Configuração incompleta: MANGOFY_TOKEN ou MANGOFY_STORE_CODE não encontrados.");
     }
 
     try {
-      const result = await createMangofyPix(data, apiToken);
+      const result = await createMangofyPix(data, apiToken, storeCode);
       return {
-        id: result.id,
-        status: result.status,
-        amount: result.amount,
+        id: result.payment_code,
+        status: result.payment_status,
+        amount: result.payment_amount,
         pix: {
-          code: result.pix_code,
-          qrcode_base64: result.pix_qr_code,
+          code: result.pix.pix_qrcode_text,
+          qrcode_base64: result.pix.pix_qrcode_image,
         }
       };
     } catch (error: any) {

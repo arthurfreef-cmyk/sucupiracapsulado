@@ -2,15 +2,14 @@
 import { z } from "zod";
 
 const PixResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.object({
-    id: z.string(),
-    pix_code: z.string(),
-    pix_qr_code: z.string(), // base64
-    amount: z.number(),
-    status: z.string(),
-  }).optional(),
-  message: z.string().optional(),
+  payment_code: z.string(),
+  payment_status: z.string(),
+  payment_amount: z.number(),
+  pix: z.object({
+    pix_qrcode_text: z.string(),
+    pix_qrcode_image: z.string(), // base64
+    pix_expires_at: z.string(),
+  }),
 });
 
 export async function createMangofyPix(payload: {
@@ -20,36 +19,57 @@ export async function createMangofyPix(payload: {
   phone: string;
   amount: number; // cents
   kit: string;
-}, apiToken: string) {
-  // Mangofy Pix API implementation
-  // Note: Adjust the URL and payload structure to match Mangofy's actual API
-  const response = await fetch("https://api.mangofy.com.br/v1/pix", {
+}, apiToken: string, storeCode: string) {
+  const url = "https://checkout.mangofy.com.br/api/v1/payment";
+  
+  const body = {
+    external_code: `pedido-${Date.now()}`,
+    payment_method: "pix",
+    payment_format: "regular",
+    installments: 1,
+    payment_amount: payload.amount,
+    shipping_amount: 0,
+    // postback_url: "https://example.com/webhook",
+    items: [
+      { 
+        code: payload.kit, 
+        name: `Kit ${payload.kit}`, 
+        quantity: 1, 
+        price: payload.amount 
+      }
+    ],
+    customer: {
+      email: payload.email,
+      name: payload.name,
+      document: payload.document.replace(/\D/g, ""),
+      phone: payload.phone.replace(/\D/g, ""),
+      ip: "127.0.0.1" // Default for API calls
+    },
+    pix: { expires_in_days: 1 }
+  };
+
+  const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiToken}`,
+      "Authorization": apiToken,
+      "Store-Code": storeCode,
       "Content-Type": "application/json",
+      "Accept": "application/json",
     },
-    body: JSON.stringify({
-      customer: {
-        name: payload.name,
-        email: payload.email,
-        document: payload.document.replace(/\D/g, ""),
-        phone: payload.phone.replace(/\D/g, ""),
-      },
-      amount: payload.amount,
-      metadata: {
-        kit: payload.kit,
-      },
-      // postback_url: "https://..." // To be configured if needed
-    }),
+    body: JSON.stringify(body),
   });
 
   const rawData = await response.json();
-  const parsed = PixResponseSchema.safeParse(rawData);
 
-  if (!parsed.success || !rawData.success) {
-    throw new Error(rawData.message || "Falha ao gerar o Pix com Mangofy.");
+  if (!response.ok) {
+    throw new Error(rawData.message || `Erro Mangofy (${response.status}): ${JSON.stringify(rawData)}`);
   }
 
-  return rawData.data;
+  const parsed = PixResponseSchema.safeParse(rawData);
+  if (!parsed.success) {
+    console.error("Mangofy Response Schema Error:", parsed.error);
+    throw new Error("Resposta da Mangofy em formato inesperado.");
+  }
+
+  return parsed.data;
 }
