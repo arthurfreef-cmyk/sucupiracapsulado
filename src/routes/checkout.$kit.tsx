@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout/$kit")({
   head: () => ({
     meta: [
       { title: "Checkout — Sucupira Composta" },
-      { name: "description", content: "Finalize sua compra com PIX ou Cartão." },
+      { name: "description", content: "Finalize sua compra com PIX com aprovação instantânea." },
       { name: "robots", content: "noindex" },
     ],
   }),
