@@ -802,7 +802,16 @@ function Pricing() {
               <h3 className="text-2xl font-bold text-center">{k.title}</h3>
               <p className="text-center text-muted-foreground text-sm">{k.sub}</p>
               {k.meta && <p className="text-center text-xs text-[var(--brand)] font-semibold mt-1">{k.meta}</p>}
-              <img src={k.img} alt={k.title} loading="lazy" decoding="async" width={400} height={300} className="w-full h-48 object-contain my-5" />
+              <img 
+                src={k.img} 
+                alt={k.title} 
+                loading="lazy" 
+                decoding="async" 
+                width={200} 
+                height={200} 
+                className="w-full h-48 object-contain my-5" 
+              />
+
               <div className="text-center mb-2">
                 <div className="text-sm text-muted-foreground">
                   De <span className="line-through">{k.from}</span> por apenas
@@ -883,8 +892,9 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FAQ() {
   const items: { q: string; a: string }[] = [
-    { q: "Por que o pagamento é apenas via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h." },
-    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX." },
+    { q: "Por que o pagamento é prioritário via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h. Também aceitamos Cartão de Crédito." },
+    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX ou Cartão." },
+
 
     { q: "Em quanto tempo faz efeito?", a: "A maioria dos usuários relata alívio das dores já nas primeiras 24h. Para resultados completos, recomendamos uso contínuo por pelo menos 30 dias." },
     { q: "Como devo tomar?", a: "Tome 1 cápsula por dia, preferencialmente antes de dormir, com um copo de água." },
@@ -1077,7 +1087,7 @@ function MobileStickyCTA() {
         href="#precos"
         className="flex items-center justify-center gap-2 w-full bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
       >
-        APROVEITAR DESCONTO NO PIX →
+        APROVEITAR DESCONTO NO CHECKOUT →
       </a>
     </div>
   );
