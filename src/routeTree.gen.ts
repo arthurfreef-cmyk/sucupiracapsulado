@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
 import { Route as ApiPublicMangofyWebhookRouteImport } from './routes/api/public/mangofy-webhook'
 
+const ObrigadoRoute = ObrigadoRouteImport.update({
+  id: '/obrigado',
+  path: '/obrigado',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,56 @@ const ApiPublicMangofyWebhookRoute = ApiPublicMangofyWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/obrigado': typeof ObrigadoRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/obrigado': typeof ObrigadoRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/obrigado': typeof ObrigadoRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
+  fullPaths:
+    | '/'
+    | '/obrigado'
+    | '/checkout/$kit'
+    | '/api/public/mangofy-webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
-  id: '__root__' | '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
+  to: '/' | '/obrigado' | '/checkout/$kit' | '/api/public/mangofy-webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/obrigado'
+    | '/checkout/$kit'
+    | '/api/public/mangofy-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ObrigadoRoute: typeof ObrigadoRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
   ApiPublicMangofyWebhookRoute: typeof ApiPublicMangofyWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/obrigado': {
+      id: '/obrigado'
+      path: '/obrigado'
+      fullPath: '/obrigado'
+      preLoaderRoute: typeof ObrigadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +113,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ObrigadoRoute: ObrigadoRoute,
   CheckoutKitRoute: CheckoutKitRoute,
   ApiPublicMangofyWebhookRoute: ApiPublicMangofyWebhookRoute,
 }
