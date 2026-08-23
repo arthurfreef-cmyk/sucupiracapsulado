@@ -7,7 +7,7 @@ const PixResponseSchema = z.object({
   payment_amount: z.number(),
   pix: z.object({
     pix_qrcode_text: z.string(),
-    pix_qrcode_image: z.string(), // base64
+    pix_qrcode_image: z.string().optional(), // Tornar opcional para evitar quebra no Zod
     pix_expires_at: z.string(),
   }),
 });
