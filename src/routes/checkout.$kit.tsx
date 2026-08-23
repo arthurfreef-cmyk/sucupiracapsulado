@@ -231,12 +231,14 @@ function CheckoutPage() {
     }
     try {
       const result = await generatePix({
-        name: form.name,
-        email: form.email,
-        document: form.document,
-        phone: form.phone,
-        amount: totalCents,
-        kit: effectiveKitId,
+        data: {
+          name: form.name,
+          email: form.email,
+          document: form.document,
+          phone: form.phone,
+          amount: totalCents,
+          kit: effectiveKitId,
+        }
       });
       setResult(result);
     } catch (err: any) {
