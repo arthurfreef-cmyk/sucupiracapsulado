@@ -38,6 +38,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  * 'melhore o carregamento de imagens e tudo do site' (on element 'body' at '/src/routes/index.tsx:1')
  * 'melhore o modal após geramento do pix para maior confiança e credibilidade adicione o qr code tambem e faça uma pagina de obrigado' (on element 'body' at '/src/routes/index.tsx:1')
  * 'veja se o pagamento no cartão esta funcionando, veja se a pessoa boatr as infomaçoes do cartao o pagamento vai ser processado' (on element 'body' at '/src/routes/index.tsx:1')
+ * 'veja se os pagamentos no metodo de cartao a mangofy esta autorizando e hablitada' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
 
