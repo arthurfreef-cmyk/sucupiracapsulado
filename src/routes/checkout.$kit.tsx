@@ -1,9 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
-import { generatePix } from "@/lib/mangofy.functions";
-
-
+import { generatePayment } from "@/lib/mangofy.functions";
 
 const KITS = {
   k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: "R$ 27,00", priceCents: 2700, fromCents: 9700, image: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/rq9lslj7_kit1frasco.png" },
@@ -13,16 +11,6 @@ const KITS = {
 
 type KitId = keyof typeof KITS;
 
-// Order bump: adicione +1 frasco por R$ 37,00
-const BUMP: Record<KitId, { addCents: number; label: string; sub: string } | null> = {
-  k1: { addCents: 3700, label: "Adicione +1 frasco por apenas R$ 37,00", sub: "Reforce seu tratamento · oferta única" },
-  k3: { addCents: 3700, label: "Adicione +1 frasco por apenas R$ 37,00", sub: "Reforce seu tratamento · oferta única" },
-  k5: { addCents: 3700, label: "Adicione +1 frasco por apenas R$ 37,00", sub: "Reforce seu tratamento · oferta única" },
-};
-
-
-
-
 export const Route = createFileRoute("/checkout/$kit")({
   beforeLoad: ({ params }) => {
     if (!(params.kit in KITS)) throw notFound();
@@ -30,21 +18,21 @@ export const Route = createFileRoute("/checkout/$kit")({
   head: () => ({
     meta: [
       { title: "Checkout — Sucupira Composta" },
-      { name: "description", content: "Finalize sua compra em 30 segundos com PIX." },
+      { name: "description", content: "Finalize sua compra com PIX ou Cartão." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: CheckoutPage,
 });
 
-type PixResult = {
+type PaymentResult = {
   id: string;
   status: string;
   amount: number;
-  pix: { code: string; qrcode_base64: string };
+  pix: { code: string; qrcode_base64: string } | null;
+  card: { card_flag?: string; card_token?: string } | null;
 };
 
-// ---------- máscaras ----------
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 const maskCPF = (s: string) => {
   const d = onlyDigits(s).slice(0, 11);
@@ -59,8 +47,9 @@ const maskPhone = (s: string) => {
   return d.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
 };
 const maskCEP = (s: string) => onlyDigits(s).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
+const maskCardNumber = (s: string) => onlyDigits(s).slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ");
+const maskExpiry = (s: string) => onlyDigits(s).slice(0, 4).replace(/(\d{2})(?=\d)/, "$1/");
 
-// validação real de CPF (algoritmo oficial)
 const isValidCPF = (raw: string) => {
   const d = onlyDigits(raw);
   if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
@@ -73,7 +62,6 @@ const isValidCPF = (raw: string) => {
   return calc(9) === Number(d[9]) && calc(10) === Number(d[10]);
 };
 
-// celular BR: 11 dígitos com DDD válido e nono dígito = 9
 const isValidPhone = (raw: string) => {
   const d = onlyDigits(raw);
   if (d.length !== 11) return false;
@@ -82,91 +70,32 @@ const isValidPhone = (raw: string) => {
   return d[2] === "9";
 };
 
-const expressShippingCents = (zip: string) => {
-  const d = onlyDigits(zip);
-  if (d.length !== 8) return 597;
-  let sum = 0;
-  for (let i = 0; i < d.length; i++) sum += Number(d[i]) * (i + 1);
-  return 400 + (sum * 37) % 400;
-};
 const formatBRL = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
 
 function CheckoutPage() {
   const { kit: kitId } = Route.useParams();
   const baseKitId = kitId as KitId;
+  const kit = KITS[baseKitId];
 
-  const effectiveKitId: KitId = baseKitId;
-  const kit = KITS[effectiveKitId];
-
-
-  useEffect(() => {
-    const w = window as any;
-    if (typeof w.fbq === "function") {
-      w.fbq("track", "ViewContent", {
-        content_ids: [baseKitId],
-        content_name: KITS[baseKitId].title,
-        content_type: "product",
-        value: KITS[baseKitId].priceCents / 100,
-        currency: "BRL",
-      });
-    }
-  }, [baseKitId]);
-
+  const [method, setMethod] = useState<"pix" | "credit_card">("pix");
   const [form, setForm] = useState({
-    name: "", email: "", document: "", phone: "",
-    zip: "", number: "",
-    street: "", neighborhood: "", city: "", state: "", complement: "",
+    name: "", email: "", document: "", phone: "", zip: "", number: "",
+    street: "", neighborhood: "", city: "", state: "",
+    cardNumber: "", cardHolder: "", cardExpiry: "", cardCVV: ""
   });
   const [cepLoading, setCepLoading] = useState(false);
   const [cepFilled, setCepFilled] = useState(false);
-  const [shipping, setShipping] = useState<"free" | "express">("free");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<PixResult | null>(null);
+  const [result, setResult] = useState<PaymentResult | null>(null);
   const [copied, setCopied] = useState(false);
   const cepTimer = useRef<number | null>(null);
-  const expressCents = expressShippingCents(form.zip);
-  const shippingCents = shipping === "express" ? expressCents : 0;
-  const totalCents = kit.priceCents + shippingCents;
 
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
-  const cpfTouched = onlyDigits(form.document).length >= 11;
-  const phoneTouched = onlyDigits(form.phone).length >= 10;
-  const formValid =
-    !!form.name.trim() &&
-    !!form.email.trim() &&
-    phoneValid &&
-    cpfValid &&
-    cepFilled &&
-    !!form.number.trim();
-
-  // Etapa do checkout para a barra de progresso
-  const step: 1 | 2 | 3 = result ? 3 : (cepFilled && form.name && form.email && form.phone ? 2 : 1);
-
-  // urgência (timer)
-  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
-  useEffect(() => {
-    if (result) return;
-    const t = window.setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => window.clearInterval(t);
-  }, [result]);
-
-  // Ao gerar o PIX, leva o usuário direto pro QR Code (evita cair no rodapé)
-  useEffect(() => {
-    if (!result) return;
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }, [result]);
-  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
-  const ss = String(secondsLeft % 60).padStart(2, "0");
-
-
-
-
+  const formValid = !!form.name && !!form.email && cpfValid && phoneValid && cepFilled && !!form.number &&
+    (method === "pix" || (!!form.cardNumber && !!form.cardHolder && form.cardExpiry.length === 5 && form.cardCVV.length >= 3));
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
@@ -178,409 +107,140 @@ function CheckoutPage() {
         const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const d = await r.json();
         if (!d.erro) {
-          setForm((f) => ({
-            ...f,
-            street: d.logradouro || f.street,
-            neighborhood: d.bairro || f.neighborhood,
-            city: d.localidade || f.city,
-            state: d.uf || f.state,
-          }));
+          setForm(f => ({ ...f, street: d.logradouro, neighborhood: d.bairro, city: d.localidade, state: d.uf }));
           setCepFilled(true);
-          const w = window as any;
-          if (typeof w.fbq === "function") {
-            w.fbq("track", "Lead", {
-              content_ids: [effectiveKitId],
-              content_name: kit.title,
-              value: kit.priceCents / 100,
-              currency: "BRL",
-            });
-          }
         }
-      } catch { /* ignore */ }
-      finally { setCepLoading(false); }
+      } catch {} finally { setCepLoading(false); }
     }, 250);
-  }, [form.zip, effectiveKitId, kit.title, kit.priceCents]);
+  }, [form.zip]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return; // evita cliques duplos
-    const missing: string[] = [];
-    if (!form.name.trim()) missing.push("Nome");
-    if (!form.email.trim()) missing.push("E-mail");
-    if (!cpfValid) missing.push("CPF");
-    if (!phoneValid) missing.push("Celular");
-    if (!cepFilled) missing.push("CEP");
-    if (!form.number.trim()) missing.push("Número");
-    if (missing.length) {
-      setError(`Preencha corretamente: ${missing.join(", ")}.`);
-      requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-      return;
-    }
-    setError(null);
     setLoading(true);
-    const w = window as any;
-    if (typeof w.fbq === "function") {
-      w.fbq("track", "InitiateCheckout", {
-        content_ids: [effectiveKitId],
-        content_name: kit.title,
-        content_type: "product",
-        value: kit.priceCents / 100,
-        currency: "BRL",
-        num_items: effectiveKitId === "k5" ? 5 : effectiveKitId === "k3" ? 3 : 1,
-      });
-    }
+    setError(null);
     try {
-      const result = await generatePix({
-        data: {
-          name: form.name,
-          email: form.email,
-          document: form.document,
-          phone: form.phone,
-          amount: totalCents,
-          kit: effectiveKitId,
-        }
-      });
-      setResult(result);
+      const payload: any = {
+        name: form.name, email: form.email, document: form.document, phone: form.phone,
+        amount: kit.priceCents, kit: baseKitId, method
+      };
+      if (method === "credit_card") {
+        const [m, y] = form.cardExpiry.split("/");
+        payload.card = {
+          number: form.cardNumber, holder: form.cardHolder,
+          month: parseInt(m), year: 2000 + parseInt(y), cvv: form.cardCVV
+        };
+      }
+      const res = await generatePayment({ data: payload });
+      setResult(res);
+      if (method === "credit_card" && res.status === "approved") {
+        // Success for card
+      }
     } catch (err: any) {
-      setError(err?.message || "Erro inesperado ao processar o pagamento.");
+      setError(err.message || "Erro no pagamento");
     } finally {
       setLoading(false);
     }
   };
 
-  const copy = async () => {
-    if (!result?.pix?.code) return;
-    await navigator.clipboard.writeText(result.pix.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  if (result) {
+    if (method === "pix" && result.pix) {
+      return (
+        <div className="min-h-screen bg-[var(--cream)] p-4 flex flex-col items-center justify-center text-center">
+          <h1 className="text-2xl font-bold mb-4">Pague seu PIX</h1>
+          {result.pix.qrcode_base64 && <img src={`data:image/png;base64,${result.pix.qrcode_base64}`} className="w-64 h-64 mb-4" />}
+          <textarea readOnly value={result.pix.code} className="w-full max-w-md p-3 border rounded mb-4 text-xs font-mono" rows={3} />
+          <button onClick={() => { navigator.clipboard.writeText(result.pix!.code); setCopied(true); }} className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold">
+            {copied ? "COPIADO!" : "COPIAR CÓDIGO PIX"}
+          </button>
+        </div>
+      );
+    }
+    if (method === "credit_card" && result.status === "approved") {
+      return (
+        <div className="min-h-screen bg-[var(--cream)] p-4 flex flex-col items-center justify-center text-center">
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mb-4">✓</div>
+          <h1 className="text-2xl font-bold mb-2">Pagamento Aprovado!</h1>
+          <p className="text-muted-foreground">Seu pedido está sendo processado e você receberá o rastreio por e-mail.</p>
+          <Link to="/" className="mt-8 text-emerald-600 font-bold underline">Voltar para a loja</Link>
+        </div>
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[var(--cream)]">
-      <header className="bg-white border-b border-[var(--border)] sticky top-0 z-20">
-        <div className="container mx-auto px-4 max-w-5xl py-3 flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-[var(--brand)] transition">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-            Voltar
-          </Link>
-          <span className="font-semibold text-[var(--brand)] text-sm md:text-base tracking-tight">Sucupira Composta</span>
-          <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-emerald-700">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Compra segura
-          </span>
-        </div>
-      </header>
-
-      {/* Faixa de selos de confiança no topo */}
-      {!result && (
-        <div className="bg-white border-b border-[var(--border)]">
-          <div className="container mx-auto max-w-5xl px-4 py-2.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[11px] sm:text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><IconLock className="text-emerald-600" /> SSL 256 bits</span>
-            <span className="inline-flex items-center gap-1.5"><IconPix className="text-emerald-600" /> PIX · Banco Central</span>
-            <span className="inline-flex items-center gap-1.5"><IconTruck className="text-emerald-600" /> Envio rastreado</span>
-            <span className="inline-flex items-center gap-1.5"><IconShield className="text-emerald-600" /> 30 dias de garantia</span>
+      <header className="bg-white border-b p-4 text-center font-bold text-[var(--brand)]">Sucupira Composta - Checkout</header>
+      <main className="container mx-auto max-w-2xl p-4 md:p-8">
+        <form onSubmit={submit} className="bg-white rounded-2xl p-6 shadow-sm space-y-6">
+          <h1 className="text-xl font-bold">Resumo do Pedido</h1>
+          <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
+            <img src={kit.image} className="w-16 h-16 object-contain" />
+            <div className="flex-1">
+              <div className="font-bold text-sm">{kit.title}</div>
+              <div className="text-xs text-muted-foreground">{kit.sub}</div>
+            </div>
+            <div className="text-lg font-bold text-[var(--brand)]">{kit.price}</div>
           </div>
-        </div>
-      )}
 
-      <main className="container mx-auto px-4 max-w-2xl py-6 md:py-10">
-        <section className="bg-white rounded-2xl border border-[var(--border)] p-5 md:p-8 shadow-sm">
-          {!result ? (
-            <>
-              <h1 className="text-xl md:text-2xl font-bold tracking-tight mb-1">Finalize seu pedido</h1>
-              <p className="text-sm text-muted-foreground mb-5">
-                Pagamento via <strong className="text-foreground">PIX</strong> com aprovação imediata. Leva menos de 1 minuto.
-              </p>
+          <div className="space-y-4">
+            <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
+            <Field label="Nome Completo" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="E-mail" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
+              <Field label="Celular" value={form.phone} onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} required placeholder="(00) 00000-0000" />
+            </div>
+            <Field label="CPF" value={form.document} onChange={e => setForm({...form, document: maskCPF(e.target.value)})} required placeholder="000.000.000-00" />
+          </div>
 
-              {/* Resumo do pedido no topo */}
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--cream)] p-4 space-y-1.5 mb-5">
-                <div className="flex items-center gap-3 pb-2 border-b border-[var(--border)]">
-                  <img src={kit.image} alt={kit.title} loading="lazy" decoding="async" className="w-16 h-16 object-contain shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold leading-tight">{kit.title}</div>
-                    <div className="text-xs text-muted-foreground">{kit.sub}</div>
-                  </div>
-                  <span className="text-xs text-muted-foreground line-through shrink-0">{formatBRL(kit.fromCents)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-emerald-700 font-semibold">
-                  <span>Desconto</span>
-                  <span>− {formatBRL(kit.fromCents - kit.priceCents)}</span>
-                </div>
-                {cepFilled && shippingCents > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span>Frete (SEDEX)</span>
-                    <span className="font-semibold">{formatBRL(shippingCents)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-baseline border-t border-[var(--border)] pt-2 mt-1">
-                  <span className="font-bold">Total</span>
-                  <span className="text-[var(--brand)] font-extrabold text-xl">{formatBRL(totalCents)}</span>
+          <div className="space-y-4">
+            <h2 className="font-bold border-b pb-2">2. Endereço</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="CEP" value={form.zip} onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} required placeholder="00000-000" />
+              <Field label="Número" value={form.number} onChange={e => setForm({...form, number: e.target.value})} required />
+            </div>
+            {cepFilled && <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">{form.street}, {form.city}-{form.state}</div>}
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="font-bold border-b pb-2">3. Forma de Pagamento</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <button type="button" onClick={() => setMethod("pix")} className={`p-4 rounded-xl border-2 font-bold flex flex-col items-center gap-2 ${method === "pix" ? "border-emerald-500 bg-emerald-50" : "border-gray-200"}`}>
+                <span className="text-xl">📱</span> PIX
+              </button>
+              <button type="button" onClick={() => setMethod("credit_card")} className={`p-4 rounded-xl border-2 font-bold flex flex-col items-center gap-2 ${method === "credit_card" ? "border-emerald-500 bg-emerald-50" : "border-gray-200"}`}>
+                <span className="text-xl">💳</span> Cartão
+              </button>
+            </div>
+
+            {method === "credit_card" && (
+              <div className="p-4 border rounded-xl space-y-4 bg-gray-50">
+                <Field label="Número do Cartão" value={form.cardNumber} onChange={e => setForm({...form, cardNumber: maskCardNumber(e.target.value)})} placeholder="0000 0000 0000 0000" />
+                <Field label="Nome no Cartão" value={form.cardHolder} onChange={e => setForm({...form, cardHolder: e.target.value.toUpperCase()})} placeholder="COMO ESTÁ NO CARTÃO" />
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Validade" value={form.cardExpiry} onChange={e => setForm({...form, cardExpiry: maskExpiry(e.target.value)})} placeholder="MM/AA" />
+                  <Field label="CVV" value={form.cardCVV} onChange={e => setForm({...form, cardCVV: onlyDigits(e.target.value).slice(0, 4)})} placeholder="123" />
                 </div>
               </div>
+            )}
+          </div>
 
+          {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
 
-
-
-              <form onSubmit={submit} className="space-y-5">
-                <div className="space-y-3">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">1 · Seus dados</div>
-                  <Field
-                    label="Nome completo" required autoComplete="name"
-                    value={form.name}
-                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  />
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <Field
-                      label="Celular" required autoComplete="tel" inputMode="numeric"
-                      placeholder="(11) 99999-9999"
-                      value={form.phone}
-                      onChange={(e) => setForm((f) => ({ ...f, phone: maskPhone(e.target.value) }))}
-                      valid={phoneTouched ? phoneValid : null}
-                      hint={phoneTouched && !phoneValid ? "Celular inválido — informe DDD + 9 dígitos" : phoneValid ? "Número válido" : undefined}
-                    />
-                    <Field
-                      label="E-mail" type="email" required autoComplete="email" inputMode="email"
-                      value={form.email}
-                      onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                    />
-                  </div>
-                  <Field
-                    label="CPF (para emissão da nota)" required inputMode="numeric"
-                    placeholder="000.000.000-00"
-                    value={form.document}
-                    onChange={(e) => setForm((f) => ({ ...f, document: maskCPF(e.target.value) }))}
-                    valid={cpfTouched ? cpfValid : null}
-                    hint={cpfTouched && !cpfValid ? "CPF inválido — confira os números" : cpfValid ? "CPF válido" : undefined}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">2 · Endereço de entrega</div>
-                  <div className="grid sm:grid-cols-[170px_1fr] gap-3">
-                    <Field
-                      label={cepLoading ? "CEP (buscando...)" : "CEP"}
-                      required inputMode="numeric" autoComplete="postal-code"
-                      placeholder="00000-000"
-                      value={form.zip}
-                      onChange={(e) => setForm((f) => ({ ...f, zip: maskCEP(e.target.value) }))}
-                    />
-                    <Field
-                      label="Número" required inputMode="numeric"
-                      value={form.number}
-                      onChange={(e) => setForm((f) => ({ ...f, number: e.target.value }))}
-                    />
-                  </div>
-
-                  {cepFilled && (
-                    <div className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg p-2.5">
-                      ✓ Entrega para <strong>{form.street}</strong>, {form.neighborhood} — {form.city}/{form.state}
-                    </div>
-                  )}
-
-                  {cepFilled && (
-                    <div className="space-y-2">
-                      <label className={`flex items-center justify-between gap-3 border rounded-xl p-3 cursor-pointer transition ${shipping === "free" ? "border-[var(--brand)] bg-[var(--brand)]/5" : "border-[var(--border)] hover:bg-[var(--cream)]"}`}>
-                        <div className="flex items-center gap-3">
-                          <input type="radio" name="shipping" value="free" checked={shipping === "free"} onChange={() => setShipping("free")} className="accent-[var(--brand)]" />
-                          <div>
-                            <div className="text-sm font-semibold">Entrega Padrão — Correios</div>
-                            <div className="text-xs text-muted-foreground">Chega em 3 a 5 dias úteis</div>
-                          </div>
-                        </div>
-                        <span className="text-sm font-bold text-green-600">GRÁTIS</span>
-                      </label>
-                      <label className={`flex items-center justify-between gap-3 border rounded-xl p-3 cursor-pointer transition ${shipping === "express" ? "border-[var(--brand)] bg-[var(--brand)]/5" : "border-[var(--border)] hover:bg-[var(--cream)]"}`}>
-                        <div className="flex items-center gap-3">
-                          <input type="radio" name="shipping" value="express" checked={shipping === "express"} onChange={() => setShipping("express")} className="accent-[var(--brand)]" />
-                          <div>
-                            <div className="text-sm font-semibold">Entrega Expressa — SEDEX</div>
-                            <div className="text-xs text-muted-foreground">Chega em 1 a 3 dias úteis</div>
-                          </div>
-                        </div>
-                        <span className="text-sm font-bold text-[var(--brand)]">{formatBRL(expressCents)}</span>
-                      </label>
-                    </div>
-                  )}
-                </div>
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3">
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading || !formValid}
-                  aria-busy={loading}
-                  aria-disabled={!formValid}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base md:text-lg py-4 rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
-                >
-                  {loading ? (
-                    <>
-                      <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Gerando PIX...
-                    </>
-                  ) : (
-                    <>Comprar agora — {formatBRL(totalCents)}</>
-                  )}
-                </button>
-
-                <p className="text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
-                  <IconLock className="text-emerald-600" />
-                  Ambiente protegido · seus dados são criptografados
-                </p>
-              </form>
-            </>
-
-          ) : (
-            <PixView result={result} kit={kit} totalCents={totalCents} onCopy={copy} copied={copied} />
-          )}
-        </section>
+          <button disabled={loading || !formValid} className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50">
+            {loading ? "Processando..." : `Finalizar Compra - ${formatBRL(kit.priceCents)}`}
+          </button>
+        </form>
       </main>
-
       <SiteFooter />
     </div>
-
   );
 }
 
-function StepDot({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) {
+function Field({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div className="flex items-center gap-1.5 shrink-0">
-      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${done ? "bg-emerald-500 text-white" : active ? "bg-[var(--brand)] text-white" : "bg-[var(--border)] text-muted-foreground"}`}>
-        {done ? "✓" : n}
-      </span>
-      <span className={`hidden sm:inline ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
-    </div>
-  );
-}
-
-function TrustBadge({ Icon, title, sub }: { Icon: React.FC<{ className?: string }>; title: string; sub: string }) {
-  return (
-    <div className="flex items-center gap-2 p-2.5 rounded-lg border border-[var(--border)] bg-white">
-      <Icon className="text-emerald-600 shrink-0" />
-      <div className="min-w-0">
-        <div className="text-[11px] font-semibold leading-tight truncate">{title}</div>
-        <div className="text-[10px] text-muted-foreground leading-tight truncate">{sub}</div>
-      </div>
-    </div>
-  );
-}
-
-function IconLock({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
-    </svg>
-  );
-}
-function IconShield({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-function IconTruck({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="6" width="14" height="11" rx="1" /><path d="M15 9h4l3 4v4h-7" /><circle cx="6" cy="19" r="2" /><circle cx="18" cy="19" r="2" />
-    </svg>
-  );
-}
-function IconPix({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3l4 4-5 5-5-5 4-4a2 2 0 012 0z" /><path d="M3 12l4-4 5 5-5 5-4-4a2 2 0 010-2z" /><path d="M21 12l-4-4-5 5 5 5 4-4a2 2 0 000-2z" /><path d="M12 21l4-4-5-5-5 5 4 4a2 2 0 002 0z" />
-    </svg>
-  );
-}
-
-
-function PixView({
-  result, kit, totalCents, onCopy, copied,
-}: {
-  result: PixResult;
-  kit: (typeof KITS)[KitId];
-  totalCents: number;
-  onCopy: () => void;
-  copied: boolean;
-}) {
-  return (
-    <div className="text-center">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold mb-3">
-        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /> Aguardando pagamento
-      </div>
-      <h1 className="text-2xl font-bold mb-2">Pague com PIX para liberar o envio</h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        Escaneie o QR Code ou copie o código. Confirmação automática.
-      </p>
-      {result.pix.qrcode_base64 && (
-        <img
-          src={`data:image/png;base64,${result.pix.qrcode_base64}`}
-          alt="QR Code PIX"
-          className="mx-auto w-64 h-64 border border-[var(--border)] rounded-xl bg-white"
-        />
-      )}
-      <div className="mt-6">
-        <button
-          onClick={onCopy}
-          className={`w-full font-semibold text-base md:text-lg py-4 rounded-xl transition border ${copied ? "bg-emerald-600 text-white border-emerald-700" : "bg-[var(--brand)] text-white border-[var(--brand-dark)] hover:bg-[var(--brand-dark)]"}`}
-        >
-          {copied ? "✓ CÓDIGO COPIADO! ABRA O APP DO SEU BANCO" : "📋 COPIAR CÓDIGO PIX"}
-        </button>
-        <p className="text-xs text-muted-foreground mt-2">Toque no botão acima, abra seu app de banco e cole no PIX Copia e Cola.</p>
-      </div>
-      <div className="mt-5 text-left">
-        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Ou copie manualmente:</label>
-        <textarea
-          readOnly
-          value={result.pix.code}
-          className="w-full mt-1 p-3 border border-[var(--border)] rounded-lg text-xs font-mono bg-[var(--cream)]"
-          rows={3}
-        />
-      </div>
-      <div className="mt-5 p-4 rounded-xl bg-emerald-50 border-2 border-emerald-200 text-emerald-900 text-sm text-left">
-        <div className="font-bold mb-1 flex items-center gap-2">✅ Confirmação automática</div>
-        <p className="leading-snug">Assim que você pagar, nosso sistema identificará automaticamente e você receberá o <strong>código de rastreio por e-mail</strong> em até 24h.</p>
-      </div>
-      <div className="mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm font-semibold">
-        🚚 Seu tratamento será enviado em até 24h após a confirmação do pagamento
-      </div>
-      <p className="text-xs text-muted-foreground mt-4">
-        Pedido #{result.id.slice(0, 8)} — Total {formatBRL(totalCents)}
-      </p>
-    </div>
-  );
-}
-
-function Field({
-  label, valid, hint, className, ...props
-}: { label: string; valid?: boolean | null; hint?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  const borderClass =
-    valid === true
-      ? "border-emerald-400 focus:ring-emerald-300/40"
-      : valid === false
-        ? "border-red-400 focus:ring-red-300/40"
-        : "border-[var(--border)] focus:ring-[var(--brand)]/30";
-  return (
-    <label className="block">
-      <span className="text-sm font-medium flex items-center gap-1.5">
-        {label}{props.required && " *"}
-        {valid === true && <span className="text-emerald-600 text-xs">✓</span>}
-      </span>
-      <div className="relative">
-        <input
-          {...props}
-          className={`mt-1 w-full h-11 px-3 rounded-lg border bg-white focus:outline-none focus:ring-2 transition-colors ${borderClass} ${className ?? ""}`}
-        />
-      </div>
-      {hint && (
-        <span className={`block mt-1 text-[11px] ${valid === false ? "text-red-600" : "text-emerald-700"}`}>
-          {hint}
-        </span>
-      )}
+    <label className="block space-y-1">
+      <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
+      <input {...props} className="w-full h-12 px-4 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" />
     </label>
   );
 }
