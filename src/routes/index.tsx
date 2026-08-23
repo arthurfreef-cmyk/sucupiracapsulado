@@ -40,6 +40,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  * 'veja se o pagamento no cartão esta funcionando, veja se a pessoa boatr as infomaçoes do cartao o pagamento vai ser processado' (on element 'body' at '/src/routes/index.tsx:1')
  * 'veja se os pagamentos no metodo de cartao a mangofy esta autorizando e hablitada' (on element 'body' at '/src/routes/index.tsx:1')
  * 'tem como testar uma transaçao de teste com cartao?' (on element 'body' at '/src/routes/index.tsx:1')
+ * 'tire a opçao de pagamento cartao de credito e deixe somete pix disponivel' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
 
