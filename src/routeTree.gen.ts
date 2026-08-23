@@ -11,8 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
-import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
-import { Route as ApiPublicBuckpayWebhookRouteImport } from './routes/api/public/buckpay-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,62 +22,31 @@ const CheckoutKitRoute = CheckoutKitRouteImport.update({
   path: '/checkout/$kit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBuckpayPixRoute = ApiBuckpayPixRouteImport.update({
-  id: '/api/buckpay-pix',
-  path: '/api/buckpay-pix',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicBuckpayWebhookRoute = ApiPublicBuckpayWebhookRouteImport.update({
-  id: '/api/public/buckpay-webhook',
-  path: '/api/public/buckpay-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
-  '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
-  '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
-  '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/api/buckpay-pix'
-    | '/checkout/$kit'
-    | '/api/public/buckpay-webhook'
+  fullPaths: '/' | '/checkout/$kit'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/api/buckpay-pix'
-    | '/checkout/$kit'
-    | '/api/public/buckpay-webhook'
-  id:
-    | '__root__'
-    | '/'
-    | '/api/buckpay-pix'
-    | '/checkout/$kit'
-    | '/api/public/buckpay-webhook'
+  to: '/' | '/checkout/$kit'
+  id: '__root__' | '/' | '/checkout/$kit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
-  ApiPublicBuckpayWebhookRoute: typeof ApiPublicBuckpayWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -98,28 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutKitRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/buckpay-pix': {
-      id: '/api/buckpay-pix'
-      path: '/api/buckpay-pix'
-      fullPath: '/api/buckpay-pix'
-      preLoaderRoute: typeof ApiBuckpayPixRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/buckpay-webhook': {
-      id: '/api/public/buckpay-webhook'
-      path: '/api/public/buckpay-webhook'
-      fullPath: '/api/public/buckpay-webhook'
-      preLoaderRoute: typeof ApiPublicBuckpayWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiBuckpayPixRoute: ApiBuckpayPixRoute,
   CheckoutKitRoute: CheckoutKitRoute,
-  ApiPublicBuckpayWebhookRoute: ApiPublicBuckpayWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
