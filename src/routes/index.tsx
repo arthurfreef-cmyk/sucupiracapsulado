@@ -818,8 +818,9 @@ function Pricing() {
                 </div>
                 <div className="text-4xl font-extrabold text-[var(--brand)]">{k.price}</div>
                 <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide mt-1">
-                  OFERTA EXCLUSIVA PARA PAGAMENTO VIA PIX
+                  OFERTA EXCLUSIVA COM FRETE GRÁTIS
                 </div>
+
               </div>
               <div className="flex flex-wrap justify-center gap-2 my-4 text-xs">
                 <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">🚚 Entrega Garantida com Código de Rastreio</span>
@@ -856,7 +857,7 @@ function Pricing() {
                 Escolher Esse Kit →
               </Link>
               <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
-                ⚡ <strong>Pagamento Exclusivo via PIX</strong> com Aprovação Instantânea
+                ⚡ <strong>Pagamento via PIX ou Cartão</strong> com Aprovação Rápida
               </p>
             </div>
           ))}
@@ -865,7 +866,7 @@ function Pricing() {
 
         <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
           <span>🔒 Compra Segura</span>
-          <span>⚡ Pagamento via PIX</span>
+          <span>⚡ Pagamento via PIX / Cartão</span>
           <span>🚚 Frete Grátis</span>
           <span>✅ Garantia 30 Dias</span>
         </div>
