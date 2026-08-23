@@ -224,7 +224,7 @@ function Hero() {
               O composto 100% natural que cura as <span className="text-[var(--gold)]">dores crônicas</span> e do dia a dia já nas <span className="text-[var(--gold)]">primeiras 24h!</span>
             </h1>
             <p className="text-white/90 text-base md:text-lg mb-5 max-w-xl mx-auto lg:mx-0">
-              Fórmula exclusiva com <strong>Sucupira + Canela de Velho + Cálcio</strong> para alívio natural das dores nas articulações, coluna e músculos.
+              Fórmula exclusiva com <strong>Sucupira + Canela de Velho + Cálcio</strong> para alívio natural das dores nas articulações, coluna e músculos. Pagamento rápido via <strong>PIX</strong>.
             </p>
 
             <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
