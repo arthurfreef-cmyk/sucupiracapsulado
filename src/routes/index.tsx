@@ -34,6 +34,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  *
  * <!-- End Meta Pixel Code --> adione esse pixel do meta no site e remova qualquer outro, ou veja se esse pixel ja esta integrado
  * 'veja se esse pixel esta marcando todos os eventos desejados e aprimore ele totalmente, n mexa em nenhum texto no codigo que nao seja relacionado ao pixel, veja se o pagamento em cartao esta ativo pela mangofy e presente no checkout como metodo de pagamento' (on element 'body' at '/src/routes/index.tsx:1')
+ * 'eu desejo ativar cartao de credito via mangofy, pode habilitar no checkout tambem' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
 
