@@ -29,7 +29,7 @@ export async function createMangofyPix(payload: {
     installments: 1,
     payment_amount: payload.amount,
     shipping_amount: 0,
-    // postback_url: "https://example.com/webhook",
+    postback_url: "https://id-preview--47926bee-82d0-4b8f-b7a3-b94b398be3b9.lovable.app/api/public/mangofy-webhook",
     items: [
       { 
         code: payload.kit, 
