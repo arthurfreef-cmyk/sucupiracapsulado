@@ -1,0 +1,999 @@
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Sucupira Composta — Alívio natural das dores em 24h" },
+      {
+        name: "description",
+        content:
+          "Fórmula 100% natural com Sucupira, Canela de Velho e Cálcio. Alívio das dores nas articulações, coluna e músculos já nas primeiras 24h.",
+      },
+      { property: "og:title", content: "Sucupira Composta — Alívio natural das dores" },
+      {
+        property: "og:description",
+        content:
+          "Composto natural com Sucupira + Canela de Velho + Cálcio. 1 cápsula por dia. Garantia de 30 dias.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
+      },
+    ],
+    links: [
+      {
+        rel: "preload",
+        as: "image",
+        href: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
+        fetchpriority: "high",
+      },
+      { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://i.postimg.cc", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://customer-assets.emergentagent.com" },
+      { rel: "dns-prefetch", href: "https://i.postimg.cc" },
+    ],
+  }),
+  component: Index,
+});
+
+// ============ ASSETS (originais do site) ============
+const IMG = {
+  hero: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
+  mulher:
+    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/tnnn1pr7_foto%20mulher%20com%20sucupira2.png",
+  sucupira:
+    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/9e0g2hsm_Design%20sem%20nome%20%289%29.png",
+  canela:
+    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/vodsrlc3_canela%20de%20velho.png",
+  calcio:
+    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/9h1bxaqi_calcio.png",
+  anvisa:
+    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/sh21vamn_logo%20anvisa.png",
+  kit1: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/rq9lslj7_kit1frasco.png",
+  kit3: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/5kgkordi_sucupira%203%20frascos.png",
+  kit5: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/nf8gbzyx_kit5frasco.png",
+};
+
+const VIDEOS = [
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/jjqfp8kw_lv_0_20251030100424.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/st156lxv_VID-20251007-WA0065.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/vtetyyqo_VID-20251031-WA0002.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/e3895bwj_2025-10-29-090328761.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/pdo5k2bh_2026-04-01-185520729.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/1iq9htj4_2026-02-04-203212563.mp4",
+  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/jcrxsk48_VID-20251123-WA0086.mp4",
+];
+
+const CHECKOUT = {
+  k1: "k1" as const,
+  k3: "k3" as const,
+  k5: "k5" as const,
+};
+
+const WHATSAPP =
+  "https://wa.me/5547999850396?text=Ol%C3%A1%2C%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas%20sobre%20o%20Sucupira%20Composta!";
+
+// ============ Page ============
+function Index() {
+  const router = useRouter();
+  useEffect(() => {
+    const idle = (cb: () => void) =>
+      (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb) : setTimeout(cb, 1500);
+    idle(() => {
+      router.preloadRoute({ to: "/checkout/$kit", params: { kit: "k3" } }).catch(() => {});
+      // Pré-aquece imagens dos kits enquanto o usuário lê a página
+      [IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    });
+  }, [router]);
+  return (
+    <div className="min-h-screen bg-[var(--cream)] text-foreground">
+      <Header />
+      <main className="pb-20 md:pb-0">
+        <Hero />
+        <Pains />
+        <Product />
+        <Formula />
+        <Benefits />
+        <BeforeAfter />
+        <Anvisa />
+        <Testimonials />
+        <VideoTestimonials />
+        <Guarantee />
+        <Pricing />
+        <ScarcityStrip />
+        <FAQ />
+        <FinalCTA />
+      </main>
+
+      <Footer />
+      
+      
+    </div>
+  );
+}
+
+// ============ Sections ============
+function Header() {
+  return (
+    <header className="fixed top-0 inset-x-0 z-50 bg-[var(--brand-dark)]/95 backdrop-blur border-b border-white/10">
+      <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between h-14 sm:h-16">
+        <a href="#" className="flex items-center gap-2 text-white font-bold min-w-0">
+          <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--gold)] flex items-center justify-center text-[var(--brand)] shrink-0">
+            ✦
+          </span>
+          <span className="text-sm sm:text-base truncate">Sucupira Composta</span>
+        </a>
+        <nav className="hidden md:flex items-center gap-6 text-white/90 text-sm font-medium">
+          <a href="#beneficios" className="hover:text-[var(--gold)]">Benefícios</a>
+          <a href="#formula" className="hover:text-[var(--gold)]">Fórmula</a>
+          <a href="#depoimentos" className="hover:text-[var(--gold)]">Depoimentos</a>
+          <a href="#precos" className="hover:text-[var(--gold)]">Comprar</a>
+          <a href="#faq" className="hover:text-[var(--gold)]">Dúvidas</a>
+        </nav>
+        <a
+          href="#precos"
+          className="inline-flex items-center gap-1 bg-[var(--gold)] text-[var(--brand)] font-bold text-[11px] sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-[1.02] transition shrink-0"
+        >
+          <span className="hidden sm:inline">QUERO LIVRE DE DORES</span>
+          <span className="sm:hidden">COMPRAR</span> →
+        </a>
+      </div>
+
+
+    </header>
+
+
+  );
+}
+
+function Hero() {
+  const conditions = [
+    "Artrite e Artrose",
+    "Fibromialgia",
+    "Dores na Coluna",
+    "Nervo Ciático",
+    "Bursite e Tendinite",
+    "Dores Musculares",
+    "Hérnia de Disco",
+    "Gota e Ácido Úrico",
+    "Reumatismo",
+  ];
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#5a0000] via-[#8B0000] to-[#5a0000] pt-32 pb-12 md:pt-36 md:pb-24">
+      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0px)", backgroundSize: "40px 40px" }} />
+      <div className="hidden md:block absolute top-20 right-10 w-[500px] h-[500px] bg-yellow-400/10 rounded-full blur-[150px]" />
+      <div className="hidden md:block absolute bottom-20 left-10 w-[400px] h-[400px] bg-white/5 rounded-full blur-[100px]" />
+
+      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          <div className="order-2 lg:order-1 text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider shadow-lg mb-4">
+              ✦ Acabe com as dores
+            </span>
+            <h1 className="text-[28px] sm:text-4xl md:text-5xl font-bold text-white leading-[1.15] mb-4">
+              O composto 100% natural que cura as <span className="text-[var(--gold)]">dores crônicas</span> e do dia a dia já nas <span className="text-[var(--gold)]">primeiras 24h!</span>
+            </h1>
+            <p className="text-white/90 text-base md:text-lg mb-5 max-w-xl mx-auto lg:mx-0">
+              Fórmula exclusiva com <strong>Sucupira + Canela de Velho + Cálcio</strong> para alívio natural das dores nas articulações, coluna e músculos.
+            </p>
+
+            <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
+              <div className="flex -space-x-2">
+                {["M", "J", "A"].map((l, i) => (
+                  <span key={i} className="w-8 h-8 rounded-full bg-[var(--gold)] text-[var(--brand)] flex items-center justify-center font-bold border-2 border-white text-sm">
+                    {l}
+                  </span>
+                ))}
+              </div>
+              <div className="text-white text-xs sm:text-sm">
+                <div className="font-bold">+2.847 pessoas satisfeitas</div>
+                <div className="text-[var(--gold)]">★★★★★ 4.9/5</div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 border border-white/15 rounded-2xl p-4 mb-6 backdrop-blur">
+              <p className="text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">Eficaz contra:</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-white text-xs sm:text-sm">
+                {conditions.map((c) => (
+                  <div key={c} className="flex items-center gap-1.5">
+                    <span className="text-[var(--gold)]">✓</span> {c}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center lg:items-start gap-3">
+              <a
+                href="#precos"
+                className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-2xl hover:scale-[1.02] transition"
+              >
+                QUERO LIVRE DAS DORES →
+              </a>
+              <a
+                href="#depoimentos"
+                className="inline-flex items-center gap-2 text-white/90 hover:text-[var(--gold)] font-semibold text-sm md:text-base underline underline-offset-4 transition"
+              >
+                ★ Ver depoimentos de quem já usou
+              </a>
+            </div>
+
+          </div>
+
+          <div className="order-1 lg:order-2 relative">
+            <img
+              src={IMG.hero}
+              alt="Sucupira Composta"
+              width={520}
+              height={520}
+              fetchPriority="high"
+              decoding="async"
+              className="w-full max-w-[280px] sm:max-w-md mx-auto drop-shadow-2xl"
+            />
+            <div className="absolute -top-2 -left-2 md:-top-4 md:-left-4 bg-white rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl text-center">
+              <div className="text-[var(--brand)] font-bold text-xs md:text-sm">1 cápsula por dia</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">e você se renova!</div>
+            </div>
+            <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 bg-[var(--gold)] rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl text-center">
+              <div className="text-[var(--brand)] font-bold text-[10px] md:text-xs">Garantia</div>
+              <div className="text-[var(--brand)] font-extrabold text-sm md:text-base">30 dias</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Pains() {
+  const items = [
+    { t: "Dores ao levantar", d: "Aquele primeiro movimento do dia que parece uma batalha" },
+    { t: "Articulações doloridas", d: "Joelhos, quadril, coluna... dor em todo lugar" },
+    { t: "Corpo travado", d: "Rigidez que não passa e limita seus movimentos" },
+    { t: "Limitações diárias", d: "Deixar de fazer o que ama por causa da dor" },
+  ];
+  return (
+    <section className="py-12 md:py-20 bg-white">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-12">
+          <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">Você se identifica?</p>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2">Cansado de viver assim?</h2>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {items.map((i) => (
+            <div key={i.t} className="bg-[var(--cream)] border border-[var(--border)] rounded-2xl p-6 hover:shadow-lg transition">
+              <div className="w-12 h-12 rounded-full bg-[var(--brand)]/10 text-[var(--brand)] flex items-center justify-center font-bold mb-4">!</div>
+              <h3 className="font-bold text-lg mb-2">{i.t}</h3>
+              <p className="text-muted-foreground text-sm">{i.d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-12 max-w-2xl mx-auto">
+          <p className="italic text-xl text-[var(--brand)] font-semibold">
+            “E se você pudesse acordar sem dor e voltar a viver plenamente?”
+          </p>
+          <a href="#depoimentos" className="inline-block mt-6 text-[var(--brand)] font-bold underline">
+            Veja os Depoimentos de Quem Usa →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Formula() {
+  const items = [
+    { img: IMG.sucupira, tag: "Anti-inflamatório", t: "Sucupira", d: "A semente de sucupira é tradicionalmente conhecida por suas propriedades que auxiliam no alívio de dores e inflamações articulares." },
+    { img: IMG.canela, tag: "Mobilidade", t: "Canela de Velho", d: "Planta medicinal brasileira amplamente reconhecida por auxiliar na flexibilidade e mobilidade das articulações." },
+    { img: IMG.calcio, tag: "Fortalecimento", t: "Cálcio", d: "Mineral essencial para a manutenção da estrutura óssea, contribuindo para ossos mais fortes e resistentes." },
+  ];
+  return (
+    <section id="formula" className="py-12 md:py-20 bg-[var(--cream)]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-12">
+          <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">A Solução Natural</p>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2">Conheça a Sucupira Composta</h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {items.map((i) => (
+            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)]">
+              <img src={i.img} alt={i.t} loading="lazy" decoding="async" width={256} height={256} className="w-32 h-32 object-contain mx-auto mb-4" />
+              <span className="inline-block bg-[var(--brand)]/10 text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full mb-3">{i.tag}</span>
+              <h3 className="text-xl font-bold mb-2">{i.t}</h3>
+              <p className="text-muted-foreground text-sm">{i.d}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 bg-gradient-to-br from-[var(--brand)] to-[var(--brand-dark)] rounded-3xl p-8 md:p-12 text-white text-center">
+          <h3 className="text-2xl md:text-3xl font-bold mb-3">Fórmula 3 em 1 completa</h3>
+          <p className="text-white/90 max-w-2xl mx-auto mb-6">
+            A combinação perfeita desses 3 ingredientes naturais potencializa os resultados e oferece alívio mais rápido e duradouro.
+          </p>
+          <p className="text-[var(--gold)] font-bold mb-6">1 cápsula por dia, antes de dormir</p>
+          <a href="#precos" className="inline-flex bg-[var(--gold)] text-[var(--brand)] font-bold px-8 py-4 rounded-full hover:scale-[1.02] transition">
+            Quero Experimentar Agora →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Product() {
+  return (
+    <section className="py-12 md:py-20 bg-white">
+      <div className="container mx-auto px-4 max-w-6xl grid lg:grid-cols-2 gap-10 items-center">
+        <img src={IMG.hero} alt="Sucupira Composta" loading="lazy" decoding="async" className="w-full max-w-md mx-auto" />
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">O Sucupira Composta tem a fórmula certa</h2>
+          <p className="text-lg text-muted-foreground mb-6">
+            Com concentração testada e ativos que realmente funcionam, <strong>quem usa sente o resultado já no primeiro dia!</strong>
+          </p>
+          <p className="text-sm font-semibold text-[var(--brand)] mb-6">
+            Este NÃO é o mesmo encontrado em farmácias comuns
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { n: "500mg", l: "Concentração ideal por cápsula" },
+              { n: "3 em 1", l: "Ativos naturais combinados" },
+              { n: "24h", l: "Resultado no primeiro dia" },
+            ].map((s) => (
+              <div key={s.n} className="bg-[var(--cream)] rounded-2xl p-4 text-center border border-[var(--border)]">
+                <div className="text-2xl font-extrabold text-[var(--brand)]">{s.n}</div>
+                <div className="text-xs text-muted-foreground mt-1">{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Benefits() {
+  const items = [
+    { t: "Ação anti-inflamatória e analgésica", d: "Alívio rápido e eficaz das dores nas articulações" },
+    { t: "Redução do ácido úrico", d: "Auxilia no controle e diminuição do ácido úrico no organismo" },
+    { t: "Elimina dores causadas pela fibromialgia, artrite e artrose", d: "Fórmula especialmente desenvolvida para combater essas condições" },
+    { t: "Acordar Melhor", d: "Menos rigidez ao levantar" },
+    { t: "100% Natural", d: "Sem químicos ou efeitos colaterais" },
+    { t: "Praticidade", d: "Apenas 1 cápsula por dia" },
+    { t: "Seguro", d: "Fórmula testada e aprovada" },
+    { t: "Mais Mobilidade", d: "Recupere a liberdade de movimento" },
+    { t: "Resultado Rápido", d: "Sinta a diferença em poucos dias" },
+  ];
+  return (
+    <section id="beneficios" className="py-12 md:py-20 bg-[var(--cream)]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Benefícios que você vai sentir</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {items.map((i) => (
+            <div key={i.t} className="bg-white rounded-2xl p-6 border border-[var(--border)] hover:shadow-lg transition">
+              <div className="w-10 h-10 rounded-full bg-[var(--brand)] text-white flex items-center justify-center mb-3 font-bold">✓</div>
+              <h3 className="font-bold mb-1">{i.t}</h3>
+              <p className="text-sm text-muted-foreground">{i.d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-10">
+          <a href="#precos" className="inline-flex bg-[var(--brand)] text-white font-bold px-8 py-4 rounded-full hover:bg-[var(--brand-dark)] transition">
+            Quero Esses Benefícios →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BeforeAfter() {
+  return (
+    <section className="py-12 md:py-20 bg-white">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold">Imagine sua vida transformada</h2>
+          <p className="text-muted-foreground mt-2">Veja a diferença que a Sucupira Composta pode fazer no seu dia a dia</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
+            <h3 className="text-2xl font-bold text-red-700 mb-4">ANTES</h3>
+            <ul className="space-y-3 text-foreground">
+              <li>✗ Acordar com dores e rigidez no corpo</li>
+              <li>✗ Evitar atividades que você ama</li>
+              <li>✗ Noites mal dormidas pela dor</li>
+              <li>✗ Depender de remédios fortes</li>
+            </ul>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-8">
+            <h3 className="text-2xl font-bold text-green-700 mb-4">DEPOIS</h3>
+            <ul className="space-y-3 text-foreground">
+              <li>✓ Despertar renovado e sem dores</li>
+              <li>✓ Voltar a fazer o que você gosta</li>
+              <li>✓ Dormir profundamente e acordar bem</li>
+              <li>✓ Usar apenas ingredientes naturais</li>
+            </ul>
+          </div>
+        </div>
+        <div className="text-center mt-10">
+          <a href="#precos" className="inline-flex bg-[var(--gold)] text-[var(--brand)] font-bold px-8 py-4 rounded-full hover:scale-[1.02] transition">
+            Quero Essa Transformação →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Anvisa() {
+  return (
+    <section className="py-16 bg-[var(--cream)]">
+      <div className="container mx-auto px-4 max-w-4xl bg-white rounded-3xl p-8 md:p-12 border border-[var(--border)] grid md:grid-cols-[auto_1fr] gap-8 items-center">
+        <img src={IMG.anvisa} alt="ANVISA" loading="lazy" decoding="async" className="w-32 mx-auto" />
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Produto Isento de Registro ANVISA</h3>
+          <p className="text-muted-foreground mb-4">
+            Este produto é 100% natural e <strong>isento de registro</strong> de acordo com a Resolução RDC nº 240/2018 da Agência Nacional de Vigilância Sanitária (ANVISA).
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">100% Natural</span>
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">Seguro para consumo</span>
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">Sem contraindicações</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Carousel({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const scrollBy = (dir: 1 | -1) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+  return (
+    <div className="relative">
+      <div
+        ref={ref}
+        className="flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        aria-label="Anterior"
+        onClick={() => scrollBy(-1)}
+        className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[var(--brand)] text-white items-center justify-center shadow-lg hover:bg-[var(--brand-dark)] transition z-10"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        aria-label="Próximo"
+        onClick={() => scrollBy(1)}
+        className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[var(--brand)] text-white items-center justify-center shadow-lg hover:bg-[var(--brand-dark)] transition z-10"
+      >
+        ›
+      </button>
+    </div>
+  );
+}
+
+function Testimonials() {
+  const items = [
+    { n: "Carlos Roberto", a: "62 anos • São Paulo, SP", q: "Já na primeira semana senti diferença. Consigo caminhar de manhã sem dor!", i: "C", p: "https://i.postimg.cc/5t6nvZR6/Whats-App-Image-2026-06-20-at-17-00-26-(1).jpg" },
+    { n: "Ana Paula", a: "55 anos • Rio de Janeiro, RJ", q: "Voltei a brincar com meus netos no chão. Chorei de felicidade!", i: "A", p: "https://i.postimg.cc/g2KfNFsq/Whats-App-Image-2026-06-20-at-16-55-38.jpg" },
+    { n: "José Antônio", a: "67 anos • Belo Horizonte, MG", q: "Uma cápsula antes de dormir e acordo muito melhor. Já estou no terceiro frasco.", i: "J", p: "https://i.postimg.cc/hvxYmHh7/Whats-App-Image-2026-06-20-at-16-55-38-(1).jpg" },
+    { n: "Maria das Graças", a: "59 anos • Curitiba, PR", q: "Depois de anos sofrendo com dores no joelho, finalmente encontrei algo que funciona!", i: "M", p: "https://i.postimg.cc/QMyYyXTf/Whats-App-Image-2026-06-20-at-17-00-26.jpg" },
+    { n: "Francisco Silva", a: "64 anos • Salvador, BA", q: "Minha esposa que indicou e hoje nós dois usamos. Voltamos a dançar forró!", i: "F", p: "https://i.postimg.cc/jd0mTdFK/Whats-App-Image-2026-06-20-at-16-55-39.jpg" },
+    { n: "Tereza Santos", a: "71 anos • Fortaleza, CE", q: "Achei que nunca mais ia conseguir subir escada. Agora subo sem dor nenhuma!", i: "T", p: "https://i.postimg.cc/pV8csMX3/Whats-App-Image-2026-06-20-at-16-55-39-(1).jpg" },
+  ];
+  return (
+    <section className="py-12 md:py-20 bg-white">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="grid lg:grid-cols-[1fr_2fr] gap-10 items-center mb-12">
+          <img src={IMG.mulher} alt="Cliente satisfeita" loading="lazy" decoding="async" className="rounded-3xl shadow-xl w-full" />
+          <div>
+            <span className="bg-[var(--gold)] text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full">Compra verificada</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-3 mb-4">
+              “Depois que comecei a usar o Sucupira Composta, minha vida voltou ao normal!”
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Eu sofria com dores nas articulações há anos. Acordava travada, não conseguia brincar com meus netos. Depois de 1 semana usando Sucupira Composta, voltei a fazer tudo que eu amava!
+            </p>
+            <div className="flex items-center gap-3">
+              <img src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" alt="Maria Helena" loading="lazy" className="w-12 h-12 rounded-full object-cover border-2 border-[var(--brand)]" />
+              <div>
+                <div className="font-bold">Maria Helena</div>
+                <div className="text-sm text-muted-foreground">58 anos • São Paulo, SP</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-2xl md:text-3xl font-bold text-center mb-8">+2.000 pessoas recomendam</h3>
+        <Carousel>
+          {items.map((t) => (
+            <div key={t.n} className="bg-[var(--cream)] rounded-2xl p-6 border border-[var(--border)] snap-center shrink-0 w-[85%] sm:w-[46%] lg:w-[32%]">
+              <div className="text-[var(--gold)] mb-2">★★★★★</div>
+              <p className="italic mb-4">“{t.q}”</p>
+              <div className="flex items-center gap-3">
+                <img src={t.p} alt={t.n} loading="lazy" className="w-10 h-10 rounded-full object-cover border-2 border-[var(--brand)]" />
+                <div>
+                  <div className="font-bold text-sm">{t.n}</div>
+                  <div className="text-xs text-muted-foreground">{t.a}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </div>
+    </section>
+  );
+}
+
+function LazyVideo({ src, idx }: { src: string; idx: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!ref.current || visible) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "150px" },
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [visible]);
+  return (
+    <div ref={ref} className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-lg">
+      {visible ? (
+        <video
+          src={`${src}#t=1`}
+          className="w-full h-full object-cover"
+          controls
+          preload="metadata"
+          playsInline
+          muted
+          data-testid={`video-testimonial-${idx + 1}`}
+          onLoadedMetadata={(e) => {
+            const v = e.currentTarget;
+            try { v.currentTime = 1; } catch {}
+          }}
+        >
+          Seu navegador não suporta vídeos.
+        </video>
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-white/50 text-3xl">▶</div>
+      )}
+    </div>
+  );
+}
+
+function VideoTestimonials() {
+  return (
+    <section id="depoimentos" className="py-12 md:py-20 bg-[var(--cream)]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold">Veja os depoimentos de quem usa nosso Sucupira Composta</h2>
+          <p className="text-muted-foreground mt-2">Pessoas reais que transformaram suas vidas</p>
+        </div>
+        <Carousel>
+          {VIDEOS.map((src, idx) => (
+            <div key={src} className="snap-center shrink-0 w-[45%] sm:w-[32%] lg:w-[23%]">
+              <LazyVideo src={src} idx={idx} />
+            </div>
+          ))}
+        </Carousel>
+        <div className="text-center mt-10">
+          <a href="#precos" className="inline-flex bg-[var(--brand)] text-white font-bold px-8 py-4 rounded-full hover:bg-[var(--brand-dark)] transition">
+            Quero Experimentar Também →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Guarantee() {
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4 max-w-4xl bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/10 border border-[var(--gold)] rounded-3xl p-8 md:p-12 text-center">
+        <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4">30</div>
+        <h3 className="text-2xl md:text-3xl font-bold mb-3">RISCO ZERO: Ou você ama os resultados ou devolvemos cada centavo</h3>
+        <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
+          Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>WhatsApp</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
+        </p>
+        <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 30 dias</p>
+
+        <div className="flex flex-wrap justify-center gap-3 text-sm">
+          <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">30 dias para testar</span>
+          <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">Reembolso total</span>
+          <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">Sem burocracia</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Countdown() {
+  const [t, setT] = useState({ h: 6, m: 30, s: 47 });
+  useEffect(() => {
+    const id = setInterval(() => {
+      setT((p) => {
+        let { h, m, s } = p;
+        s--;
+        if (s < 0) { s = 59; m--; }
+        if (m < 0) { m = 59; h--; }
+        if (h < 0) { h = 0; m = 0; s = 0; }
+        return { h, m, s };
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  const Box = ({ n, l }: { n: number; l: string }) => (
+    <div className="bg-[var(--brand)] text-white rounded-xl px-5 py-3 min-w-[80px]">
+      <div className="text-3xl font-extrabold">{String(n).padStart(2, "0")}</div>
+      <div className="text-xs uppercase">{l}</div>
+    </div>
+  );
+  return (
+    <div className="flex items-center justify-center gap-3">
+      <Box n={t.h} l="Horas" />
+      <Box n={t.m} l="Min" />
+      <Box n={t.s} l="Seg" />
+    </div>
+  );
+}
+
+function Pricing() {
+  const kits = [
+    {
+      title: "1 Frasco",
+      sub: "30 dias de tratamento",
+      img: IMG.kit1,
+      from: "R$ 97",
+      price: "R$ 27",
+      href: CHECKOUT.k1,
+      highlight: false,
+    },
+    {
+      title: "3 Frascos",
+      sub: "90 dias de tratamento",
+      tag: "Mais Vendido",
+      meta: "Escolha de 73% dos clientes",
+      img: IMG.kit3,
+      from: "R$ 291",
+      price: "R$ 97",
+      href: CHECKOUT.k3,
+      highlight: true,
+      badge: "MELHOR CUSTO-BENEFÍCIO",
+    },
+    {
+      title: "5 Frascos",
+      sub: "150 dias de tratamento",
+      img: IMG.kit5,
+      from: "R$ 485",
+      price: "R$ 147",
+      href: CHECKOUT.k5,
+      highlight: false,
+    },
+  ];
+
+  return (
+    <section id="precos" className="py-12 md:py-20 bg-[var(--cream)]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-8">
+          <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">Aproveite o DESCONTO e FRETE GRÁTIS antes que acabe!</p>
+          <p className="text-muted-foreground mt-1 mb-5">Promoção encerra à meia-noite</p>
+          <Countdown />
+        </div>
+
+        <h2 className="text-3xl md:text-4xl font-bold text-center mt-12 mb-2">Escolha seu Kit</h2>
+        <p className="text-center text-sm text-red-600 mb-10">⚠️ Estoque limitado — Últimas unidades do lote promocional</p>
+
+        <div className="grid md:grid-cols-3 gap-6 items-stretch">
+          {kits.map((k) => (
+            <div
+              key={k.title}
+              className={`relative bg-white rounded-3xl p-6 border-2 flex flex-col ${
+                k.highlight ? "border-[var(--brand)] shadow-2xl md:-translate-y-4" : "border-[var(--border)] shadow"
+              }`}
+            >
+              {k.tag && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--brand)] text-white text-xs font-bold px-4 py-1 rounded-full">
+                  {k.tag}
+                </span>
+              )}
+              <h3 className="text-2xl font-bold text-center">{k.title}</h3>
+              <p className="text-center text-muted-foreground text-sm">{k.sub}</p>
+              {k.meta && <p className="text-center text-xs text-[var(--brand)] font-semibold mt-1">{k.meta}</p>}
+              <img src={k.img} alt={k.title} loading="lazy" decoding="async" width={400} height={300} className="w-full h-48 object-contain my-5" />
+              <div className="text-center mb-2">
+                <div className="text-sm text-muted-foreground">
+                  De <span className="line-through">{k.from}</span> por apenas
+                </div>
+                <div className="text-4xl font-extrabold text-[var(--brand)]">{k.price}</div>
+                <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide mt-1">
+                  OFERTA EXCLUSIVA PARA PAGAMENTO VIA PIX
+                </div>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 my-4 text-xs">
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">🚚 Entrega Garantida com Código de Rastreio</span>
+                {k.badge && (
+                  <span className="bg-[var(--gold)] text-[var(--brand)] px-3 py-1 rounded-full font-bold">{k.badge}</span>
+                )}
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">Garantia 30 dias</span>
+              </div>
+
+              <Link
+                to="/checkout/$kit"
+                params={{ kit: k.href }}
+                onClick={() => {
+                  const w = window as any;
+                  const value = Number(k.price.replace(/[^\d,]/g, "").replace(",", "."));
+                  const num = k.href === "k5" ? 5 : k.href === "k3" ? 3 : 1;
+                  if (typeof w.fbq === "function") {
+                    w.fbq("track", "AddToCart", {
+                      content_ids: [k.href],
+                      content_name: k.title,
+                      content_type: "product",
+                      value,
+                      currency: "BRL",
+                      num_items: num,
+                    });
+                  }
+                }}
+                className={`mt-auto block text-center font-bold py-4 rounded-full transition ${
+                  k.highlight
+                    ? "bg-[var(--brand)] text-white hover:bg-[var(--brand-dark)]"
+                    : "bg-[var(--gold)] text-[var(--brand)] hover:scale-[1.02]"
+                }`}
+              >
+                Escolher Esse Kit →
+              </Link>
+              <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
+                ⚡ <strong>Pagamento Exclusivo via PIX</strong> com Aprovação Instantânea
+              </p>
+            </div>
+          ))}
+
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
+          <span>🔒 Compra Segura</span>
+          <span>⚡ Pagamento via PIX</span>
+          <span>🚚 Frete Grátis</span>
+          <span>✅ Garantia 30 Dias</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-white border border-[var(--border)] rounded-2xl">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between text-left p-5 font-semibold"
+      >
+        <span>{q}</span>
+        <span className="text-[var(--brand)] text-xl">{open ? "−" : "+"}</span>
+      </button>
+      {open && <div className="px-5 pb-5 text-muted-foreground text-sm">{a}</div>}
+    </div>
+  );
+}
+
+function FAQ() {
+  const items: { q: string; a: string }[] = [
+    { q: "Por que o pagamento é apenas via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h." },
+    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX." },
+
+    { q: "Em quanto tempo faz efeito?", a: "A maioria dos usuários relata alívio das dores já nas primeiras 24h. Para resultados completos, recomendamos uso contínuo por pelo menos 30 dias." },
+    { q: "Como devo tomar?", a: "Tome 1 cápsula por dia, preferencialmente antes de dormir, com um copo de água." },
+    { q: "Quanto tempo dura 1 frasco?", a: "Cada frasco contém 30 cápsulas, o suficiente para 30 dias de tratamento." },
+    { q: "Posso tomar se tenho diabetes?", a: "O Sucupira Composta é 100% natural. Em casos de condições específicas, recomendamos consultar seu médico antes do uso." },
+    { q: "Tem interação com outros remédios?", a: "Por ser natural, geralmente não há interações. Em caso de uso de medicamentos contínuos, consulte seu médico." },
+    { q: "Tem contraindicação?", a: "Contraindicado para gestantes, lactantes e menores de 18 anos." },
+    { q: "O frete é grátis?", a: "Sim! Todos os kits têm FRETE GRÁTIS para todo o Brasil." },
+    { q: "Como funciona a garantia?", a: "Você tem 30 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
+    { q: "Quanto tempo para chegar?", a: "O prazo médio de entrega é de 5 a 10 dias úteis, dependendo da sua região." },
+    { q: "É aprovado pela ANVISA?", a: "Produto isento de registro segundo a RDC nº 240/2018 da ANVISA. 100% natural e seguro." },
+    { q: "Posso tomar junto com outros suplementos?", a: "Sim, geralmente não há problema. Em caso de dúvida, consulte seu profissional de saúde." },
+  ];
+  return (
+    <section id="faq" className="py-12 md:py-20 bg-white">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Perguntas Frequentes</h2>
+        <div className="space-y-3">
+          {items.map((i) => <FAQItem key={i.q} q={i.q} a={i.a} />)}
+        </div>
+        <div className="text-center mt-10">
+          <p className="font-semibold mb-3">Ainda tem dúvidas?</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="mailto:contato@sucupiracomposta.com.br" className="bg-[var(--cream)] border border-[var(--border)] px-5 py-3 rounded-full text-sm font-semibold">
+              ✉️ contato@sucupiracomposta.com.br
+            </a>
+            <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="bg-green-500 text-white px-5 py-3 rounded-full text-sm font-bold">
+              💬 WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section className="py-20 bg-gradient-to-br from-[var(--brand-dark)] via-[var(--brand)] to-[var(--brand-dark)] text-white">
+      <div className="container mx-auto px-4 max-w-4xl text-center">
+        <h2 className="text-3xl md:text-5xl font-bold mb-4">Não deixe a dor roubar mais dias da sua vida!</h2>
+        <p className="text-white/90 text-lg mb-8">Milhares já transformaram sua qualidade de vida. Agora é a sua vez!</p>
+        <a href="#precos" className="inline-flex bg-[var(--gold)] text-[var(--brand)] font-bold px-10 py-5 rounded-full shadow-2xl hover:scale-[1.02] transition text-lg">
+          Quero Minha Sucupira Composta →
+        </a>
+        <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-white/80">
+          <span>✓ Garantia 30 dias</span>
+          <span>✓ Frete Grátis</span>
+          <span>✓ +2.000 clientes</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function CTABridge({
+  eyebrow, title, cta, tone = "cream", microcopy,
+}: { eyebrow: string; title: string; cta: string; tone?: "cream" | "brand"; microcopy?: string }) {
+  const isBrand = tone === "brand";
+  return (
+    <section className={isBrand ? "bg-[var(--brand)] py-10 md:py-14" : "bg-[var(--cream)] py-10 md:py-14"}>
+      <div className="container mx-auto px-4 max-w-4xl text-center">
+        <p className={`text-xs md:text-sm font-bold uppercase tracking-wider mb-2 ${isBrand ? "text-[var(--gold)]" : "text-[var(--brand)]"}`}>
+          {eyebrow}
+        </p>
+        <h3 className={`text-2xl md:text-3xl font-bold mb-5 ${isBrand ? "text-white" : "text-foreground"}`}>
+          {title}
+        </h3>
+        <a
+          href="#precos"
+          className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-xl hover:scale-[1.02] transition"
+        >
+          {cta}
+        </a>
+        {microcopy && (
+          <p className={`mt-3 text-xs md:text-sm ${isBrand ? "text-white/80" : "text-muted-foreground"}`}>
+            {microcopy}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ScarcityStrip() {
+  return (
+    <section className="bg-[var(--brand-dark)] text-white py-4 border-y border-[var(--gold)]/30">
+      <div className="container mx-auto px-4 max-w-5xl flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs md:text-sm font-semibold">
+        <span className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[var(--gold)] animate-pulse" />
+          Últimas unidades do lote em estoque
+        </span>
+        <span className="hidden md:inline opacity-50">•</span>
+        <span>🚚 Envio em até 24h</span>
+        <span className="hidden md:inline opacity-50">•</span>
+        <span>🛡️ Garantia incondicional de 30 dias</span>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+
+  return (
+    <footer className="bg-[var(--brand-dark)] text-white/80 py-12 text-sm">
+      <div className="container mx-auto px-4 max-w-6xl space-y-8">
+        {/* Trust badges */}
+        <div className="text-center border-b border-white/15 pb-6">
+          <p className="font-bold text-white text-base tracking-wide">
+            🔒 COMPRA SEGURA &nbsp;|&nbsp; 🛡️ AMBIENTE PROTEGIDO &nbsp;|&nbsp; 🚚 FRETE GRÁTIS
+          </p>
+          <p className="mt-3 max-w-3xl mx-auto text-white/75">
+            Seus dados financeiros estão totalmente seguros. O processamento do pagamento é
+            criptografado e certificado pelos maiores padrões de segurança online.
+          </p>
+        </div>
+
+        {/* Company info */}
+        <div className="text-center space-y-1 border-b border-white/15 pb-6">
+          <p className="font-extrabold text-white text-lg">Sucupira Composta</p>
+          <p>©️ 2026 – Todos os direitos reservados.</p>
+          <p>MJA – CNPJ: 17.797.109/0001-02</p>
+          <p>Rua Cinco, N 112, Jardim Lucinda, Itaquaquecetuba - SP, 08593-289</p>
+        </div>
+
+        {/* Useful links + customer service */}
+        <div className="grid md:grid-cols-2 gap-6 border-b border-white/15 pb-6">
+          <div className="text-center md:text-left">
+            <p className="font-bold text-white mb-2">LINKS ÚTEIS:</p>
+            <p className="space-x-2">
+              <a href="#" className="hover:text-[var(--gold)]">Políticas de Privacidade</a>
+              <span>|</span>
+              <a href="#" className="hover:text-[var(--gold)]">Termos de Uso</a>
+              <span>|</span>
+              <a href="#" className="hover:text-[var(--gold)]">Políticas de Reembolso</a>
+            </p>
+          </div>
+          <div className="text-center md:text-right">
+            <p className="font-bold text-white mb-2">ATENDIMENTO AO CLIENTE:</p>
+            <p>E-mail: contato@sucupiracompostaspt.com.br</p>
+            <p>Horário: Segunda a Sexta, das 08h às 18h</p>
+          </div>
+        </div>
+
+        {/* Legal disclaimers */}
+        <div className="space-y-3 text-xs text-white/60 max-w-4xl mx-auto leading-relaxed">
+          <p className="font-bold text-white/80 text-center">
+            AVISOS LEGAIS E ISENÇÃO DE RESPONSABILIDADE:
+          </p>
+          <p>
+            Este produto é 100% natural e isento de registro de acordo com a Resolução RDC nº
+            240/2018 da Agência Nacional de Vigilância Sanitária (ANVISA).
+          </p>
+          <p>
+            As informações e sugestões contidas neste site têm caráter meramente informativo e
+            não substituem o aconselhamento, diagnóstico ou tratamento de profissionais de
+            saúde. Os resultados podem variar de acordo com o organismo de cada pessoa.
+          </p>
+          <p>
+            Este site não faz parte do site do Facebook ou da Meta Platforms, Inc. Além disso,
+            este site NÃO é endossado pelo Facebook de forma alguma. FACEBOOK é uma marca
+            comercial da META PLATFORMS, Inc.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function WhatsAppFab() {
+  return (
+    <a
+      href={WHATSAPP}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Fale conosco no WhatsApp"
+      className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 bg-green-500 text-white font-bold w-12 h-12 md:w-auto md:h-auto md:px-5 md:py-3 rounded-full shadow-2xl flex items-center justify-center md:gap-2 hover:scale-[1.05] transition"
+    >
+      <span className="md:hidden text-xl">💬</span>
+      <span className="hidden md:inline">💬 Fale Conosco</span>
+    </a>
+  );
+}
+
+function MobileStickyCTA() {
+  return (
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-[var(--border)] px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+      <a
+        href="#precos"
+        className="flex items-center justify-center gap-2 w-full bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
+      >
+        APROVEITAR DESCONTO NO PIX →
+      </a>
+    </div>
+  );
+}
