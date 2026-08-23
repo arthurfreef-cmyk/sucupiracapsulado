@@ -228,35 +228,9 @@ function CheckoutPage() {
       });
     }
     try {
-      const res = await fetch("/api/buckpay-pix", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kit: effectiveKitId,
-          shipping: { method: shipping, amount: shippingCents },
-          
-          buyer: {
-            name: form.name, email: form.email,
-            document: form.document, phone: form.phone,
-          },
-          address: {
-            zip: form.zip, street: form.street, number: form.number,
-            complement: form.complement, neighborhood: form.neighborhood,
-            city: form.city, state: form.state,
-          },
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Falha ao gerar PIX.");
-      setResult(data);
-      if (typeof w.fbq === "function") {
-        w.fbq("track", "AddPaymentInfo", {
-          content_ids: [effectiveKitId],
-          value: kit.priceCents / 100,
-          currency: "BRL",
-        });
-      }
+      // BuckPay integration removed per user request. 
+      // This is a placeholder for the new checkout flow or API call.
+      throw new Error("Integração com BuckPay removida. Por favor, configure o novo fluxo de pagamento.");
     } catch (err: any) {
       setError(err?.message || "Erro inesperado.");
     } finally {
