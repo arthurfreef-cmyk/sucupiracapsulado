@@ -128,18 +128,8 @@ function CheckoutPage() {
         name: form.name, email: form.email, document: form.document, phone: form.phone,
         amount: kit.priceCents, kit: baseKitId, method
       };
-      if (method === "credit_card") {
-        const [m, y] = form.cardExpiry.split("/");
-        payload.card = {
-          number: form.cardNumber, holder: form.cardHolder,
-          month: parseInt(m), year: 2000 + parseInt(y), cvv: form.cardCVV
-        };
-      }
       const res = await generatePayment({ data: payload });
       setResult(res);
-      if (method === "credit_card" && res.status === "approved") {
-        navigate({ to: "/obrigado" });
-      }
     } catch (err: any) {
       setError(err.message || "Erro no pagamento");
     } finally {
