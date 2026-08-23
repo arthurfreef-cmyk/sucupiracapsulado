@@ -1,19 +1,27 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createMangofyPix } from "./mangofy.server";
+import { createMangofyPayment } from "./mangofy.server";
 
-const PixInputSchema = z.object({
+const PaymentInputSchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
   document: z.string().min(11),
   phone: z.string().min(10),
   amount: z.number(),
   kit: z.string(),
+  method: z.enum(["pix", "credit_card"]),
+  card: z.object({
+    number: z.string(),
+    holder: z.string(),
+    month: z.number(),
+    year: z.number(),
+    cvv: z.string(),
+  }).optional(),
 });
 
-export const generatePix = createServerFn({ method: "POST" })
-  .inputValidator((data) => PixInputSchema.parse(data))
+export const generatePayment = createServerFn({ method: "POST" })
+  .inputValidator((data) => PaymentInputSchema.parse(data))
   .handler(async ({ data }) => {
     const apiToken = process.env['MANGOFY_TOKEN'];
     const storeCode = process.env['MANGOFY_STORE_CODE'];
@@ -23,15 +31,16 @@ export const generatePix = createServerFn({ method: "POST" })
     }
 
     try {
-      const result = await createMangofyPix(data, apiToken, storeCode);
+      const result = await createMangofyPayment(data, apiToken, storeCode);
       return {
-        id: result.payment_code,
+        id: result.payment_code || "pending",
         status: result.payment_status,
         amount: result.payment_amount,
-        pix: {
+        pix: result.pix ? {
           code: result.pix.pix_qrcode_text,
           qrcode_base64: result.pix.pix_qrcode_image || "",
-        }
+        } : null,
+        card: result.card || null
       };
     } catch (error: any) {
       console.error("Mangofy API Error:", error);
