@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
+import { Route as ApiPublicMangofyWebhookRouteImport } from './routes/api/public/mangofy-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const CheckoutKitRoute = CheckoutKitRouteImport.update({
   path: '/checkout/$kit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMangofyWebhookRoute = ApiPublicMangofyWebhookRouteImport.update({
+  id: '/api/public/mangofy-webhook',
+  path: '/api/public/mangofy-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout/$kit': typeof CheckoutKitRoute
+  '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout/$kit': typeof CheckoutKitRoute
+  '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout/$kit': typeof CheckoutKitRoute
+  '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkout/$kit'
+  fullPaths: '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkout/$kit'
-  id: '__root__' | '/' | '/checkout/$kit'
+  to: '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
+  id: '__root__' | '/' | '/checkout/$kit' | '/api/public/mangofy-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
+  ApiPublicMangofyWebhookRoute: typeof ApiPublicMangofyWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutKitRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mangofy-webhook': {
+      id: '/api/public/mangofy-webhook'
+      path: '/api/public/mangofy-webhook'
+      fullPath: '/api/public/mangofy-webhook'
+      preLoaderRoute: typeof ApiPublicMangofyWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutKitRoute: CheckoutKitRoute,
+  ApiPublicMangofyWebhookRoute: ApiPublicMangofyWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
