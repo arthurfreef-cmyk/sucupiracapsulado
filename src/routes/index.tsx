@@ -40,6 +40,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  * 'veja se o pagamento no cartão esta funcionando, veja se a pessoa boatr as infomaçoes do cartao o pagamento vai ser processado' (on element 'body' at '/src/routes/index.tsx:1')
  * 'veja se os pagamentos no metodo de cartao a mangofy esta autorizando e hablitada' (on element 'body' at '/src/routes/index.tsx:1')
  * 'tem como testar uma transaçao de teste com cartao?' (on element 'body' at '/src/routes/index.tsx:1')
+ * 'tire a opçao de pagamento cartao de credito e deixe somete pix disponivel' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -223,7 +224,7 @@ function Hero() {
               O composto 100% natural que cura as <span className="text-[var(--gold)]">dores crônicas</span> e do dia a dia já nas <span className="text-[var(--gold)]">primeiras 24h!</span>
             </h1>
             <p className="text-white/90 text-base md:text-lg mb-5 max-w-xl mx-auto lg:mx-0">
-              Fórmula exclusiva com <strong>Sucupira + Canela de Velho + Cálcio</strong> para alívio natural das dores nas articulações, coluna e músculos.
+              Fórmula exclusiva com <strong>Sucupira + Canela de Velho + Cálcio</strong> para alívio natural das dores nas articulações, coluna e músculos. Pagamento rápido via <strong>PIX</strong>.
             </p>
 
             <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
@@ -861,7 +862,7 @@ function Pricing() {
                 Escolher Esse Kit →
               </Link>
               <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
-                ⚡ <strong>Pagamento via PIX ou Cartão</strong> com Aprovação Rápida
+                ⚡ <strong>Pagamento via PIX</strong> com Aprovação Instantânea
               </p>
             </div>
           ))}
@@ -870,7 +871,7 @@ function Pricing() {
 
         <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
           <span>🔒 Compra Segura</span>
-          <span>⚡ Pagamento via PIX / Cartão</span>
+          <span>⚡ Pagamento via PIX</span>
           <span>🚚 Frete Grátis</span>
           <span>✅ Garantia 30 Dias</span>
         </div>
@@ -897,8 +898,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FAQ() {
   const items: { q: string; a: string }[] = [
-    { q: "Por que o pagamento é prioritário via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h. Também aceitamos Cartão de Crédito." },
-    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX ou Cartão." },
+    { q: "Quais são as formas de pagamento?", a: "Para garantir a melhor agilidade no envio e os menores preços, aceitamos pagamentos via PIX. A aprovação é instantânea e o envio ocorre em até 24h." },
+    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX." },
 
 
     { q: "Em quanto tempo faz efeito?", a: "A maioria dos usuários relata alívio das dores já nas primeiras 24h. Para resultados completos, recomendamos uso contínuo por pelo menos 30 dias." },

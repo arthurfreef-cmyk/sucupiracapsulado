@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout/$kit")({
   head: () => ({
     meta: [
       { title: "Checkout — Sucupira Composta" },
-      { name: "description", content: "Finalize sua compra com PIX ou Cartão." },
+      { name: "description", content: "Finalize sua compra com PIX com aprovação instantânea." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -81,7 +81,7 @@ function CheckoutPage() {
   const baseKitId = kitId as KitId;
   const kit = KITS[baseKitId];
 
-  const [method, setMethod] = useState<"pix" | "credit_card">("pix");
+  const [method, setMethod] = useState<"pix">("pix");
   const [form, setForm] = useState({
     name: "", email: "", document: "", phone: "", zip: "", number: "",
     street: "", neighborhood: "", city: "", state: "",
@@ -100,7 +100,7 @@ function CheckoutPage() {
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
   const formValid = !!form.name && !!form.email && cpfValid && phoneValid && cepFilled && !!form.number &&
-    (method === "pix" || (!!form.cardNumber && !!form.cardHolder && form.cardExpiry.length === 5 && form.cardCVV.length >= 3));
+    (method === "pix");
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
@@ -128,18 +128,8 @@ function CheckoutPage() {
         name: form.name, email: form.email, document: form.document, phone: form.phone,
         amount: kit.priceCents, kit: baseKitId, method
       };
-      if (method === "credit_card") {
-        const [m, y] = form.cardExpiry.split("/");
-        payload.card = {
-          number: form.cardNumber, holder: form.cardHolder,
-          month: parseInt(m), year: 2000 + parseInt(y), cvv: form.cardCVV
-        };
-      }
       const res = await generatePayment({ data: payload });
       setResult(res);
-      if (method === "credit_card" && res.status === "approved") {
-        navigate({ to: "/obrigado" });
-      }
     } catch (err: any) {
       setError(err.message || "Erro no pagamento");
     } finally {
@@ -299,26 +289,25 @@ function CheckoutPage() {
           </div>
 
           <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2">3. Forma de Pagamento</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <button type="button" onClick={() => setMethod("pix")} className={`p-4 rounded-xl border-2 font-bold flex flex-col items-center gap-2 ${method === "pix" ? "border-emerald-500 bg-emerald-50" : "border-gray-200"}`}>
-                <span className="text-xl">📱</span> PIX
-              </button>
-              <button type="button" onClick={() => setMethod("credit_card")} className={`p-4 rounded-xl border-2 font-bold flex flex-col items-center gap-2 ${method === "credit_card" ? "border-emerald-500 bg-emerald-50" : "border-gray-200"}`}>
-                <span className="text-xl">💳</span> Cartão
-              </button>
-            </div>
-
-            {method === "credit_card" && (
-              <div className="p-4 border rounded-xl space-y-4 bg-gray-50">
-                <Field label="Número do Cartão" value={form.cardNumber} onChange={e => setForm({...form, cardNumber: maskCardNumber(e.target.value)})} placeholder="0000 0000 0000 0000" />
-                <Field label="Nome no Cartão" value={form.cardHolder} onChange={e => setForm({...form, cardHolder: e.target.value.toUpperCase()})} placeholder="COMO ESTÁ NO CARTÃO" />
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Validade" value={form.cardExpiry} onChange={e => setForm({...form, cardExpiry: maskExpiry(e.target.value)})} placeholder="MM/AA" />
-                  <Field label="CVV" value={form.cardCVV} onChange={e => setForm({...form, cardCVV: onlyDigits(e.target.value).slice(0, 4)})} placeholder="123" />
+            <h2 className="font-bold border-b pb-2 text-emerald-700 flex items-center gap-2">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+              3. Forma de Pagamento
+            </h2>
+            <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-bold flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📱</span>
+                <div>
+                  <p className="text-sm">PIX</p>
+                  <p className="text-xs text-emerald-600 font-normal">Aprovação imediata</p>
                 </div>
               </div>
-            )}
+              <div className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                Selecionado
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground text-center">
+              Pague com PIX e receba seu acesso instantaneamente por e-mail.
+            </p>
           </div>
 
           {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
