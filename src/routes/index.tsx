@@ -121,12 +121,14 @@ function Index() {
       (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb) : setTimeout(cb, 1500);
     idle(() => {
       router.preloadRoute({ to: "/checkout/$kit", params: { kit: "k3" } }).catch(() => {});
-      // Pré-aquece imagens dos kits enquanto o usuário lê a página
-      [IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
+      // Pré-aquece imagens dos kits de forma eficiente
+      [IMG.hero, IMG.mulher, IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
+        if (!src) return;
         const img = new Image();
         img.src = src;
       });
     });
+
   }, [router]);
   return (
     <div className="min-h-screen bg-[var(--cream)] text-foreground">
@@ -338,8 +340,17 @@ function Formula() {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {items.map((i) => (
-            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)]">
-              <img src={i.img} alt={i.t} loading="lazy" decoding="async" width={256} height={256} className="w-32 h-32 object-contain mx-auto mb-4" />
+            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)] group">
+              <img 
+                src={i.img} 
+                alt={i.t} 
+                loading="lazy" 
+                decoding="async" 
+                width={128} 
+                height={128} 
+                className="w-32 h-32 object-contain mx-auto mb-4 transition-transform group-hover:scale-105" 
+              />
+
               <span className="inline-block bg-[var(--brand)]/10 text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full mb-3">{i.tag}</span>
               <h3 className="text-xl font-bold mb-2">{i.t}</h3>
               <p className="text-muted-foreground text-sm">{i.d}</p>
@@ -366,7 +377,18 @@ function Product() {
   return (
     <section className="py-12 md:py-20 bg-white">
       <div className="container mx-auto px-4 max-w-6xl grid lg:grid-cols-2 gap-10 items-center">
-        <img src={IMG.hero} alt="Sucupira Composta" loading="lazy" decoding="async" className="w-full max-w-md mx-auto" />
+        <div className="relative aspect-square max-w-md mx-auto w-full">
+          <img 
+            src={IMG.hero} 
+            alt="Sucupira Composta" 
+            loading="lazy" 
+            decoding="async" 
+            width={448}
+            height={448}
+            className="w-full h-full object-contain" 
+          />
+        </div>
+
         <div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">O Sucupira Composta tem a fórmula certa</h2>
           <p className="text-lg text-muted-foreground mb-6">
