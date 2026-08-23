@@ -7,7 +7,7 @@ const PixResponseSchema = z.object({
   payment_amount: z.number(),
   pix: z.object({
     pix_qrcode_text: z.string(),
-    pix_qrcode_image: z.string(), // base64
+    pix_qrcode_image: z.string().optional(), // Tornar opcional para evitar quebra no Zod
     pix_expires_at: z.string(),
   }),
 });
@@ -29,7 +29,7 @@ export async function createMangofyPix(payload: {
     installments: 1,
     payment_amount: payload.amount,
     shipping_amount: 0,
-    // postback_url: "https://example.com/webhook",
+    postback_url: "https://id-preview--47926bee-82d0-4b8f-b7a3-b94b398be3b9.lovable.app/api/public/mangofy-webhook",
     items: [
       { 
         code: payload.kit, 
@@ -60,6 +60,7 @@ export async function createMangofyPix(payload: {
   });
 
   const rawData = await response.json();
+  console.log("Mangofy API Response:", JSON.stringify(rawData, null, 2));
 
   if (!response.ok) {
     throw new Error(rawData.message || `Erro Mangofy (${response.status}): ${JSON.stringify(rawData)}`);
@@ -68,6 +69,10 @@ export async function createMangofyPix(payload: {
   const parsed = PixResponseSchema.safeParse(rawData);
   if (!parsed.success) {
     console.error("Mangofy Response Schema Error:", parsed.error);
+    // Tenta retornar mesmo assim se tiver os campos básicos para depuração
+    if (rawData.pix?.pix_qrcode_text) {
+      return rawData;
+    }
     throw new Error("Resposta da Mangofy em formato inesperado.");
   }
 

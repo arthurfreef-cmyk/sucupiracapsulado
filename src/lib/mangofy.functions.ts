@@ -30,7 +30,7 @@ export const generatePix = createServerFn({ method: "POST" })
         amount: result.payment_amount,
         pix: {
           code: result.pix.pix_qrcode_text,
-          qrcode_base64: result.pix.pix_qrcode_image,
+          qrcode_base64: result.pix.pix_qrcode_image || "",
         }
       };
     } catch (error: any) {
