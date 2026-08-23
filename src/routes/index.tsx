@@ -35,6 +35,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  * <!-- End Meta Pixel Code --> adione esse pixel do meta no site e remova qualquer outro, ou veja se esse pixel ja esta integrado
  * 'veja se esse pixel esta marcando todos os eventos desejados e aprimore ele totalmente, n mexa em nenhum texto no codigo que nao seja relacionado ao pixel, veja se o pagamento em cartao esta ativo pela mangofy e presente no checkout como metodo de pagamento' (on element 'body' at '/src/routes/index.tsx:1')
  * 'eu desejo ativar cartao de credito via mangofy, pode habilitar no checkout tambem' (on element 'body' at '/src/routes/index.tsx:1')
+ * 'melhore o carregamento de imagens e tudo do site' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -120,12 +121,14 @@ function Index() {
       (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb) : setTimeout(cb, 1500);
     idle(() => {
       router.preloadRoute({ to: "/checkout/$kit", params: { kit: "k3" } }).catch(() => {});
-      // Pré-aquece imagens dos kits enquanto o usuário lê a página
-      [IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
+      // Pré-aquece imagens dos kits de forma eficiente
+      [IMG.hero, IMG.mulher, IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
+        if (!src) return;
         const img = new Image();
         img.src = src;
       });
     });
+
   }, [router]);
   return (
     <div className="min-h-screen bg-[var(--cream)] text-foreground">
@@ -337,8 +340,17 @@ function Formula() {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {items.map((i) => (
-            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)]">
-              <img src={i.img} alt={i.t} loading="lazy" decoding="async" width={256} height={256} className="w-32 h-32 object-contain mx-auto mb-4" />
+            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)] group">
+              <img 
+                src={i.img} 
+                alt={i.t} 
+                loading="lazy" 
+                decoding="async" 
+                width={128} 
+                height={128} 
+                className="w-32 h-32 object-contain mx-auto mb-4 transition-transform group-hover:scale-105" 
+              />
+
               <span className="inline-block bg-[var(--brand)]/10 text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full mb-3">{i.tag}</span>
               <h3 className="text-xl font-bold mb-2">{i.t}</h3>
               <p className="text-muted-foreground text-sm">{i.d}</p>
@@ -365,7 +377,18 @@ function Product() {
   return (
     <section className="py-12 md:py-20 bg-white">
       <div className="container mx-auto px-4 max-w-6xl grid lg:grid-cols-2 gap-10 items-center">
-        <img src={IMG.hero} alt="Sucupira Composta" loading="lazy" decoding="async" className="w-full max-w-md mx-auto" />
+        <div className="relative aspect-square max-w-md mx-auto w-full">
+          <img 
+            src={IMG.hero} 
+            alt="Sucupira Composta" 
+            loading="lazy" 
+            decoding="async" 
+            width={448}
+            height={448}
+            className="w-full h-full object-contain" 
+          />
+        </div>
+
         <div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">O Sucupira Composta tem a fórmula certa</h2>
           <p className="text-lg text-muted-foreground mb-6">
@@ -534,7 +557,16 @@ function Testimonials() {
     <section className="py-12 md:py-20 bg-white">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="grid lg:grid-cols-[1fr_2fr] gap-10 items-center mb-12">
-          <img src={IMG.mulher} alt="Cliente satisfeita" loading="lazy" decoding="async" className="rounded-3xl shadow-xl w-full" />
+          <img 
+            src={IMG.mulher} 
+            alt="Cliente satisfeita" 
+            loading="lazy" 
+            decoding="async" 
+            width={400}
+            height={500}
+            className="rounded-3xl shadow-xl w-full object-cover" 
+          />
+
           <div>
             <span className="bg-[var(--gold)] text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full">Compra verificada</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-3 mb-4">
@@ -544,7 +576,15 @@ function Testimonials() {
               Eu sofria com dores nas articulações há anos. Acordava travada, não conseguia brincar com meus netos. Depois de 1 semana usando Sucupira Composta, voltei a fazer tudo que eu amava!
             </p>
             <div className="flex items-center gap-3">
-              <img src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" alt="Maria Helena" loading="lazy" className="w-12 h-12 rounded-full object-cover border-2 border-[var(--brand)]" />
+              <img 
+                src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" 
+                alt="Maria Helena" 
+                loading="lazy" 
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover border-2 border-[var(--brand)]" 
+              />
+
               <div>
                 <div className="font-bold">Maria Helena</div>
                 <div className="text-sm text-muted-foreground">58 anos • São Paulo, SP</div>
@@ -560,7 +600,15 @@ function Testimonials() {
               <div className="text-[var(--gold)] mb-2">★★★★★</div>
               <p className="italic mb-4">“{t.q}”</p>
               <div className="flex items-center gap-3">
-                <img src={t.p} alt={t.n} loading="lazy" className="w-10 h-10 rounded-full object-cover border-2 border-[var(--brand)]" />
+                <img 
+                  src={t.p} 
+                  alt={t.n} 
+                  loading="lazy" 
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-[var(--brand)]" 
+                />
+
                 <div>
                   <div className="font-bold text-sm">{t.n}</div>
                   <div className="text-xs text-muted-foreground">{t.a}</div>
@@ -754,15 +802,25 @@ function Pricing() {
               <h3 className="text-2xl font-bold text-center">{k.title}</h3>
               <p className="text-center text-muted-foreground text-sm">{k.sub}</p>
               {k.meta && <p className="text-center text-xs text-[var(--brand)] font-semibold mt-1">{k.meta}</p>}
-              <img src={k.img} alt={k.title} loading="lazy" decoding="async" width={400} height={300} className="w-full h-48 object-contain my-5" />
+              <img 
+                src={k.img} 
+                alt={k.title} 
+                loading="lazy" 
+                decoding="async" 
+                width={200} 
+                height={200} 
+                className="w-full h-48 object-contain my-5" 
+              />
+
               <div className="text-center mb-2">
                 <div className="text-sm text-muted-foreground">
                   De <span className="line-through">{k.from}</span> por apenas
                 </div>
                 <div className="text-4xl font-extrabold text-[var(--brand)]">{k.price}</div>
                 <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide mt-1">
-                  OFERTA EXCLUSIVA PARA PAGAMENTO VIA PIX
+                  OFERTA EXCLUSIVA COM FRETE GRÁTIS
                 </div>
+
               </div>
               <div className="flex flex-wrap justify-center gap-2 my-4 text-xs">
                 <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">🚚 Entrega Garantida com Código de Rastreio</span>
@@ -799,7 +857,7 @@ function Pricing() {
                 Escolher Esse Kit →
               </Link>
               <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
-                ⚡ <strong>Pagamento Exclusivo via PIX</strong> com Aprovação Instantânea
+                ⚡ <strong>Pagamento via PIX ou Cartão</strong> com Aprovação Rápida
               </p>
             </div>
           ))}
@@ -808,7 +866,7 @@ function Pricing() {
 
         <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
           <span>🔒 Compra Segura</span>
-          <span>⚡ Pagamento via PIX</span>
+          <span>⚡ Pagamento via PIX / Cartão</span>
           <span>🚚 Frete Grátis</span>
           <span>✅ Garantia 30 Dias</span>
         </div>
@@ -835,8 +893,9 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FAQ() {
   const items: { q: string; a: string }[] = [
-    { q: "Por que o pagamento é apenas via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h." },
-    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX." },
+    { q: "Por que o pagamento é prioritário via PIX?", a: "Para garantirmos o menor preço do mercado e a aprovação imediata do seu pedido, agilizando o envio em até 24h. Também aceitamos Cartão de Crédito." },
+    { q: "Como faço para comprar?", a: "É só escolher seu kit na seção de preços e clicar em \"Escolher Esse Kit\". Você será direcionado ao checkout seguro para finalizar o pedido via PIX ou Cartão." },
+
 
     { q: "Em quanto tempo faz efeito?", a: "A maioria dos usuários relata alívio das dores já nas primeiras 24h. Para resultados completos, recomendamos uso contínuo por pelo menos 30 dias." },
     { q: "Como devo tomar?", a: "Tome 1 cápsula por dia, preferencialmente antes de dormir, com um copo de água." },
@@ -1029,7 +1088,7 @@ function MobileStickyCTA() {
         href="#precos"
         className="flex items-center justify-center gap-2 w-full bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
       >
-        APROVEITAR DESCONTO NO PIX →
+        APROVEITAR DESCONTO NO CHECKOUT →
       </a>
     </div>
   );
