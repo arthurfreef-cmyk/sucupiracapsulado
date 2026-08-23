@@ -557,7 +557,16 @@ function Testimonials() {
     <section className="py-12 md:py-20 bg-white">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="grid lg:grid-cols-[1fr_2fr] gap-10 items-center mb-12">
-          <img src={IMG.mulher} alt="Cliente satisfeita" loading="lazy" decoding="async" className="rounded-3xl shadow-xl w-full" />
+          <img 
+            src={IMG.mulher} 
+            alt="Cliente satisfeita" 
+            loading="lazy" 
+            decoding="async" 
+            width={400}
+            height={500}
+            className="rounded-3xl shadow-xl w-full object-cover" 
+          />
+
           <div>
             <span className="bg-[var(--gold)] text-[var(--brand)] text-xs font-bold px-3 py-1 rounded-full">Compra verificada</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-3 mb-4">
@@ -567,7 +576,15 @@ function Testimonials() {
               Eu sofria com dores nas articulações há anos. Acordava travada, não conseguia brincar com meus netos. Depois de 1 semana usando Sucupira Composta, voltei a fazer tudo que eu amava!
             </p>
             <div className="flex items-center gap-3">
-              <img src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" alt="Maria Helena" loading="lazy" className="w-12 h-12 rounded-full object-cover border-2 border-[var(--brand)]" />
+              <img 
+                src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" 
+                alt="Maria Helena" 
+                loading="lazy" 
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover border-2 border-[var(--brand)]" 
+              />
+
               <div>
                 <div className="font-bold">Maria Helena</div>
                 <div className="text-sm text-muted-foreground">58 anos • São Paulo, SP</div>
@@ -583,7 +600,15 @@ function Testimonials() {
               <div className="text-[var(--gold)] mb-2">★★★★★</div>
               <p className="italic mb-4">“{t.q}”</p>
               <div className="flex items-center gap-3">
-                <img src={t.p} alt={t.n} loading="lazy" className="w-10 h-10 rounded-full object-cover border-2 border-[var(--brand)]" />
+                <img 
+                  src={t.p} 
+                  alt={t.n} 
+                  loading="lazy" 
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-[var(--brand)]" 
+                />
+
                 <div>
                   <div className="font-bold text-sm">{t.n}</div>
                   <div className="text-xs text-muted-foreground">{t.a}</div>
