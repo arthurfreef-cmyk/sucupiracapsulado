@@ -1,4 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+/**
+ * teste o geramento de pix para ver se tem erros e veja se esta gerando o pagamento
+ */
 import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
