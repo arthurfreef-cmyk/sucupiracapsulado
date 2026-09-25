@@ -1,7 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
-import { generatePayment } from "@/lib/mangofy.functions";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle } from "lucide-react";
 
 
@@ -124,12 +123,22 @@ function CheckoutPage() {
     setLoading(true);
     setError(null);
     try {
-      const payload: any = {
-        name: form.name, email: form.email, document: form.document, phone: form.phone,
-        amount: kit.priceCents, kit: baseKitId, method
-      };
-      const res = await generatePayment({ data: payload });
-      setResult(res);
+      const r = await fetch("/api/buckpay-pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kit: baseKitId,
+          buyer: { name: form.name, email: form.email, document: form.document, phone: form.phone },
+          address: {
+            zip: form.zip, street: form.street, number: form.number,
+            neighborhood: form.neighborhood, city: form.city, state: form.state,
+          },
+          utm: typeof window !== "undefined" ? window.location.search : "",
+        }),
+      });
+      const json = await r.json().catch(() => null);
+      if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
+      setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
     } catch (err: any) {
       setError(err.message || "Erro no pagamento");
     } finally {
