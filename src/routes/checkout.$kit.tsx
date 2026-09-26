@@ -118,11 +118,38 @@ function CheckoutPage() {
     }, 250);
   }, [form.zip]);
 
+  // Meta Pixel: InitiateCheckout ao abrir o checkout
+  useEffect(() => {
+    const w = window as any;
+    if (typeof w.fbq === "function") {
+      w.fbq("track", "InitiateCheckout", {
+        content_ids: [baseKitId], content_type: "product", content_name: kit.title,
+        value: kit.priceCents / 100, currency: "BRL", num_items: 1,
+      });
+    }
+  }, [baseKitId]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const w = window as any;
+    const fbData = {
+      content_ids: [baseKitId], content_type: "product", content_name: kit.title,
+      value: kit.priceCents / 100, currency: "BRL",
+    };
     try {
+      if (typeof w.fbq === "function") {
+        // Advanced Matching: melhora a correspondência de eventos
+        const parts = form.name.trim().toLowerCase().split(/\s+/);
+        w.fbq("init", "1590108412755712", {
+          em: form.email.trim().toLowerCase(), ph: "55" + onlyDigits(form.phone),
+          fn: parts[0], ln: parts.slice(1).join(" "), ct: form.city.toLowerCase(),
+          st: form.state.toLowerCase(), zp: onlyDigits(form.zip), country: "br",
+          external_id: onlyDigits(form.document),
+        });
+        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" });
+      }
       const r = await fetch("/api/buckpay-pix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -138,6 +165,10 @@ function CheckoutPage() {
       });
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
+      if (typeof w.fbq === "function") {
+        w.fbq("track", "AddPaymentInfo", fbData, { eventID: `pix_${json.id}` });
+        w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
+      }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
     } catch (err: any) {
       setError(err.message || "Erro no pagamento");

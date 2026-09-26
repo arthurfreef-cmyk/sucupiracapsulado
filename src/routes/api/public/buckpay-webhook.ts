@@ -52,8 +52,7 @@ export const Route = createFileRoute("/api/public/buckpay-webhook")({
           ln: sha256(ln),
           external_id: sha256(onlyDigits(buyer?.document)),
           country: sha256("br"),
-          client_ip_address: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined,
-          client_user_agent: request.headers.get("user-agent") || undefined,
+          // IP/UA do webhook seriam da BuckPay, não do comprador — por isso não são enviados.
         };
         const user_data = Object.fromEntries(
           Object.entries(userData).filter(([, v]) => Boolean(v)),
