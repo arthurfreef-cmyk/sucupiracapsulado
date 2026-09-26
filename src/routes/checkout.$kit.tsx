@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle } from "lucide-react";
+import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck } from "lucide-react";
 
 
 const KITS = {
@@ -82,12 +82,15 @@ function CheckoutPage() {
 
   const [method, setMethod] = useState<"pix">("pix");
   const [form, setForm] = useState({
-    name: "", email: "", document: "", phone: "", zip: "", number: "",
+    name: "", email: "", document: "", phone: "", zip: "", number: "", complement: "",
     street: "", neighborhood: "", city: "", state: "",
-    cardNumber: "", cardHolder: "", cardExpiry: "", cardCVV: ""
   });
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const touch = (k: string) => setTouched(t => ({ ...t, [k]: true }));
   const [cepLoading, setCepLoading] = useState(false);
   const [cepFilled, setCepFilled] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
+  const [shipping, setShipping] = useState<"free" | "express">("free");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -95,14 +98,24 @@ function CheckoutPage() {
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const cepTimer = useRef<number | null>(null);
 
-
+  const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
-  const formValid = !!form.name && !!form.email && cpfValid && phoneValid && cepFilled && !!form.number &&
-    (method === "pix");
+  const formValid = nameValid && emailValid && cpfValid && phoneValid && cepFilled && !!form.number.trim();
+
+  // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
+  const cepDigits = onlyDigits(form.zip);
+  let h = 7;
+  for (const c of cepDigits) h = (h * 31 + Number(c)) % 100003;
+  let expressCents = 500 + (h % 200);
+  if (expressCents % 10 === 0) expressCents += 7;
+  const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
+  const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
+    setCepError(null);
     if (cep.length !== 8) { setCepFilled(false); return; }
     if (cepTimer.current) window.clearTimeout(cepTimer.current);
     cepTimer.current = window.setTimeout(async () => {
@@ -113,8 +126,11 @@ function CheckoutPage() {
         if (!d.erro) {
           setForm(f => ({ ...f, street: d.logradouro, neighborhood: d.bairro, city: d.localidade, state: d.uf }));
           setCepFilled(true);
+        } else {
+          setCepFilled(false);
+          setCepError("CEP não encontrado");
         }
-      } catch {} finally { setCepLoading(false); }
+      } catch { setCepError("Não foi possível buscar o CEP"); } finally { setCepLoading(false); }
     }, 250);
   }, [form.zip]);
 
@@ -131,12 +147,17 @@ function CheckoutPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formValid) {
+      setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
+      setError("Confira os campos destacados em vermelho.");
+      return;
+    }
     setLoading(true);
     setError(null);
     const w = window as any;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
-      value: kit.priceCents / 100, currency: "BRL",
+      value: totalCents / 100, currency: "BRL",
     };
     try {
       if (typeof w.fbq === "function") {
@@ -155,9 +176,10 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
+          shipping: { method: shipping, amount: shippingCents },
           buyer: { name: form.name, email: form.email, document: form.document, phone: form.phone },
           address: {
-            zip: form.zip, street: form.street, number: form.number,
+            zip: form.zip, street: form.street, number: form.number, complement: form.complement,
             neighborhood: form.neighborhood, city: form.city, state: form.state,
           },
           utm: typeof window !== "undefined" ? window.location.search : "",
@@ -294,14 +316,22 @@ function CheckoutPage() {
   }
 
 
+  const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
+
   return (
     <div className="min-h-screen bg-[var(--cream)]">
-      <header className="bg-white border-b p-4 text-center font-bold text-[var(--brand)]">Sucupira Composta - Checkout</header>
+      <header className="bg-white border-b p-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-[var(--brand)]">
+          <ArrowLeft size={18} /> Voltar
+        </Link>
+        <span className="font-bold text-[var(--brand)]">Checkout Seguro</span>
+        <Lock size={16} className="text-emerald-600" />
+      </header>
       <main className="container mx-auto max-w-2xl p-4 md:p-8">
-        <form onSubmit={submit} className="bg-white rounded-2xl p-6 shadow-sm space-y-6">
+        <form onSubmit={submit} noValidate className="bg-white rounded-2xl p-6 shadow-sm space-y-6">
           <h1 className="text-xl font-bold">Resumo do Pedido</h1>
           <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
-            <img src={kit.image} className="w-16 h-16 object-contain" />
+            <img src={kit.image} alt={kit.title} width={64} height={64} className="w-16 h-16 object-contain" />
             <div className="flex-1">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>
@@ -311,27 +341,70 @@ function CheckoutPage() {
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
-            <Field label="Nome Completo" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="E-mail" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
-              <Field label="Celular" value={form.phone} onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} required placeholder="(00) 00000-0000" />
+            <Field label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
+              onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
+              error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
+                onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
+                error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
+              <Field label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
+                onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
+                error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
             </div>
-            <Field label="CPF" value={form.document} onChange={e => setForm({...form, document: maskCPF(e.target.value)})} required placeholder="000.000.000-00" />
+            <Field label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
+              onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
+              error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
           </div>
 
           <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2">2. Endereço</h2>
+            <h2 className="font-bold border-b pb-2">2. Endereço de Entrega</h2>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="CEP" value={form.zip} onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} required placeholder="00000-000" />
-              <Field label="Número" value={form.number} onChange={e => setForm({...form, number: e.target.value})} required />
+              <Field label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
+                onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
+                error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
+              <Field label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
+                onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
+                error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
-            {cepFilled && <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">{form.street}, {form.city}-{form.state}</div>}
+            {cepLoading && <div className="text-xs text-gray-500">Buscando endereço...</div>}
+            {cepFilled && (
+              <>
+                <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
+                  {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
+                </div>
+                <Field label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
+                  onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
+              </>
+            )}
           </div>
+
+          {cepFilled && (
+            <div className="space-y-3">
+              <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
+              {([
+                { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
+                { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
+              ] as const).map(o => (
+                <button type="button" key={o.id} onClick={() => setShipping(o.id)}
+                  className={`w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition ${shipping === o.id ? "border-emerald-500 bg-emerald-50" : "border-gray-200 hover:border-gray-300"}`}>
+                  <div className="flex items-center gap-3">
+                    <span className={`w-4 h-4 rounded-full border-2 ${shipping === o.id ? "border-emerald-600 bg-emerald-600" : "border-gray-300"}`} />
+                    <div>
+                      <p className="text-sm font-bold">{o.title}</p>
+                      <p className="text-xs text-gray-500">{o.eta}</p>
+                    </div>
+                  </div>
+                  <span className={`font-bold text-sm ${o.cents === 0 ? "text-emerald-600" : ""}`}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2 text-emerald-700 flex items-center gap-2">
               <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-              3. Forma de Pagamento
+              {cepFilled ? "4" : "3"}. Forma de Pagamento
             </h2>
             <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-bold flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -345,16 +418,20 @@ function CheckoutPage() {
                 Selecionado
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Pague com PIX e receba seu acesso instantaneamente por e-mail.
-            </p>
+          </div>
+
+          <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1">
+            <div className="flex justify-between"><span>Produto</span><span>{formatBRL(kit.priceCents)}</span></div>
+            <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </div>
 
           {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
 
-          <button disabled={loading || !formValid} className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50">
-            {loading ? "Processando..." : `Finalizar Compra - ${formatBRL(kit.priceCents)}`}
+          <button disabled={loading} className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50">
+            {loading ? "Gerando PIX..." : `Finalizar Compra - ${formatBRL(totalCents)}`}
           </button>
+          <p className="text-[11px] text-center text-gray-500 flex items-center justify-center gap-1"><ShieldCheck size={12} /> Seus dados estão protegidos</p>
         </form>
       </main>
       <SiteFooter />
@@ -362,11 +439,16 @@ function CheckoutPage() {
   );
 }
 
-function Field({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function Field({ label, error, ok, ...props }: { label: string; error?: string; ok?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block space-y-1">
       <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
-      <input {...props} className="w-full h-12 px-4 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" />
+      <div className="relative">
+        <input {...props} aria-invalid={!!error}
+          className={`w-full h-12 px-4 pr-10 border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
+        {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />}
+      </div>
+      {error && <span className="text-xs text-red-600">{error}</span>}
     </label>
   );
 }
