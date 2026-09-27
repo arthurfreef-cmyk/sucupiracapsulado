@@ -586,7 +586,7 @@ function Testimonials() {
             </p>
             <div className="flex items-center gap-3">
               <img 
-                src=imgDep7 
+                src={imgDep7} 
                 alt="Maria Helena" 
                 loading="lazy" 
                 width={48}
