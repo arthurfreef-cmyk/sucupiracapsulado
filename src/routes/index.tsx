@@ -555,12 +555,12 @@ function Carousel({ children }: { children: React.ReactNode }) {
 
 function Testimonials() {
   const items = [
-    { n: "Carlos Roberto", a: "62 anos • São Paulo, SP", q: "Já na primeira semana senti diferença. Consigo caminhar de manhã sem dor!", i: "C", p: "https://i.postimg.cc/5t6nvZR6/Whats-App-Image-2026-06-20-at-17-00-26-(1).jpg" },
-    { n: "Ana Paula", a: "55 anos • Rio de Janeiro, RJ", q: "Voltei a brincar com meus netos no chão. Chorei de felicidade!", i: "A", p: "https://i.postimg.cc/g2KfNFsq/Whats-App-Image-2026-06-20-at-16-55-38.jpg" },
-    { n: "José Antônio", a: "67 anos • Belo Horizonte, MG", q: "Uma cápsula antes de dormir e acordo muito melhor. Já estou no terceiro frasco.", i: "J", p: "https://i.postimg.cc/hvxYmHh7/Whats-App-Image-2026-06-20-at-16-55-38-(1).jpg" },
-    { n: "Maria das Graças", a: "59 anos • Curitiba, PR", q: "Depois de anos sofrendo com dores no joelho, finalmente encontrei algo que funciona!", i: "M", p: "https://i.postimg.cc/QMyYyXTf/Whats-App-Image-2026-06-20-at-17-00-26.jpg" },
-    { n: "Francisco Silva", a: "64 anos • Salvador, BA", q: "Minha esposa que indicou e hoje nós dois usamos. Voltamos a dançar forró!", i: "F", p: "https://i.postimg.cc/jd0mTdFK/Whats-App-Image-2026-06-20-at-16-55-39.jpg" },
-    { n: "Tereza Santos", a: "71 anos • Fortaleza, CE", q: "Achei que nunca mais ia conseguir subir escada. Agora subo sem dor nenhuma!", i: "T", p: "https://i.postimg.cc/pV8csMX3/Whats-App-Image-2026-06-20-at-16-55-39-(1).jpg" },
+    { n: "Carlos Roberto", a: "62 anos • São Paulo, SP", q: "Já na primeira semana senti diferença. Consigo caminhar de manhã sem dor!", i: "C", p: imgDep1 },
+    { n: "Ana Paula", a: "55 anos • Rio de Janeiro, RJ", q: "Voltei a brincar com meus netos no chão. Chorei de felicidade!", i: "A", p: imgDep2 },
+    { n: "José Antônio", a: "67 anos • Belo Horizonte, MG", q: "Uma cápsula antes de dormir e acordo muito melhor. Já estou no terceiro frasco.", i: "J", p: imgDep3 },
+    { n: "Maria das Graças", a: "59 anos • Curitiba, PR", q: "Depois de anos sofrendo com dores no joelho, finalmente encontrei algo que funciona!", i: "M", p: imgDep4 },
+    { n: "Francisco Silva", a: "64 anos • Salvador, BA", q: "Minha esposa que indicou e hoje nós dois usamos. Voltamos a dançar forró!", i: "F", p: imgDep5 },
+    { n: "Tereza Santos", a: "71 anos • Fortaleza, CE", q: "Achei que nunca mais ia conseguir subir escada. Agora subo sem dor nenhuma!", i: "T", p: imgDep6 },
   ];
   return (
     <section className="py-12 md:py-20 bg-white">
@@ -586,7 +586,7 @@ function Testimonials() {
             </p>
             <div className="flex items-center gap-3">
               <img 
-                src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" 
+                src=imgDep7 
                 alt="Maria Helena" 
                 loading="lazy" 
                 width={48}
