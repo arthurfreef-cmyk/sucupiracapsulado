@@ -44,6 +44,23 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  */
 import { useEffect, useRef, useState } from "react";
 
+import imgHero from "@/assets/hero.webp";
+import imgMulher from "@/assets/mulher.webp";
+import imgSucupira from "@/assets/sucupira.webp";
+import imgCanela from "@/assets/canela.webp";
+import imgCalcio from "@/assets/calcio.webp";
+import imgAnvisa from "@/assets/anvisa.webp";
+import imgKit1 from "@/assets/kit1.webp";
+import imgKit3 from "@/assets/kit3.webp";
+import imgKit5 from "@/assets/kit5.webp";
+import imgDep1 from "@/assets/dep1.webp";
+import imgDep2 from "@/assets/dep2.webp";
+import imgDep3 from "@/assets/dep3.webp";
+import imgDep4 from "@/assets/dep4.webp";
+import imgDep5 from "@/assets/dep5.webp";
+import imgDep6 from "@/assets/dep6.webp";
+import imgDep7 from "@/assets/dep7.webp";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -66,37 +83,24 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
-        fetchpriority: "high",
-      },
       { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://i.postimg.cc", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://customer-assets.emergentagent.com" },
-      { rel: "dns-prefetch", href: "https://i.postimg.cc" },
     ],
   }),
   component: Index,
 });
 
-// ============ ASSETS (originais do site) ============
+// ============ ASSETS (otimizados localmente em WebP) ============
 const IMG = {
-  hero: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
-  mulher:
-    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/tnnn1pr7_foto%20mulher%20com%20sucupira2.png",
-  sucupira:
-    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/9e0g2hsm_Design%20sem%20nome%20%289%29.png",
-  canela:
-    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/vodsrlc3_canela%20de%20velho.png",
-  calcio:
-    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/9h1bxaqi_calcio.png",
-  anvisa:
-    "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/sh21vamn_logo%20anvisa.png",
-  kit1: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/rq9lslj7_kit1frasco.png",
-  kit3: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/5kgkordi_sucupira%203%20frascos.png",
-  kit5: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/nf8gbzyx_kit5frasco.png",
+  hero: imgHero,
+  mulher: imgMulher,
+  sucupira: imgSucupira,
+  canela: imgCanela,
+  calcio: imgCalcio,
+  anvisa: imgAnvisa,
+  kit1: imgKit1,
+  kit3: imgKit3,
+  kit5: imgKit5,
 };
 
 const VIDEOS = [
@@ -551,12 +555,12 @@ function Carousel({ children }: { children: React.ReactNode }) {
 
 function Testimonials() {
   const items = [
-    { n: "Carlos Roberto", a: "62 anos • São Paulo, SP", q: "Já na primeira semana senti diferença. Consigo caminhar de manhã sem dor!", i: "C", p: "https://i.postimg.cc/5t6nvZR6/Whats-App-Image-2026-06-20-at-17-00-26-(1).jpg" },
-    { n: "Ana Paula", a: "55 anos • Rio de Janeiro, RJ", q: "Voltei a brincar com meus netos no chão. Chorei de felicidade!", i: "A", p: "https://i.postimg.cc/g2KfNFsq/Whats-App-Image-2026-06-20-at-16-55-38.jpg" },
-    { n: "José Antônio", a: "67 anos • Belo Horizonte, MG", q: "Uma cápsula antes de dormir e acordo muito melhor. Já estou no terceiro frasco.", i: "J", p: "https://i.postimg.cc/hvxYmHh7/Whats-App-Image-2026-06-20-at-16-55-38-(1).jpg" },
-    { n: "Maria das Graças", a: "59 anos • Curitiba, PR", q: "Depois de anos sofrendo com dores no joelho, finalmente encontrei algo que funciona!", i: "M", p: "https://i.postimg.cc/QMyYyXTf/Whats-App-Image-2026-06-20-at-17-00-26.jpg" },
-    { n: "Francisco Silva", a: "64 anos • Salvador, BA", q: "Minha esposa que indicou e hoje nós dois usamos. Voltamos a dançar forró!", i: "F", p: "https://i.postimg.cc/jd0mTdFK/Whats-App-Image-2026-06-20-at-16-55-39.jpg" },
-    { n: "Tereza Santos", a: "71 anos • Fortaleza, CE", q: "Achei que nunca mais ia conseguir subir escada. Agora subo sem dor nenhuma!", i: "T", p: "https://i.postimg.cc/pV8csMX3/Whats-App-Image-2026-06-20-at-16-55-39-(1).jpg" },
+    { n: "Carlos Roberto", a: "62 anos • São Paulo, SP", q: "Já na primeira semana senti diferença. Consigo caminhar de manhã sem dor!", i: "C", p: imgDep1 },
+    { n: "Ana Paula", a: "55 anos • Rio de Janeiro, RJ", q: "Voltei a brincar com meus netos no chão. Chorei de felicidade!", i: "A", p: imgDep2 },
+    { n: "José Antônio", a: "67 anos • Belo Horizonte, MG", q: "Uma cápsula antes de dormir e acordo muito melhor. Já estou no terceiro frasco.", i: "J", p: imgDep3 },
+    { n: "Maria das Graças", a: "59 anos • Curitiba, PR", q: "Depois de anos sofrendo com dores no joelho, finalmente encontrei algo que funciona!", i: "M", p: imgDep4 },
+    { n: "Francisco Silva", a: "64 anos • Salvador, BA", q: "Minha esposa que indicou e hoje nós dois usamos. Voltamos a dançar forró!", i: "F", p: imgDep5 },
+    { n: "Tereza Santos", a: "71 anos • Fortaleza, CE", q: "Achei que nunca mais ia conseguir subir escada. Agora subo sem dor nenhuma!", i: "T", p: imgDep6 },
   ];
   return (
     <section className="py-12 md:py-20 bg-white">
@@ -582,7 +586,7 @@ function Testimonials() {
             </p>
             <div className="flex items-center gap-3">
               <img 
-                src="https://i.postimg.cc/wTq5LCt7/Whats-App-Image-2026-06-20-at-17-07-40.jpg" 
+                src={imgDep7} 
                 alt="Maria Helena" 
                 loading="lazy" 
                 width={48}
