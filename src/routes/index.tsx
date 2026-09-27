@@ -83,16 +83,8 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
-        fetchpriority: "high",
-      },
       { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://i.postimg.cc", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://customer-assets.emergentagent.com" },
-      { rel: "dns-prefetch", href: "https://i.postimg.cc" },
     ],
   }),
   component: Index,
