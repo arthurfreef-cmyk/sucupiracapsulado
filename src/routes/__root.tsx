@@ -107,6 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: `window.pixelId="lt_px_7124c79da5bc";var a=document.createElement("script");a.setAttribute("async","");a.setAttribute("defer","");a.setAttribute("src","https://lowtrack.com.br/pixel.js");document.head.appendChild(a);`,
       },
     ],
+  }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
