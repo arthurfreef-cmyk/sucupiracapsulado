@@ -119,8 +119,6 @@ const CHECKOUT = {
   k5: "k5" as const,
 };
 
-const WHATSAPP =
-  "https://wa.me/5547999850396?text=Ol%C3%A1%2C%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas%20sobre%20o%20Sucupira%20Composta!";
 
 // ============ Page ============
 function Index() {
@@ -931,9 +929,6 @@ function FAQ() {
             <a href="mailto:contato@sucupiracomposta.com.br" className="bg-[var(--cream)] border border-[var(--border)] px-5 py-3 rounded-full text-sm font-semibold">
               ✉️ contato@sucupiracomposta.com.br
             </a>
-            <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="bg-green-500 text-white px-5 py-3 rounded-full text-sm font-bold">
-              💬 WhatsApp
-            </a>
           </div>
         </div>
       </div>
@@ -1072,21 +1067,6 @@ function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-function WhatsAppFab() {
-  return (
-    <a
-      href={WHATSAPP}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Fale conosco no WhatsApp"
-      className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 bg-green-500 text-white font-bold w-12 h-12 md:w-auto md:h-auto md:px-5 md:py-3 rounded-full shadow-2xl flex items-center justify-center md:gap-2 hover:scale-[1.05] transition"
-    >
-      <span className="md:hidden text-xl">💬</span>
-      <span className="hidden md:inline">💬 Fale Conosco</span>
-    </a>
   );
 }
 
