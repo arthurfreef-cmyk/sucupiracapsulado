@@ -102,7 +102,8 @@ function CheckoutPage() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
-  const formValid = nameValid && emailValid && cpfValid && phoneValid && cepFilled && !!form.number.trim();
+  const zipValid = onlyDigits(form.zip).length === 8;
+  const formValid = nameValid && emailValid && cpfValid && phoneValid && zipValid && cepFilled && !!form.number.trim();
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
@@ -145,29 +146,87 @@ function CheckoutPage() {
     }
   }, [baseKitId]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formValid) {
+  const submit = async () => {
+    if (loading) return;
+    const readValue = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value ?? "";
+    const submittedForm = {
+      ...form,
+      name: readValue("name").trim(),
+      email: readValue("email").trim(),
+      phone: readValue("phone"),
+      document: readValue("document"),
+      zip: readValue("zip"),
+      number: readValue("number").trim(),
+      complement: readValue("complement"),
+    };
+    const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
+    const submittedEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(submittedForm.email);
+    const submittedPhoneValid = isValidPhone(submittedForm.phone);
+    const submittedCpfValid = isValidCPF(submittedForm.document);
+    const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
+    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number) {
       setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
-      setError("Confira os campos destacados em vermelho.");
+      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : "number";
+      const messages: Record<string, string> = {
+        name: "Informe seu nome e sobrenome.",
+        email: "Confira o e-mail informado.",
+        phone: "Informe um celular válido com DDD.",
+        document: "Confira o CPF informado.",
+        zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
+        number: "Informe o número do endereço.",
+      };
+      setError(messages[invalidField]);
+      window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
       return;
     }
     setLoading(true);
     setError(null);
     const w = window as any;
+    let submittedAddress = {
+      street: submittedForm.street,
+      neighborhood: submittedForm.neighborhood,
+      city: submittedForm.city,
+      state: submittedForm.state,
+    };
+    if (!submittedAddress.city || !submittedAddress.state) {
+      try {
+        const addressResponse = await fetch(`https://viacep.com.br/ws/${onlyDigits(submittedForm.zip)}/json/`);
+        const address = await addressResponse.json();
+        if (address.erro) throw new Error("CEP não encontrado.");
+        submittedAddress = {
+          street: address.logradouro ?? "",
+          neighborhood: address.bairro ?? "",
+          city: address.localidade ?? "",
+          state: address.uf ?? "",
+        };
+        setForm((current) => ({ ...current, ...submittedForm, ...submittedAddress }));
+        setCepFilled(true);
+      } catch {
+        setError("Não foi possível confirmar o CEP. Confira o número e tente novamente.");
+        setLoading(false);
+        document.getElementById("zip")?.focus();
+        return;
+      }
+    }
+    let submittedExpressCents = 500;
+    for (const character of onlyDigits(submittedForm.zip)) submittedExpressCents = (submittedExpressCents * 31 + Number(character)) % 100003;
+    submittedExpressCents = 500 + (submittedExpressCents % 200);
+    if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
+    const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
+    const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
-      value: totalCents / 100, currency: "BRL",
+      value: submittedTotalCents / 100, currency: "BRL",
     };
     try {
       if (typeof w.fbq === "function") {
         // Advanced Matching: melhora a correspondência de eventos
-        const parts = form.name.trim().toLowerCase().split(/\s+/);
+        const parts = submittedForm.name.toLowerCase().split(/\s+/);
         w.fbq("init", "1590108412755712", {
-          em: form.email.trim().toLowerCase(), ph: "55" + onlyDigits(form.phone),
-          fn: parts[0], ln: parts.slice(1).join(" "), ct: form.city.toLowerCase(),
-          st: form.state.toLowerCase(), zp: onlyDigits(form.zip), country: "br",
-          external_id: onlyDigits(form.document),
+          em: submittedForm.email.toLowerCase(), ph: "55" + onlyDigits(submittedForm.phone),
+          fn: parts[0], ln: parts.slice(1).join(" "), ct: submittedAddress.city.toLowerCase(),
+          st: submittedAddress.state.toLowerCase(), zp: onlyDigits(submittedForm.zip), country: "br",
+          external_id: onlyDigits(submittedForm.document),
         });
         w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" });
       }
@@ -176,11 +235,11 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
-          shipping: { method: shipping, amount: shippingCents },
-          buyer: { name: form.name, email: form.email, document: form.document, phone: form.phone },
+          shipping: { method: shipping, amount: submittedShippingCents },
+          buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
-            zip: form.zip, street: form.street, number: form.number, complement: form.complement,
-            neighborhood: form.neighborhood, city: form.city, state: form.state,
+            zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
+            neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state,
           },
           utm: typeof window !== "undefined" ? window.location.search : "",
         }),
@@ -192,8 +251,8 @@ function CheckoutPage() {
         w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
       }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
-    } catch (err: any) {
-      setError(err.message || "Erro no pagamento");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -263,7 +322,7 @@ function CheckoutPage() {
                   />
                   <button 
                     onClick={() => { 
-                      navigator.clipboard.writeText(result.pix!.code); 
+                      navigator.clipboard.writeText(result.pix?.code ?? ""); 
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }} 
@@ -328,7 +387,15 @@ function CheckoutPage() {
         <Lock size={16} className="text-emerald-600" />
       </header>
       <main className="container mx-auto max-w-2xl p-4 md:p-8">
-        <form onSubmit={submit} noValidate className="bg-white rounded-2xl p-6 shadow-sm space-y-6">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            void submit();
+          }}
+          noValidate
+          className="bg-white rounded-2xl p-6 shadow-sm space-y-6"
+        >
           <h1 className="text-xl font-bold">Resumo do Pedido</h1>
           <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
             <img src={kit.image} alt={kit.title} width={64} height={64} className="w-16 h-16 object-contain" />
@@ -341,18 +408,18 @@ function CheckoutPage() {
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
-            <Field label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
+            <Field id="name" name="name" label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
+              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
                 onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
-              <Field label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
+              <Field id="phone" name="phone" label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
                 onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
                 error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
             </div>
-            <Field label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
+            <Field id="document" name="document" label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
           </div>
@@ -360,10 +427,10 @@ function CheckoutPage() {
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">2. Endereço de Entrega</h2>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
+              <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
                 error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
-              <Field label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
+              <Field id="number" name="number" label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
@@ -373,7 +440,7 @@ function CheckoutPage() {
                 <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
                   {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
                 </div>
-                <Field label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
+                <Field id="complement" name="complement" label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
                   onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
               </>
             )}
@@ -428,7 +495,16 @@ function CheckoutPage() {
 
           {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
 
-          <button disabled={loading} className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              void submit();
+            }}
+            className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50"
+          >
             {loading ? "Gerando PIX..." : `Finalizar Compra - ${formatBRL(totalCents)}`}
           </button>
           <p className="text-[11px] text-center text-gray-500 flex items-center justify-center gap-1"><ShieldCheck size={12} /> Seus dados estão protegidos</p>
