@@ -102,7 +102,8 @@ function CheckoutPage() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
-  const formValid = nameValid && emailValid && cpfValid && phoneValid && cepFilled && !!form.number.trim();
+  const zipValid = onlyDigits(form.zip).length === 8;
+  const formValid = nameValid && emailValid && cpfValid && phoneValid && zipValid && cepFilled && !!form.number.trim();
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
@@ -145,11 +146,21 @@ function CheckoutPage() {
     }
   }, [baseKitId]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submit = async () => {
+    if (loading) return;
     if (!formValid) {
       setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
-      setError("Confira os campos destacados em vermelho.");
+      const invalidField = !nameValid ? "name" : !emailValid ? "email" : !phoneValid ? "phone" : !cpfValid ? "document" : !zipValid || !cepFilled ? "zip" : "number";
+      const messages: Record<string, string> = {
+        name: "Informe seu nome e sobrenome.",
+        email: "Confira o e-mail informado.",
+        phone: "Informe um celular válido com DDD.",
+        document: "Confira o CPF informado.",
+        zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
+        number: "Informe o número do endereço.",
+      };
+      setError(messages[invalidField]);
+      window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
       return;
     }
     setLoading(true);
@@ -192,8 +203,8 @@ function CheckoutPage() {
         w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
       }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
-    } catch (err: any) {
-      setError(err.message || "Erro no pagamento");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -263,7 +274,7 @@ function CheckoutPage() {
                   />
                   <button 
                     onClick={() => { 
-                      navigator.clipboard.writeText(result.pix!.code); 
+                      navigator.clipboard.writeText(result.pix?.code ?? ""); 
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }} 
@@ -328,7 +339,15 @@ function CheckoutPage() {
         <Lock size={16} className="text-emerald-600" />
       </header>
       <main className="container mx-auto max-w-2xl p-4 md:p-8">
-        <form onSubmit={submit} noValidate className="bg-white rounded-2xl p-6 shadow-sm space-y-6">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            void submit();
+          }}
+          noValidate
+          className="bg-white rounded-2xl p-6 shadow-sm space-y-6"
+        >
           <h1 className="text-xl font-bold">Resumo do Pedido</h1>
           <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
             <img src={kit.image} alt={kit.title} width={64} height={64} className="w-16 h-16 object-contain" />
@@ -341,18 +360,18 @@ function CheckoutPage() {
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
-            <Field label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
+            <Field id="name" name="name" label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
+              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
                 onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
-              <Field label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
+              <Field id="phone" name="phone" label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
                 onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
                 error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
             </div>
-            <Field label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
+            <Field id="document" name="document" label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
           </div>
@@ -360,10 +379,10 @@ function CheckoutPage() {
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">2. Endereço de Entrega</h2>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
+              <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
                 error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
-              <Field label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
+              <Field id="number" name="number" label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
@@ -428,7 +447,16 @@ function CheckoutPage() {
 
           {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
 
-          <button disabled={loading} className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              void submit();
+            }}
+            className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50"
+          >
             {loading ? "Gerando PIX..." : `Finalizar Compra - ${formatBRL(totalCents)}`}
           </button>
           <p className="text-[11px] text-center text-gray-500 flex items-center justify-center gap-1"><ShieldCheck size={12} /> Seus dados estão protegidos</p>
