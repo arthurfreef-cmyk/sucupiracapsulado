@@ -148,9 +148,25 @@ function CheckoutPage() {
 
   const submit = async () => {
     if (loading) return;
-    if (!formValid) {
+    const readValue = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value ?? "";
+    const submittedForm = {
+      ...form,
+      name: readValue("name").trim(),
+      email: readValue("email").trim(),
+      phone: readValue("phone"),
+      document: readValue("document"),
+      zip: readValue("zip"),
+      number: readValue("number").trim(),
+      complement: readValue("complement"),
+    };
+    const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
+    const submittedEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(submittedForm.email);
+    const submittedPhoneValid = isValidPhone(submittedForm.phone);
+    const submittedCpfValid = isValidCPF(submittedForm.document);
+    const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
+    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number) {
       setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
-      const invalidField = !nameValid ? "name" : !emailValid ? "email" : !phoneValid ? "phone" : !cpfValid ? "document" : !zipValid || !cepFilled ? "zip" : "number";
+      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : "number";
       const messages: Record<string, string> = {
         name: "Informe seu nome e sobrenome.",
         email: "Confira o e-mail informado.",
@@ -166,19 +182,51 @@ function CheckoutPage() {
     setLoading(true);
     setError(null);
     const w = window as any;
+    let submittedAddress = {
+      street: submittedForm.street,
+      neighborhood: submittedForm.neighborhood,
+      city: submittedForm.city,
+      state: submittedForm.state,
+    };
+    if (!submittedAddress.city || !submittedAddress.state) {
+      try {
+        const addressResponse = await fetch(`https://viacep.com.br/ws/${onlyDigits(submittedForm.zip)}/json/`);
+        const address = await addressResponse.json();
+        if (address.erro) throw new Error("CEP não encontrado.");
+        submittedAddress = {
+          street: address.logradouro ?? "",
+          neighborhood: address.bairro ?? "",
+          city: address.localidade ?? "",
+          state: address.uf ?? "",
+        };
+        setForm((current) => ({ ...current, ...submittedForm, ...submittedAddress }));
+        setCepFilled(true);
+      } catch {
+        setError("Não foi possível confirmar o CEP. Confira o número e tente novamente.");
+        setLoading(false);
+        document.getElementById("zip")?.focus();
+        return;
+      }
+    }
+    let submittedExpressCents = 500;
+    for (const character of onlyDigits(submittedForm.zip)) submittedExpressCents = (submittedExpressCents * 31 + Number(character)) % 100003;
+    submittedExpressCents = 500 + (submittedExpressCents % 200);
+    if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
+    const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
+    const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
-      value: totalCents / 100, currency: "BRL",
+      value: submittedTotalCents / 100, currency: "BRL",
     };
     try {
       if (typeof w.fbq === "function") {
         // Advanced Matching: melhora a correspondência de eventos
-        const parts = form.name.trim().toLowerCase().split(/\s+/);
+        const parts = submittedForm.name.toLowerCase().split(/\s+/);
         w.fbq("init", "1590108412755712", {
-          em: form.email.trim().toLowerCase(), ph: "55" + onlyDigits(form.phone),
-          fn: parts[0], ln: parts.slice(1).join(" "), ct: form.city.toLowerCase(),
-          st: form.state.toLowerCase(), zp: onlyDigits(form.zip), country: "br",
-          external_id: onlyDigits(form.document),
+          em: submittedForm.email.toLowerCase(), ph: "55" + onlyDigits(submittedForm.phone),
+          fn: parts[0], ln: parts.slice(1).join(" "), ct: submittedAddress.city.toLowerCase(),
+          st: submittedAddress.state.toLowerCase(), zp: onlyDigits(submittedForm.zip), country: "br",
+          external_id: onlyDigits(submittedForm.document),
         });
         w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" });
       }
@@ -187,11 +235,11 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
-          shipping: { method: shipping, amount: shippingCents },
-          buyer: { name: form.name, email: form.email, document: form.document, phone: form.phone },
+          shipping: { method: shipping, amount: submittedShippingCents },
+          buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
-            zip: form.zip, street: form.street, number: form.number, complement: form.complement,
-            neighborhood: form.neighborhood, city: form.city, state: form.state,
+            zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
+            neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state,
           },
           utm: typeof window !== "undefined" ? window.location.search : "",
         }),
@@ -392,7 +440,7 @@ function CheckoutPage() {
                 <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
                   {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
                 </div>
-                <Field label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
+                <Field id="complement" name="complement" label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
                   onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
               </>
             )}
