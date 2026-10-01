@@ -490,7 +490,6 @@ function CheckoutPage() {
 
           <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1">
             <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            {bumpCents > 0 && <div className="flex justify-between"><span>2º frasco (upgrade)</span><span>+{formatBRL(bumpCents)}</span></div>}
             <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </div>
