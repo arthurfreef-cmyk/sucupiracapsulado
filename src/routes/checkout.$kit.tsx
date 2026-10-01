@@ -91,7 +91,6 @@ function CheckoutPage() {
   const [cepFilled, setCepFilled] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
   const [shipping, setShipping] = useState<"free" | "express">("free");
-  const [bump, setBump] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -112,9 +111,8 @@ function CheckoutPage() {
   for (const c of cepDigits) h = (h * 31 + Number(c)) % 100003;
   let expressCents = 500 + (h % 200);
   if (expressCents % 10 === 0) expressCents += 7;
-  const bumpCents = baseKitId === "k1" && bump ? 2000 : 0;
   const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
-  const totalCents = kit.priceCents + shippingCents + bumpCents;
+  const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
@@ -215,8 +213,7 @@ function CheckoutPage() {
     submittedExpressCents = 500 + (submittedExpressCents % 200);
     if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
     const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
-    const submittedBumpCents = baseKitId === "k1" && bump ? 2000 : 0;
-    const submittedTotalCents = kit.priceCents + submittedShippingCents + submittedBumpCents;
+    const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
       value: submittedTotalCents / 100, currency: "BRL",
@@ -238,8 +235,7 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
-          bumpAddCents: submittedBumpCents || undefined,
-          shipping: { method: shipping, amount: submittedShippingCents },
+          kit: baseKitId,
           buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
             zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
