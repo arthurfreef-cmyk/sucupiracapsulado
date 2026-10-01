@@ -215,7 +215,8 @@ function CheckoutPage() {
     submittedExpressCents = 500 + (submittedExpressCents % 200);
     if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
     const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
-    const submittedTotalCents = kit.priceCents + submittedShippingCents;
+    const submittedBumpCents = baseKitId === "k1" && bump ? 2000 : 0;
+    const submittedTotalCents = kit.priceCents + submittedShippingCents + submittedBumpCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
       value: submittedTotalCents / 100, currency: "BRL",
@@ -237,6 +238,7 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
+          bumpAddCents: submittedBumpCents || undefined,
           shipping: { method: shipping, amount: submittedShippingCents },
           buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
