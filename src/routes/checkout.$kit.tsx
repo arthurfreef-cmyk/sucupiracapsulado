@@ -91,6 +91,7 @@ function CheckoutPage() {
   const [cepFilled, setCepFilled] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
   const [shipping, setShipping] = useState<"free" | "express">("free");
+  const [bump, setBump] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -111,8 +112,9 @@ function CheckoutPage() {
   for (const c of cepDigits) h = (h * 31 + Number(c)) % 100003;
   let expressCents = 500 + (h % 200);
   if (expressCents % 10 === 0) expressCents += 7;
+  const bumpCents = baseKitId === "k1" && bump ? 2000 : 0;
   const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
-  const totalCents = kit.priceCents + shippingCents;
+  const totalCents = kit.priceCents + shippingCents + bumpCents;
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
