@@ -406,20 +406,6 @@ function CheckoutPage() {
             <div className="text-lg font-bold text-[var(--brand)]">{kit.price}</div>
           </div>
 
-          {baseKitId === "k1" && (
-            <button type="button" onClick={() => setBump(b => !b)}
-              className={`w-full text-left p-4 rounded-xl border-2 border-dashed transition ${bump ? "border-emerald-500 bg-emerald-50" : "border-gray-300 hover:border-emerald-400"}`}>
-              <div className="flex items-start gap-3">
-                <span className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${bump ? "bg-emerald-600 border-emerald-600" : "border-gray-300"}`}>
-                  {bump && <CheckCircle2 size={13} className="text-white" />}
-                </span>
-                <div className="flex-1">
-                  <p className="text-sm font-bold">Adicionar 2º frasco por +R$ 20,00</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Complete 60 dias de tratamento em vez de 30, sem custo extra de frete.</p>
-                </div>
-              </div>
-            </button>
-          )}
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
