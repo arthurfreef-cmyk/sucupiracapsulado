@@ -91,7 +91,6 @@ function CheckoutPage() {
   const [cepFilled, setCepFilled] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
   const [shipping, setShipping] = useState<"free" | "express">("free");
-  const [bump, setBump] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -112,9 +111,8 @@ function CheckoutPage() {
   for (const c of cepDigits) h = (h * 31 + Number(c)) % 100003;
   let expressCents = 500 + (h % 200);
   if (expressCents % 10 === 0) expressCents += 7;
-  const bumpCents = baseKitId === "k1" && bump ? 2000 : 0;
   const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
-  const totalCents = kit.priceCents + shippingCents + bumpCents;
+  const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
@@ -215,8 +213,7 @@ function CheckoutPage() {
     submittedExpressCents = 500 + (submittedExpressCents % 200);
     if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
     const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
-    const submittedBumpCents = baseKitId === "k1" && bump ? 2000 : 0;
-    const submittedTotalCents = kit.priceCents + submittedShippingCents + submittedBumpCents;
+    const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
       value: submittedTotalCents / 100, currency: "BRL",
@@ -238,8 +235,6 @@ function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kit: baseKitId,
-          bumpAddCents: submittedBumpCents || undefined,
-          shipping: { method: shipping, amount: submittedShippingCents },
           buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
             zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
@@ -411,20 +406,6 @@ function CheckoutPage() {
             <div className="text-lg font-bold text-[var(--brand)]">{kit.price}</div>
           </div>
 
-          {baseKitId === "k1" && (
-            <button type="button" onClick={() => setBump(b => !b)}
-              className={`w-full text-left p-4 rounded-xl border-2 border-dashed transition ${bump ? "border-emerald-500 bg-emerald-50" : "border-gray-300 hover:border-emerald-400"}`}>
-              <div className="flex items-start gap-3">
-                <span className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${bump ? "bg-emerald-600 border-emerald-600" : "border-gray-300"}`}>
-                  {bump && <CheckCircle2 size={13} className="text-white" />}
-                </span>
-                <div className="flex-1">
-                  <p className="text-sm font-bold">Adicionar 2º frasco por +R$ 20,00</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Complete 60 dias de tratamento em vez de 30, sem custo extra de frete.</p>
-                </div>
-              </div>
-            </button>
-          )}
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
@@ -509,7 +490,6 @@ function CheckoutPage() {
 
           <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1">
             <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            {bumpCents > 0 && <div className="flex justify-between"><span>2º frasco (upgrade)</span><span>+{formatBRL(bumpCents)}</span></div>}
             <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </div>
