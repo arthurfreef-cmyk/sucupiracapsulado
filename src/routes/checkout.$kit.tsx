@@ -495,7 +495,7 @@ function CheckoutPage() {
             </h2>
             <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-bold flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">📱</span>
+                <QrCode size={22} className="text-emerald-600" />
                 <div>
                   <p className="text-sm">PIX</p>
                   <p className="text-xs text-emerald-600 font-normal">Aprovação imediata</p>
