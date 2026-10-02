@@ -184,7 +184,7 @@ function Header() {
         </nav>
         <a
           href="#precos"
-          className="inline-flex items-center gap-1 bg-[var(--gold)] text-[var(--brand)] font-bold text-[11px] sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-[1.02] transition shrink-0"
+          className="inline-flex items-center gap-1 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-[11px] sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-[1.03] active:scale-[0.98] transition shrink-0"
         >
           <span className="hidden sm:inline">QUERO LIVRE DE DORES</span>
           <span className="sm:hidden">COMPRAR</span> →
@@ -257,7 +257,7 @@ function Hero() {
             <div className="flex flex-col items-center lg:items-start gap-3">
               <a
                 href="#precos"
-                className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-2xl hover:scale-[1.02] transition"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-[0_8px_24px_rgba(140,0,0,0.3)] hover:scale-[1.03] active:scale-[0.98] transition"
               >
                 QUERO LIVRE DAS DORES →
               </a>
@@ -312,8 +312,8 @@ function Pains() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {items.map((i) => (
-            <div key={i.t} className="bg-[var(--cream)] border border-[var(--border)] rounded-2xl p-6 hover:shadow-lg transition">
-              <div className="w-12 h-12 rounded-full bg-[var(--brand)]/10 text-[var(--brand)] flex items-center justify-center font-bold mb-4">!</div>
+            <div key={i.t} className="bg-[var(--cream)] border border-[var(--border)] rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition">
+              <div className="w-12 h-12 rounded-full bg-[var(--brand)]/10 text-[var(--brand)] flex items-center justify-center font-bold mb-4 border border-[var(--brand)]/20">!</div>
               <h3 className="font-bold text-lg mb-2">{i.t}</h3>
               <p className="text-muted-foreground text-sm">{i.d}</p>
             </div>
@@ -347,7 +347,7 @@ function Formula() {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {items.map((i) => (
-            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition border border-[var(--border)] group">
+            <div key={i.t} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-[var(--gold)] transition border border-[var(--border)] group">
               <img 
                 src={i.img} 
                 alt={i.t} 
@@ -440,8 +440,8 @@ function Benefits() {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Benefícios que você vai sentir</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((i) => (
-            <div key={i.t} className="bg-white rounded-2xl p-6 border border-[var(--border)] hover:shadow-lg transition">
-              <div className="w-10 h-10 rounded-full bg-[var(--brand)] text-white flex items-center justify-center mb-3 font-bold">✓</div>
+            <div key={i.t} className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition">
+              <div className="w-10 h-10 rounded-full bg-[var(--brand)] text-white flex items-center justify-center mb-3 font-bold shadow-sm">✓</div>
               <h3 className="font-bold mb-1">{i.t}</h3>
               <p className="text-sm text-muted-foreground">{i.d}</p>
             </div>
@@ -603,7 +603,7 @@ function Testimonials() {
         <h3 className="text-2xl md:text-3xl font-bold text-center mb-8">+2.000 pessoas recomendam</h3>
         <Carousel>
           {items.map((t) => (
-            <div key={t.n} className="bg-[var(--cream)] rounded-2xl p-6 border border-[var(--border)] snap-center shrink-0 w-[85%] sm:w-[46%] lg:w-[32%]">
+            <div key={t.n} className="bg-[var(--cream)] rounded-2xl p-6 border border-[var(--border)] shadow-sm snap-center shrink-0 w-[85%] sm:w-[46%] lg:w-[32%]">
               <div className="text-[var(--gold)] mb-2">★★★★★</div>
               <p className="italic mb-4">“{t.q}”</p>
               <div className="flex items-center gap-3">
@@ -885,7 +885,7 @@ function Pricing() {
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-white border border-[var(--border)] rounded-2xl">
+    <div className="bg-white border border-[var(--border)] rounded-2xl shadow-sm hover:border-[var(--brand)]/30 transition-colors">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between text-left p-5 font-semibold"
