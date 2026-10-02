@@ -700,7 +700,7 @@ function Guarantee() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 max-w-4xl bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/10 border border-[var(--gold)] rounded-3xl p-8 md:p-12 text-center">
-        <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4">30</div>
+        <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4 shadow-lg border-4 border-white">30</div>
         <h3 className="text-2xl md:text-3xl font-bold mb-3">RISCO ZERO: Ou você ama os resultados ou devolvemos cada centavo</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
           Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>WhatsApp</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
@@ -798,7 +798,7 @@ function Pricing() {
             <div
               key={k.title}
               className={`relative bg-white rounded-3xl p-6 border-2 flex flex-col ${
-                k.highlight ? "border-[var(--brand)] shadow-2xl md:-translate-y-4" : "border-[var(--border)] shadow"
+                k.highlight ? "border-[var(--brand)] shadow-2xl md:-translate-y-4" : "border-[var(--border)] shadow-sm hover:shadow-md transition"
               }`}
             >
               {k.tag && (
