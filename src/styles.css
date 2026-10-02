@@ -16,6 +16,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-gold-light: var(--gold-light);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-primary: var(--primary);
@@ -63,6 +64,7 @@
   --brand-dark: oklch(0.30 0.16 25);            /* #5a0000-ish */
   --brand-light: oklch(0.50 0.20 25);           /* #A52A2A */
   --gold: oklch(0.86 0.18 95);                  /* yellow-400 ish */
+  --gold-light: oklch(0.93 0.11 92);            /* #F1D279-ish highlight */
   --cream: oklch(0.985 0.015 75);
 }
 
@@ -72,6 +74,12 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4 { letter-spacing: -0.01em; }
+  h1, h2 { letter-spacing: -0.015em; }
+  h1 {
+    font-family: "Playfair Display", Georgia, serif;
+  }
+  html { scroll-behavior: smooth; }
 }
