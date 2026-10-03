@@ -103,6 +103,7 @@ function CheckoutPage() {
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const cepTimer = useRef<number | null>(null);
+  const checkoutForm = useRef<HTMLFormElement | null>(null);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -154,7 +155,10 @@ function CheckoutPage() {
 
   const submit = async () => {
     if (loading) return;
-    const readValue = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value ?? "";
+    const readValue = (name: string) => {
+      const field = checkoutForm.current?.elements.namedItem(name);
+      return field instanceof HTMLInputElement ? field.value : "";
+    };
     const submittedForm = {
       ...form,
       name: readValue("name").trim(),
@@ -426,6 +430,7 @@ function CheckoutPage() {
       </header>
       <main className="container mx-auto max-w-2xl p-4 md:p-8">
         <form
+          ref={checkoutForm}
           onSubmit={(event) => {
             event.preventDefault();
             event.stopPropagation();
