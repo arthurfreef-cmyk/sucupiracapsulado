@@ -20,6 +20,10 @@ export const Route = createFileRoute("/checkout/$kit")({
     meta: [
       { title: "Checkout — Sucupira Composta" },
       { name: "description", content: "Finalize sua compra com PIX com aprovação instantânea." },
+      { property: "og:title", content: "Checkout — Sucupira Composta" },
+      { property: "og:description", content: "Finalize sua compra com PIX com aprovação instantânea." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -94,6 +98,8 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PaymentResult | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [qrCodeError, setQrCodeError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const cepTimer = useRef<number | null>(null);
@@ -267,6 +273,36 @@ function CheckoutPage() {
     }
   }, [result, method]);
 
+  useEffect(() => {
+    const pixCode = result?.pix?.code;
+    if (!pixCode) {
+      setQrCodeUrl(null);
+      setQrCodeError(false);
+      return;
+    }
+
+    let active = true;
+    let objectUrl: string | null = null;
+    setQrCodeUrl(null);
+    setQrCodeError(false);
+
+    void import("uqr")
+      .then(({ renderSVG }) => {
+        if (!active) return;
+        const svg = renderSVG(pixCode, { ecc: "M", border: 4 });
+        objectUrl = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+        setQrCodeUrl(objectUrl);
+      })
+      .catch(() => {
+        if (active) setQrCodeError(true);
+      });
+
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [result?.pix?.code]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -289,16 +325,18 @@ function CheckoutPage() {
             <div className="p-6 md:p-8 space-y-6">
               <div className="flex flex-col items-center space-y-4">
                 <div className="bg-gray-100 p-4 rounded-2xl relative group">
-                  {result.pix.qrcode_base64 ? (
+                  {qrCodeUrl ? (
                     <img 
-                      src={`data:image/png;base64,${result.pix.qrcode_base64}`} 
+                      src={qrCodeUrl}
                       alt="PIX QR Code"
-                      className="w-48 h-48 md:w-56 md:h-56"
+                      width={224}
+                      height={224}
+                      className="w-48 h-48 md:w-56 md:h-56 bg-white"
                     />
                   ) : (
-                    <div className="w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center text-gray-400">
-                      <QrCode size={64} strokeWidth={1} />
-                      <p className="text-xs mt-2">QR Code Indisponível</p>
+                    <div className="w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center text-gray-400" role="status">
+                      {qrCodeError ? <AlertCircle size={48} strokeWidth={1.5} /> : <QrCode size={64} strokeWidth={1} className="animate-pulse" />}
+                      <p className="text-xs mt-2">{qrCodeError ? "Use o código PIX abaixo" : "Gerando QR Code..."}</p>
                     </div>
                   )}
                   <div className="absolute inset-0 flex items-center justify-center bg-white/80 opacity-0 group-hover:opacity-100 transition rounded-2xl pointer-events-none">
