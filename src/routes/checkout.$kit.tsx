@@ -408,7 +408,7 @@ function CheckoutPage() {
             
             <div className="bg-gray-50 p-4 border-t flex items-center justify-center gap-4 text-xs text-gray-400">
               <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra Segura</span>
-              <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Pagamento Processado por BuckPay</span>
+              <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Pagamento 100% seguro via PIX</span>
             </div>
           </div>
         </div>
