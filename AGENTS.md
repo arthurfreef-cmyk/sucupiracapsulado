@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep payment API routes limited to Web-standard, edge-compatible dependencies because all routes share the production server bundle.
+- Generate PIX QR images in the browser from the provider's copy-and-paste code so server payment routes remain edge-compatible.

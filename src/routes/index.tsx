@@ -81,6 +81,13 @@ export const Route = createFileRoute("/")({
         content:
           "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:image",
+        content:
+          "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },

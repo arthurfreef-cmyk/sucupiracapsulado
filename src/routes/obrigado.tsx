@@ -8,6 +8,10 @@ export const Route = createFileRoute("/obrigado")({
     meta: [
       { title: "Pedido Confirmado — Sucupira Composta" },
       { name: "description", content: "Obrigado por sua compra! Seu pedido foi recebido com sucesso." },
+      { property: "og:title", content: "Pedido Confirmado — Sucupira Composta" },
+      { property: "og:description", content: "Obrigado por sua compra! Seu pedido foi recebido com sucesso." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

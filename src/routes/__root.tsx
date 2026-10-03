@@ -78,18 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Your Site Model imports your existing website into a modeling environment for comprehensive page design." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Your Site Model imports your existing website into a modeling environment for comprehensive page design." },
+      { title: "Sucupira Composta" },
+      { name: "description", content: "Sucupira Composta, fórmula natural para o cuidado diário." },
+      { name: "author", content: "Sucupira Composta" },
+      { property: "og:title", content: "Sucupira Composta" },
+      { property: "og:description", content: "Sucupira Composta, fórmula natural para o cuidado diário." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Your Site Model imports your existing website into a modeling environment for comprehensive page design." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b0aae748-25d5-4973-b2e4-ac98cdcc2730/id-preview-46d0d72a--b0cab1d6-7794-4c6c-a386-dabcde19bbc2.lovable.app-1781991155312.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b0aae748-25d5-4973-b2e4-ac98cdcc2730/id-preview-46d0d72a--b0cab1d6-7794-4c6c-a386-dabcde19bbc2.lovable.app-1781991155312.png" },
+      { name: "twitter:title", content: "Sucupira Composta" },
+      { name: "twitter:description", content: "Sucupira Composta, fórmula natural para o cuidado diário." },
     ],
     links: [
       {
@@ -113,9 +110,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       {
         children: `(function(){function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16)})}function setC(k,v,d){try{var e=new Date();e.setTime(e.getTime()+d*864e5);document.cookie=k+"="+v+";expires="+e.toUTCString()+";path=/;SameSite=Lax"}catch(e){}}function getC(k){var m=document.cookie.match(new RegExp('(?:^|; )'+k+'=([^;]*)'));return m?decodeURIComponent(m[1]):null}try{var qs=new URLSearchParams(location.search);var fbclid=qs.get('fbclid');if(fbclid){var fbc='fb.1.'+Date.now()+'.'+fbclid;setC('_fbc',fbc,90);setC('_lv_fbc',fbc,90)}['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','ttclid','src','sck'].forEach(function(k){var v=qs.get(k);if(v)setC('lv_'+k,v,90)});var eid=sessionStorage.getItem('lv_eid');if(!eid){eid=uuid();sessionStorage.setItem('lv_eid',eid)}window.__lvEventId=eid}catch(e){}})();!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1590108412755712');fbq('track','PageView');var _eid=window.__lvEventId||String(Date.now());fbq('track','ViewContent',{content_type:'product',content_category:'suplemento',content_name:'Sucupira Composta'},{eventID:'vc_'+_eid});var _milestones={};function _scroll(){var h=document.documentElement,p=(h.scrollTop||document.body.scrollTop)/((h.scrollHeight||document.body.scrollHeight)-h.clientHeight)*100;[25,50,75,90].forEach(function(m){if(!_milestones[m]&&p>=m){_milestones[m]=1;fbq('trackCustom','Scroll'+m)}})}window.addEventListener('scroll',_scroll,{passive:true});[15,30,60,120].forEach(function(s){setTimeout(function(){fbq('trackCustom','TimeOnPage'+s+'s')},s*1000)});document.addEventListener('click',function(e){var el=e.target.closest('a,button');if(!el)return;var t=(el.innerText||'').trim().toLowerCase();if(/comprar|garantir|quero|checkout|finalizar|aproveitar|pix/.test(t)){fbq('trackCustom','CTAClick',{label:t.slice(0,60),href:el.href||''})}},{passive:true});`,
-      },
-      {
-        children: `window.pixelId="lt_px_7124c79da5bc";var a=document.createElement("script");a.setAttribute("async","");a.setAttribute("defer","");a.setAttribute("src","https://lowtrack.com.br/pixel.js");document.head.appendChild(a);`,
       },
     ],
   }),
@@ -150,6 +144,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (window.location.pathname.startsWith("/checkout/")) return;
+
+    const trackerWindow = window as typeof window & { pixelId?: string };
+    trackerWindow.pixelId = "lt_px_7124c79da5bc";
+    if (document.querySelector('script[src="https://lowtrack.com.br/pixel.js"]')) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.defer = true;
+    script.src = "https://lowtrack.com.br/pixel.js";
+    document.head.appendChild(script);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
