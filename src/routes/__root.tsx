@@ -149,6 +149,8 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    if (window.location.pathname.startsWith("/checkout/")) return;
+
     const trackerWindow = window as typeof window & { pixelId?: string };
     trackerWindow.pixelId = "lt_px_7124c79da5bc";
     if (document.querySelector('script[src="https://lowtrack.com.br/pixel.js"]')) return;
