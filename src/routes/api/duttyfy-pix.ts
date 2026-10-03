@@ -1,6 +1,5 @@
 // Cria cobrança PIX via Duttyfy (gateway principal). BuckPay permanece em /api/buckpay-pix.
 import { createFileRoute } from "@tanstack/react-router";
-import QRCode from "qrcode";
 
 const KITS = {
   k1: { amount: 2700, name: "Sucupira Composta - 1 Frasco" },
@@ -108,19 +107,11 @@ export const Route = createFileRoute("/api/duttyfy-pix")({
           return Response.json({ error: msg }, { status: status >= 400 && status < 500 ? 400 : 502 });
         }
 
-        let qr = "";
-        try {
-          const dataUrl = await QRCode.toDataURL(json.pixCode, { width: 320, margin: 1 });
-          qr = dataUrl.replace(/^data:image\/png;base64,/, "");
-        } catch (err) {
-          console.error("QR generation failed", err);
-        }
-
         return Response.json({
           id: json.transactionId,
           status: json.status || "PENDING",
           amount: total,
-          pix: { code: json.pixCode, qrcode_base64: qr },
+          pix: { code: json.pixCode, qrcode_base64: "" },
         });
       },
     },
