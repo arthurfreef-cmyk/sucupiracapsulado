@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
+import { Route as ApiDuttyfyPixRouteImport } from './routes/api/duttyfy-pix'
 import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
 import { Route as ApiPublicMangofyWebhookRouteImport } from './routes/api/public/mangofy-webhook'
 import { Route as ApiPublicBuckpayWebhookRouteImport } from './routes/api/public/buckpay-webhook'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const CheckoutKitRoute = CheckoutKitRouteImport.update({
   id: '/checkout/$kit',
   path: '/checkout/$kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDuttyfyPixRoute = ApiDuttyfyPixRouteImport.update({
+  id: '/api/duttyfy-pix',
+  path: '/api/duttyfy-pix',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBuckpayPixRoute = ApiBuckpayPixRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
+  '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
+  '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
+  '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/api/buckpay-pix'
+    | '/api/duttyfy-pix'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/api/buckpay-pix'
+    | '/api/duttyfy-pix'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/api/buckpay-pix'
+    | '/api/duttyfy-pix'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ObrigadoRoute: typeof ObrigadoRoute
   ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
+  ApiDuttyfyPixRoute: typeof ApiDuttyfyPixRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
   ApiPublicBuckpayWebhookRoute: typeof ApiPublicBuckpayWebhookRoute
   ApiPublicMangofyWebhookRoute: typeof ApiPublicMangofyWebhookRoute
@@ -129,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout/$kit'
       fullPath: '/checkout/$kit'
       preLoaderRoute: typeof CheckoutKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/duttyfy-pix': {
+      id: '/api/duttyfy-pix'
+      path: '/api/duttyfy-pix'
+      fullPath: '/api/duttyfy-pix'
+      preLoaderRoute: typeof ApiDuttyfyPixRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/buckpay-pix': {
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ObrigadoRoute: ObrigadoRoute,
   ApiBuckpayPixRoute: ApiBuckpayPixRoute,
+  ApiDuttyfyPixRoute: ApiDuttyfyPixRoute,
   CheckoutKitRoute: CheckoutKitRoute,
   ApiPublicBuckpayWebhookRoute: ApiPublicBuckpayWebhookRoute,
   ApiPublicMangofyWebhookRoute: ApiPublicMangofyWebhookRoute,
