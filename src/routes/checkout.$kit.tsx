@@ -281,7 +281,7 @@ function CheckoutPage() {
     };
     try {
       if (typeof w.fbq === "function") {
-        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
+        w.fbq("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
       }
       const r = await fetch("/api/duttyfy-pix", {
         method: "POST",
@@ -300,6 +300,7 @@ function CheckoutPage() {
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
       if (typeof w.fbq === "function") {
+        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
         w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
       }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
