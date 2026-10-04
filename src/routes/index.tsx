@@ -843,6 +843,7 @@ function Pricing() {
                 to="/checkout/$kit"
                 params={{ kit: k.href }}
                 search={true}
+                reloadDocument
                 onClick={() => {
                   const w = window as any;
                   const value = Number(k.price.replace(/[^\d,]/g, "").replace(",", "."));

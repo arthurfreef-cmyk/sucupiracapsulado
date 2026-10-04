@@ -263,10 +263,14 @@ function CheckoutPage() {
         setForm((current) => ({ ...current, ...submittedForm, ...submittedAddress }));
         setCepFilled(true);
       } catch {
-        setError("Não foi possível confirmar o CEP. Confira o número e tente novamente.");
-        setLoading(false);
-        document.getElementById("zip")?.focus();
-        return;
+        // A consulta externa do CEP ajuda no preenchimento, mas não deve impedir
+        // a geração do PIX quando o visitante informou oito dígitos válidos.
+        submittedAddress = {
+          street: submittedForm.street,
+          neighborhood: submittedForm.neighborhood,
+          city: submittedForm.city,
+          state: submittedForm.state,
+        };
       }
     }
     let submittedExpressCents = 500;
@@ -283,9 +287,12 @@ function CheckoutPage() {
       if (typeof w.fbq === "function") {
         w.fbq("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
       }
+      const controller = new AbortController();
+      const requestTimeout = window.setTimeout(() => controller.abort(), 25000);
       const r = await fetch("/api/duttyfy-pix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           kit: baseKitId,
           shipping: { method: shipping, amount: submittedShippingCents },
@@ -296,7 +303,7 @@ function CheckoutPage() {
           },
           utm: getCampaignQuery(),
         }),
-      });
+      }).finally(() => window.clearTimeout(requestTimeout));
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
       if (typeof w.fbq === "function") {
@@ -305,7 +312,13 @@ function CheckoutPage() {
       }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.");
+      const message = err instanceof DOMException && err.name === "AbortError"
+        ? "O pagamento demorou para responder. Tente novamente."
+        : err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.";
+      if (typeof w.fbq === "function") {
+        w.fbq("trackCustom", "PixErro", { ...fbData, payment_type: "pix", error: message.slice(0, 100) });
+      }
+      setError(message);
     } finally {
       submitInFlight.current = false;
       setLoading(false);
