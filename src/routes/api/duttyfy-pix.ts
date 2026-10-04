@@ -19,28 +19,15 @@ type Body = {
 const onlyDigits = (v = "") => v.replace(/\D/g, "");
 const isKitId = (v: unknown): v is KitId => typeof v === "string" && v in KITS;
 const isValidEmail = (v = "") => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/** POST com retry exponencial (1s, 2s, 4s) apenas em 5xx/erro de rede. */
-async function postWithRetry(url: string, payload: unknown): Promise<{ status: number; text: string }> {
-  let lastErr: unknown;
-  for (let attempt = 0; attempt < 4; attempt++) {
-    if (attempt > 0) await sleep(1000 * 2 ** (attempt - 1));
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000),
-      });
-      const text = await res.text();
-      if (res.status >= 500) { lastErr = new Error(`HTTP ${res.status}`); continue; }
-      return { status: res.status, text };
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr instanceof Error ? lastErr : new Error("Falha de rede");
+/** Evita repetir automaticamente uma criação de cobrança e gerar PIX duplicados. */
+async function postPayment(url: string, payload: unknown): Promise<{ status: number; text: string }> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(20000),
+  });
+  return { status: response.status, text: await response.text() };
 }
 
 export const Route = createFileRoute("/api/duttyfy-pix")({
@@ -92,7 +79,7 @@ export const Route = createFileRoute("/api/duttyfy-pix")({
 
         let status: number, text: string;
         try {
-          ({ status, text } = await postWithRetry(gatewayUrl, payload));
+          ({ status, text } = await postPayment(gatewayUrl, payload));
         } catch (err) {
           console.error("Duttyfy fetch failed", gatewayUrl.slice(-8), err instanceof Error ? err.message : err);
           return Response.json({ error: "Não foi possível conectar ao provedor de pagamento. Tente novamente." }, { status: 502 });

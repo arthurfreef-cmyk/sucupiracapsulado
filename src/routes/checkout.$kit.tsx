@@ -2,12 +2,15 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck } from "lucide-react";
+import imgKit1 from "@/assets/kit1.webp";
+import imgKit3 from "@/assets/kit3.webp";
+import imgKit5 from "@/assets/kit5.webp";
 
 
 const KITS = {
-  k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: "R$ 27,00", priceCents: 2700, fromCents: 9700, image: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/rq9lslj7_kit1frasco.png" },
-  k3: { title: "3 Frascos", sub: "90 dias de tratamento", price: "R$ 97,00", priceCents: 9700, fromCents: 29100, image: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/5kgkordi_sucupira%203%20frascos.png" },
-  k5: { title: "5 Frascos", sub: "150 dias de tratamento", price: "R$ 147,00", priceCents: 14700, fromCents: 48500, image: "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/nf8gbzyx_kit5frasco.png" },
+  k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: "R$ 27,00", priceCents: 2700, fromCents: 9700, image: imgKit1 },
+  k3: { title: "3 Frascos", sub: "90 dias de tratamento", price: "R$ 97,00", priceCents: 9700, fromCents: 29100, image: imgKit3 },
+  k5: { title: "5 Frascos", sub: "150 dias de tratamento", price: "R$ 147,00", priceCents: 14700, fromCents: 48500, image: imgKit5 },
 } as const;
 
 type KitId = keyof typeof KITS;
@@ -78,6 +81,41 @@ const isValidPhone = (raw: string) => {
 const formatBRL = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+type AddressResult = { logradouro?: string; bairro?: string; localidade?: string; uf?: string; erro?: boolean };
+
+const addressCache = new Map<string, AddressResult>();
+
+async function fetchAddress(cep: string, signal?: AbortSignal): Promise<AddressResult> {
+  const cached = addressCache.get(cep);
+  if (cached) return cached;
+  const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal });
+  if (!response.ok) throw new Error("Falha ao consultar CEP");
+  const address = (await response.json()) as AddressResult;
+  if (address.erro) throw new Error("CEP não encontrado");
+  addressCache.set(cep, address);
+  return address;
+}
+
+function getCampaignQuery(): string {
+  const current = new URLSearchParams(window.location.search);
+  const cookieValues = new Map(
+    document.cookie.split(";").map((part) => {
+      const separator = part.indexOf("=");
+      if (separator < 0) return [part.trim(), ""];
+      return [part.slice(0, separator).trim(), decodeURIComponent(part.slice(separator + 1))];
+    }),
+  );
+  ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "ttclid", "src", "sck"].forEach((key) => {
+    if (!current.has(key)) {
+      const stored = cookieValues.get(`lv_${key}`);
+      if (stored) current.set(key, stored);
+    }
+  });
+  const fbc = cookieValues.get("_fbc") ?? cookieValues.get("_lv_fbc");
+  if (fbc && !current.has("fbc")) current.set("fbc", fbc);
+  return current.toString();
+}
+
 function CheckoutPage() {
   const { kit: kitId } = Route.useParams();
   const navigate = useNavigate();
@@ -103,7 +141,9 @@ function CheckoutPage() {
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const cepTimer = useRef<number | null>(null);
+  const cepController = useRef<AbortController | null>(null);
   const checkoutForm = useRef<HTMLFormElement | null>(null);
+  const submitInFlight = useRef(false);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -124,22 +164,34 @@ function CheckoutPage() {
   useEffect(() => {
     const cep = onlyDigits(form.zip);
     setCepError(null);
-    if (cep.length !== 8) { setCepFilled(false); return; }
+    if (cep.length !== 8) {
+      setCepFilled(false);
+      cepController.current?.abort();
+      return;
+    }
     if (cepTimer.current) window.clearTimeout(cepTimer.current);
+    cepController.current?.abort();
+    const controller = new AbortController();
+    cepController.current = controller;
     cepTimer.current = window.setTimeout(async () => {
       setCepLoading(true);
       try {
-        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const d = await r.json();
-        if (!d.erro) {
-          setForm(f => ({ ...f, street: d.logradouro, neighborhood: d.bairro, city: d.localidade, state: d.uf }));
-          setCepFilled(true);
-        } else {
-          setCepFilled(false);
-          setCepError("CEP não encontrado");
-        }
-      } catch { setCepError("Não foi possível buscar o CEP"); } finally { setCepLoading(false); }
+        const timeout = window.setTimeout(() => controller.abort(), 5000);
+        const d = await fetchAddress(cep, controller.signal).finally(() => window.clearTimeout(timeout));
+        setForm(f => ({ ...f, street: d.logradouro ?? "", neighborhood: d.bairro ?? "", city: d.localidade ?? "", state: d.uf ?? "" }));
+        setCepFilled(true);
+      } catch (cause) {
+        if (cause instanceof DOMException && cause.name === "AbortError") return;
+        setCepFilled(false);
+        setCepError(cause instanceof Error && cause.message === "CEP não encontrado" ? "CEP não encontrado" : "Não foi possível buscar o CEP");
+      } finally {
+        if (cepController.current === controller) setCepLoading(false);
+      }
     }, 250);
+    return () => {
+      if (cepTimer.current) window.clearTimeout(cepTimer.current);
+      controller.abort();
+    };
   }, [form.zip]);
 
   // Meta Pixel: InitiateCheckout ao abrir o checkout
@@ -154,7 +206,7 @@ function CheckoutPage() {
   }, [baseKitId]);
 
   const submit = async () => {
-    if (loading) return;
+    if (submitInFlight.current) return;
     const readValue = (name: string) => {
       const field = checkoutForm.current?.elements.namedItem(name);
       return field instanceof HTMLInputElement ? field.value : "";
@@ -189,6 +241,7 @@ function CheckoutPage() {
       window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
       return;
     }
+    submitInFlight.current = true;
     setLoading(true);
     setError(null);
     const w = window as any;
@@ -200,9 +253,7 @@ function CheckoutPage() {
     };
     if (!submittedAddress.city || !submittedAddress.state) {
       try {
-        const addressResponse = await fetch(`https://viacep.com.br/ws/${onlyDigits(submittedForm.zip)}/json/`);
-        const address = await addressResponse.json();
-        if (address.erro) throw new Error("CEP não encontrado.");
+        const address = await fetchAddress(onlyDigits(submittedForm.zip), AbortSignal.timeout(5000));
         submittedAddress = {
           street: address.logradouro ?? "",
           neighborhood: address.bairro ?? "",
@@ -230,15 +281,7 @@ function CheckoutPage() {
     };
     try {
       if (typeof w.fbq === "function") {
-        // Advanced Matching: melhora a correspondência de eventos
-        const parts = submittedForm.name.toLowerCase().split(/\s+/);
-        w.fbq("init", "1590108412755712", {
-          em: submittedForm.email.toLowerCase(), ph: "55" + onlyDigits(submittedForm.phone),
-          fn: parts[0], ln: parts.slice(1).join(" "), ct: submittedAddress.city.toLowerCase(),
-          st: submittedAddress.state.toLowerCase(), zp: onlyDigits(submittedForm.zip), country: "br",
-          external_id: onlyDigits(submittedForm.document),
-        });
-        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" });
+        w.fbq("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
       }
       const r = await fetch("/api/duttyfy-pix", {
         method: "POST",
@@ -251,19 +294,20 @@ function CheckoutPage() {
             zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
             neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state,
           },
-          utm: typeof window !== "undefined" ? window.location.search : "",
+          utm: getCampaignQuery(),
         }),
       });
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
       if (typeof w.fbq === "function") {
-        w.fbq("track", "AddPaymentInfo", fbData, { eventID: `pix_${json.id}` });
+        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
         w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
       }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.");
     } finally {
+      submitInFlight.current = false;
       setLoading(false);
     }
   };
@@ -444,7 +488,7 @@ function CheckoutPage() {
             <p className="text-xs text-gray-500 mt-0.5">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
           <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
-            <img src={kit.image} alt={kit.title} width={64} height={64} className="w-16 h-16 object-contain" />
+            <img src={kit.image} alt={kit.title} width={64} height={64} decoding="async" className="w-16 h-16 object-contain" />
             <div className="flex-1">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>

@@ -90,6 +90,7 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
+      { rel: "preload", as: "image", href: imgHero, fetchPriority: "high" },
       { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://customer-assets.emergentagent.com" },
     ],
@@ -135,12 +136,6 @@ function Index() {
       (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb) : setTimeout(cb, 1500);
     idle(() => {
       router.preloadRoute({ to: "/checkout/$kit", params: { kit: "k3" } }).catch(() => {});
-      // Pré-aquece imagens dos kits de forma eficiente
-      [IMG.hero, IMG.mulher, IMG.kit1, IMG.kit3, IMG.kit5, IMG.sucupira, IMG.canela, IMG.calcio].forEach((src) => {
-        if (!src) return;
-        const img = new Image();
-        img.src = src;
-      });
     });
 
   }, [router]);
@@ -847,6 +842,7 @@ function Pricing() {
               <Link
                 to="/checkout/$kit"
                 params={{ kit: k.href }}
+                search={true}
                 onClick={() => {
                   const w = window as any;
                   const value = Number(k.price.replace(/[^\d,]/g, "").replace(",", "."));
