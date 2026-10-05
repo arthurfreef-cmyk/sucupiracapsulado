@@ -43,6 +43,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  * 'tire a opçao de pagamento cartao de credito e deixe somete pix disponivel' (on element 'body' at '/src/routes/index.tsx:1')
  */
 import { useEffect, useRef, useState } from "react";
+import { BadgeCheck, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
 
 import imgHero from "@/assets/hero.webp";
 import imgMulher from "@/assets/mulher.webp";
@@ -232,11 +233,9 @@ function Hero() {
             </p>
 
             <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
-              <div className="flex -space-x-2">
-                {["M", "J", "A"].map((l, i) => (
-                  <span key={i} className="w-8 h-8 rounded-full bg-[var(--gold)] text-[var(--brand)] flex items-center justify-center font-bold border-2 border-white text-sm">
-                    {l}
-                  </span>
+              <div className="flex -space-x-2" aria-hidden="true">
+                {[imgDep1, imgDep2, imgDep3].map((src) => (
+                  <img key={src} src={src} alt="" width={32} height={32} loading="lazy" decoding="async" className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm" />
                 ))}
               </div>
               <div className="text-white text-xs sm:text-sm">
@@ -288,6 +287,7 @@ function Hero() {
               <div className="text-[10px] md:text-xs text-muted-foreground">e você se renova!</div>
             </div>
             <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 bg-[var(--gold)] rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl text-center">
+              <ShieldCheck size={16} className="mx-auto mb-0.5 text-[var(--brand)]" aria-hidden="true" />
               <div className="text-[var(--brand)] font-bold text-[10px] md:text-xs">Garantia</div>
               <div className="text-[var(--brand)] font-extrabold text-sm md:text-base">30 dias</div>
             </div>
@@ -832,11 +832,11 @@ function Pricing() {
 
               </div>
               <div className="flex flex-wrap justify-center gap-2 my-4 text-xs">
-                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">🚚 Entrega Garantida com Código de Rastreio</span>
+                <span className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold"><Truck size={13} aria-hidden="true" /> Entrega Garantida com Código de Rastreio</span>
                 {k.badge && (
                   <span className="bg-[var(--gold)] text-[var(--brand)] px-3 py-1 rounded-full font-bold">{k.badge}</span>
                 )}
-                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">Garantia 30 dias</span>
+                <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold"><BadgeCheck size={13} aria-hidden="true" /> Garantia 30 dias</span>
               </div>
 
               <Link
@@ -867,19 +867,19 @@ function Pricing() {
               >
                 Escolher Esse Kit →
               </Link>
-              <p className="text-center text-[11px] text-muted-foreground mt-2 leading-snug">
-                ⚡ <strong>Pagamento via PIX</strong> com Aprovação Instantânea
+              <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground mt-2 leading-snug">
+                <LockKeyhole size={12} aria-hidden="true" /> <span><strong>Pagamento via PIX</strong> com Aprovação Instantânea</span>
               </p>
             </div>
           ))}
 
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-10">
-          <span>🔒 Compra Segura</span>
-          <span>⚡ Pagamento via PIX</span>
-          <span>🚚 Frete Grátis</span>
-          <span>✅ Garantia 30 Dias</span>
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 text-sm text-muted-foreground mt-10" aria-label="Benefícios da compra">
+          <span className="inline-flex items-center gap-1.5"><LockKeyhole size={15} className="text-[var(--brand)]" aria-hidden="true" /> Compra Segura</span>
+          <span className="inline-flex items-center gap-1.5"><BadgeCheck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Pagamento via PIX</span>
+          <span className="inline-flex items-center gap-1.5"><Truck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Frete Grátis</span>
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Garantia 30 Dias</span>
         </div>
       </div>
     </section>
