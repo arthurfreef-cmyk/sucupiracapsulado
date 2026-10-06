@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck } from "lucide-react";
+import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
 import imgKit1 from "@/assets/kit1.webp";
 import imgKit3 from "@/assets/kit3.webp";
 import imgKit5 from "@/assets/kit5.webp";
@@ -55,9 +55,6 @@ const maskPhone = (s: string) => {
   return d.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
 };
 const maskCEP = (s: string) => onlyDigits(s).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
-const maskCardNumber = (s: string) => onlyDigits(s).slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ");
-const maskExpiry = (s: string) => onlyDigits(s).slice(0, 4).replace(/(\d{2})(?=\d)/, "$1/");
-
 const isValidCPF = (raw: string) => {
   const d = onlyDigits(raw);
   if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
@@ -122,7 +119,6 @@ function CheckoutPage() {
   const baseKitId = kitId as KitId;
   const kit = KITS[baseKitId];
 
-  const [method, setMethod] = useState<"pix">("pix");
   const [form, setForm] = useState({
     name: "", email: "", document: "", phone: "", zip: "", number: "", complement: "",
     street: "", neighborhood: "", city: "", state: "",
@@ -150,7 +146,6 @@ function CheckoutPage() {
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
   const zipValid = onlyDigits(form.zip).length === 8;
-  const formValid = nameValid && emailValid && cpfValid && phoneValid && zipValid && cepFilled && !!form.number.trim();
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
@@ -326,13 +321,13 @@ function CheckoutPage() {
   };
 
   useEffect(() => {
-    if (result && method === "pix") {
+    if (result) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [result, method]);
+  }, [result]);
 
   useEffect(() => {
     const pixCode = result?.pix?.code;
@@ -371,7 +366,7 @@ function CheckoutPage() {
   };
 
   if (result) {
-    if (method === "pix" && result.pix) {
+    if (result.pix) {
       return (
         <div className="min-h-screen bg-gray-50 p-4 flex flex-col items-center justify-center">
           <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl overflow-hidden">
@@ -513,30 +508,30 @@ function CheckoutPage() {
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
-            <Field id="name" name="name" label="Nome Completo" autoComplete="name" placeholder="Nome e sobrenome" value={form.name}
+            <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" placeholder="seu@email.com" value={form.email}
+              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" enterKeyHint="next" placeholder="seu@email.com" value={form.email}
                 onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
-              <Field id="phone" name="phone" label="Celular (WhatsApp)" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(00) 00000-0000" value={form.phone}
+              <Field id="phone" name="phone" label="Celular" type="tel" inputMode="numeric" autoComplete="tel-national" enterKeyHint="next" placeholder="(00) 00000-0000" value={form.phone}
                 onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
                 error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
             </div>
-            <Field id="document" name="document" label="CPF" inputMode="numeric" placeholder="000.000.000-00" value={form.document}
+            <Field id="document" name="document" label="CPF" inputMode="numeric" autoComplete="off" enterKeyHint="next" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
-            <p className="text-[11px] text-gray-400 -mt-2">Usamos seu CPF apenas para a segurança da compra e emissão da nota fiscal.</p>
+            <p className="text-[11px] text-gray-400 -mt-2">CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
           </div>
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">2. Endereço de Entrega</h2>
             <div className="grid grid-cols-2 gap-4">
-              <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" placeholder="00000-000" value={form.zip}
+              <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
                 error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
-              <Field id="number" name="number" label="Número" inputMode="numeric" placeholder="Nº" value={form.number}
+              <Field id="number" name="number" label="Número" inputMode="numeric" autoComplete="address-line2" enterKeyHint="done" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
@@ -608,18 +603,15 @@ function CheckoutPage() {
             </div>
           </div>
 
-          {error && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
+          {error && <div role="alert" aria-live="assertive" className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
 
           <button
-            type="button"
+            type="submit"
             disabled={loading}
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              void submit();
-            }}
-            className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-50"
+            aria-busy={loading}
+            className="w-full min-h-14 py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-70 flex items-center justify-center gap-2"
           >
+            {loading && <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />}
             {loading ? "Gerando PIX..." : `Finalizar Compra - ${formatBRL(totalCents)}`}
           </button>
           <div className="flex items-center justify-center gap-4 text-[11px] text-gray-500 flex-wrap">
@@ -636,15 +628,16 @@ function CheckoutPage() {
 }
 
 function Field({ label, error, ok, ...props }: { label: string; error?: string; ok?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
+  const errorId = props.id ? `${props.id}-error` : undefined;
   return (
     <label className="block space-y-1">
       <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
       <div className="relative">
-        <input {...props} aria-invalid={!!error}
+        <input {...props} required aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
           className={`w-full h-12 px-4 pr-10 border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
         {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />}
       </div>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span id={errorId} className="text-xs text-red-600">{error}</span>}
     </label>
   );
 }
