@@ -508,11 +508,11 @@ function CheckoutPage() {
 
           <div className="space-y-4">
             <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
-            <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
+            <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" enterKeyHint="next" placeholder="seu@email.com" value={form.email}
+              <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="seu@email.com" value={form.email}
                 onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
               <Field id="phone" name="phone" label="Celular" type="tel" inputMode="numeric" autoComplete="tel-national" enterKeyHint="next" placeholder="(00) 00000-0000" value={form.phone}
@@ -617,7 +617,7 @@ function CheckoutPage() {
             className="w-full min-h-14 py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading && <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />}
-            {loading ? "Gerando PIX..." : "FINALIZAR PEDIDO"}
+            {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
           </button>
           <div className="flex items-center justify-center gap-4 text-[11px] text-gray-500 flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
@@ -639,7 +639,7 @@ function Field({ label, error, ok, ...props }: { label: string; error?: string; 
       <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
       <div className="relative">
         <input {...props} required={props.required ?? true} aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
-          className={`w-full h-12 px-4 pr-10 border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
+          className={`w-full h-12 px-4 pr-10 text-base border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
         {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />}
       </div>
       {error && <span id={errorId} className="text-xs text-red-600">{error}</span>}
