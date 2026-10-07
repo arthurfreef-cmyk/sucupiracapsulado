@@ -541,8 +541,13 @@ function CheckoutPage() {
                 <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
                   {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
                 </div>
-                <Field id="complement" name="complement" label="Complemento (opcional)" placeholder="Apto, bloco, referência" value={form.complement}
-                  onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
+                <details className="text-sm text-muted-foreground">
+                  <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
+                  <div className="mt-3">
+                    <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
+                      onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
+                  </div>
+                </details>
               </>
             )}
           </div>
@@ -612,7 +617,7 @@ function CheckoutPage() {
             className="w-full min-h-14 py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading && <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />}
-            {loading ? "Gerando PIX..." : `Finalizar Compra - ${formatBRL(totalCents)}`}
+            {loading ? "Gerando PIX..." : "FINALIZAR PEDIDO"}
           </button>
           <div className="flex items-center justify-center gap-4 text-[11px] text-gray-500 flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
@@ -633,7 +638,7 @@ function Field({ label, error, ok, ...props }: { label: string; error?: string; 
     <label className="block space-y-1">
       <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
       <div className="relative">
-        <input {...props} required aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
+        <input {...props} required={props.required ?? true} aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
           className={`w-full h-12 px-4 pr-10 border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
         {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />}
       </div>
