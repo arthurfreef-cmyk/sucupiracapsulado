@@ -4,5 +4,6 @@
 - [x] Testar validação, checkout, QR Code e compilação.
 
 # Verificação da página e checkout
-- [ ] Reproduzir erros na página e no checkout sem alterar estrutura, visual ou copy.
-- [ ] Corrigir erros confirmados e validar o fluxo de PIX.
+- [x] Reproduzir erros na página e no checkout sem alterar estrutura, visual ou copy.
+- [x] Corrigir divergência de frete, endereço de CEP anterior, cópia sem confirmação e leitura de cookies malformados; validar fluxo com pagamento simulado, sem criar cobrança real.
+- [ ] Confirmar eventos do Pixel Booster — bloqueado pela proteção externa da Fruitfy; depende de liberação do fornecedor.
