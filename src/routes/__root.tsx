@@ -146,6 +146,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    // Load after hydration so third-party tracking cannot alter the initial checkout DOM.
+    if (document.querySelector('script[data-fruitfy-booster]')) return;
+    const script = document.createElement("script");
+    script.dataset.fruitfyBooster = "true";
+    script.textContent = `!function(f,r,u,i,t){if(f.fruit)return;var q=f.fruit=function(){q.callMethod?q.callMethod.apply(q,arguments):q.queue.push(arguments)};q.queue=[];q.loaded=!0;q.version='1.0';var s=r.createElement(u);s.async=!0;s.src=i+'?v='+Date.now();var e=r.getElementsByTagName(u)[0];e.parentNode.insertBefore(s,e)}(window,document,'script','https://dash.fruitfy.io/scripts/pixel_hot.js','fruit');`;
+    document.head.appendChild(script);
+  }, []);
+
+  useEffect(() => {
     if (window.location.pathname.startsWith("/checkout/")) return;
 
     const trackerWindow = window as typeof window & { pixelId?: string };
