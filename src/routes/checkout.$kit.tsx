@@ -42,6 +42,16 @@ type PaymentResult = {
   card: { card_flag?: string; card_token?: string } | null;
 };
 
+// Tracking is optional: a third-party error must never interrupt payment.
+function trackCheckout(...args: unknown[]): void {
+  try {
+    const tracker = (window as typeof window & { fbq?: (...values: unknown[]) => void }).fbq;
+    if (typeof tracker === "function") tracker(...args);
+  } catch {
+    // Keep the purchase flow available even when a tracker fails.
+  }
+}
+
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 const maskCPF = (s: string) => {
   const d = onlyDigits(s).slice(0, 11);
@@ -157,6 +167,7 @@ function CheckoutPage() {
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
+    setCepLoading(false);
     setCepError(null);
     resolvedCep.current = null;
     setCepFilled(false);
@@ -195,13 +206,10 @@ function CheckoutPage() {
 
   // Meta Pixel: InitiateCheckout ao abrir o checkout
   useEffect(() => {
-    const w = window as any;
-    if (typeof w.fbq === "function") {
-      w.fbq("track", "InitiateCheckout", {
+      trackCheckout("track", "InitiateCheckout", {
         content_ids: [baseKitId], content_type: "product", content_name: kit.title,
         value: kit.priceCents / 100, currency: "BRL", num_items: 1,
       });
-    }
   }, [baseKitId]);
 
   const submit = async () => {
@@ -243,7 +251,6 @@ function CheckoutPage() {
     submitInFlight.current = true;
     setLoading(true);
     setError(null);
-    const w = window as any;
     let submittedAddress = {
       street: submittedForm.street,
       neighborhood: submittedForm.neighborhood,
@@ -285,9 +292,7 @@ function CheckoutPage() {
       value: submittedTotalCents / 100, currency: "BRL",
     };
     try {
-      if (typeof w.fbq === "function") {
-        w.fbq("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
-      }
+      trackCheckout("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
       const controller = new AbortController();
       const requestTimeout = window.setTimeout(() => controller.abort(), 25000);
       const r = await fetch("/api/fruitfy-pix", {
@@ -307,18 +312,14 @@ function CheckoutPage() {
       }).finally(() => window.clearTimeout(requestTimeout));
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
-      if (typeof w.fbq === "function") {
-        w.fbq("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
-        w.fbq("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
-      }
       setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
+      trackCheckout("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
+      trackCheckout("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
     } catch (err: unknown) {
       const message = err instanceof DOMException && err.name === "AbortError"
         ? "O pagamento demorou para responder. Tente novamente."
         : err instanceof Error ? err.message : "Não foi possível gerar o PIX. Tente novamente.";
-      if (typeof w.fbq === "function") {
-        w.fbq("trackCustom", "PixErro", { ...fbData, payment_type: "pix", error: message.slice(0, 100) });
-      }
+      trackCheckout("trackCustom", "PixErro", { ...fbData, payment_type: "pix", error: message.slice(0, 100) });
       setError(message);
     } finally {
       submitInFlight.current = false;
