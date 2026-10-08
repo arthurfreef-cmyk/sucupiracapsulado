@@ -77,18 +77,8 @@ export const Route = createFileRoute("/")({
         content:
           "Composto natural com Sucupira + Canela de Velho + Cálcio. 1 cápsula por dia. Garantia de 30 dias.",
       },
-      {
-        property: "og:image",
-        content:
-          "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:image",
-        content:
-          "https://customer-assets.emergentagent.com/job_vida-sem-limites-1/artifacts/okesmw0h_topositeok.png",
-      },
     ],
     links: [
       { rel: "preload", as: "image", href: imgHero, fetchPriority: "high" },

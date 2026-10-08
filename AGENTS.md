@@ -11,3 +11,4 @@
 
 - Keep payment API routes limited to Web-standard, edge-compatible dependencies because all routes share the production server bundle.
 - Generate PIX QR images in the browser from the provider's copy-and-paste code so server payment routes remain edge-compatible.
+- Keep the primary Fruitfy charge handler separate from the preserved legacy providers and validate its payload/response in a browser-safe module; this prevents provider schema drift and enables isolated tests.
