@@ -7,6 +7,7 @@ export const FRUITFY_KITS = {
 } as const;
 
 const digits = (value: string) => value.replace(/\D/g, "");
+
 export const fruitfyInput = z.object({
   kit: z.enum(["k1", "k3", "k5"]),
   buyer: z.object({
@@ -16,6 +17,15 @@ export const fruitfyInput = z.object({
     phone: z.string().max(25).transform(digits).transform((phone) =>
       phone.length > 11 && phone.startsWith("55") ? phone.slice(2) : phone,
     ).pipe(z.string().regex(/^\d{10,11}$/)),
+  }),
+  address: z.object({
+    zip: z.string().transform(digits).pipe(z.string().length(8)),
+    street: z.string().trim().min(1).max(255),
+    number: z.string().trim().min(1).max(20),
+    complement: z.string().trim().max(100).optional(),
+    neighborhood: z.string().trim().min(1).max(100),
+    city: z.string().trim().min(1).max(100),
+    state: z.string().trim().length(2),
   }),
   shipping: z.object({
     method: z.enum(["free", "express"]),
@@ -39,6 +49,15 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
     email: input.buyer.email.toLowerCase(),
     cpf: input.buyer.document,
     phone: `55${input.buyer.phone}`,
+    address: {
+      zip: input.address.zip,
+      street: input.address.street,
+      number: input.address.number,
+      complement: input.address.complement || "",
+      neighborhood: input.address.neighborhood,
+      city: input.address.city,
+      state: input.address.state.toUpperCase(),
+    },
     items: [{ id: kit.id, value: amount, quantity: 1 }],
     utm,
   };
