@@ -5,6 +5,7 @@ import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft,
 import imgKit1 from "@/assets/kit1.webp";
 import imgKit3 from "@/assets/kit3.webp";
 import imgKit5 from "@/assets/kit5.webp";
+import { decodeCampaignCookie, expressShippingCents } from "@/lib/checkout-utils";
 
 
 const KITS = {
@@ -99,7 +100,7 @@ function getCampaignQuery(): string {
     document.cookie.split(";").map((part) => {
       const separator = part.indexOf("=");
       if (separator < 0) return [part.trim(), ""];
-      return [part.slice(0, separator).trim(), decodeURIComponent(part.slice(separator + 1))];
+      return [part.slice(0, separator).trim(), decodeCampaignCookie(part.slice(separator + 1))];
     }),
   );
   ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "ttclid", "src", "sck"].forEach((key) => {
@@ -140,6 +141,7 @@ function CheckoutPage() {
   const cepController = useRef<AbortController | null>(null);
   const checkoutForm = useRef<HTMLFormElement | null>(null);
   const submitInFlight = useRef(false);
+  const resolvedCep = useRef<string | null>(null);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -149,16 +151,16 @@ function CheckoutPage() {
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
-  let h = 7;
-  for (const c of cepDigits) h = (h * 31 + Number(c)) % 100003;
-  let expressCents = 500 + (h % 200);
-  if (expressCents % 10 === 0) expressCents += 7;
+  const expressCents = expressShippingCents(cepDigits);
   const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
   const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
     const cep = onlyDigits(form.zip);
     setCepError(null);
+    resolvedCep.current = null;
+    setCepFilled(false);
+    setForm(current => ({ ...current, street: "", neighborhood: "", city: "", state: "" }));
     if (cep.length !== 8) {
       setCepFilled(false);
       cepController.current?.abort();
@@ -173,6 +175,8 @@ function CheckoutPage() {
       try {
         const timeout = window.setTimeout(() => controller.abort(), 5000);
         const d = await fetchAddress(cep, controller.signal).finally(() => window.clearTimeout(timeout));
+        if (controller.signal.aborted) return;
+        resolvedCep.current = cep;
         setForm(f => ({ ...f, street: d.logradouro ?? "", neighborhood: d.bairro ?? "", city: d.localidade ?? "", state: d.uf ?? "" }));
         setCepFilled(true);
       } catch (cause) {
@@ -246,7 +250,7 @@ function CheckoutPage() {
       city: submittedForm.city,
       state: submittedForm.state,
     };
-    if (!submittedAddress.city || !submittedAddress.state) {
+    if (resolvedCep.current !== onlyDigits(submittedForm.zip) || !submittedAddress.city || !submittedAddress.state) {
       try {
         const address = await fetchAddress(onlyDigits(submittedForm.zip), AbortSignal.timeout(5000));
         submittedAddress = {
@@ -255,24 +259,26 @@ function CheckoutPage() {
           city: address.localidade ?? "",
           state: address.uf ?? "",
         };
+        resolvedCep.current = onlyDigits(submittedForm.zip);
         setForm((current) => ({ ...current, ...submittedForm, ...submittedAddress }));
         setCepFilled(true);
       } catch {
-        // A consulta externa do CEP ajuda no preenchimento, mas não deve impedir
-        // a geração do PIX quando o visitante informou oito dígitos válidos.
-        submittedAddress = {
-          street: submittedForm.street,
-          neighborhood: submittedForm.neighborhood,
-          city: submittedForm.city,
-          state: submittedForm.state,
-        };
+        // Never send an address belonging to the previous ZIP code.
+        setError("Não foi possível buscar o CEP");
+        submitInFlight.current = false;
+        setLoading(false);
+        return;
       }
     }
-    let submittedExpressCents = 500;
-    for (const character of onlyDigits(submittedForm.zip)) submittedExpressCents = (submittedExpressCents * 31 + Number(character)) % 100003;
-    submittedExpressCents = 500 + (submittedExpressCents % 200);
-    if (submittedExpressCents % 10 === 0) submittedExpressCents += 7;
-    const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
+    if (!submittedAddress.street || !submittedAddress.neighborhood || !submittedAddress.city || submittedAddress.state.length !== 2) {
+      setError("Não foi possível buscar o CEP");
+      submitInFlight.current = false;
+      setLoading(false);
+      return;
+    }
+    const submittedExpressCents = expressShippingCents(submittedForm.zip);
+    const submittedShippingCents = cepFilled && shipping === "express" ? submittedExpressCents : 0;
+    const submittedShipping = submittedShippingCents > 0 ? "express" : "free";
     const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
       content_ids: [baseKitId], content_type: "product", content_name: kit.title,
@@ -290,7 +296,7 @@ function CheckoutPage() {
         signal: controller.signal,
         body: JSON.stringify({
           kit: baseKitId,
-          shipping: { method: shipping, amount: submittedShippingCents },
+          shipping: { method: submittedShipping, amount: submittedShippingCents },
           buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
           address: {
             zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement,
@@ -416,10 +422,24 @@ function CheckoutPage() {
                     className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono resize-none focus:outline-none h-24"
                   />
                   <button 
-                    onClick={() => { 
-                      navigator.clipboard.writeText(result.pix?.code ?? ""); 
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
+                    onClick={async () => {
+                      const code = result.pix?.code;
+                      if (!code) return;
+                      let success = false;
+                      try {
+                        await navigator.clipboard.writeText(code);
+                        success = true;
+                      } catch {
+                        const field = document.querySelector<HTMLTextAreaElement>("textarea[readonly]");
+                        if (field) {
+                          field.focus();
+                          field.select();
+                          field.setSelectionRange(0, code.length);
+                          try { success = document.execCommand("copy"); } catch { success = false; }
+                        }
+                      }
+                      setCopied(success);
+                      if (success) setTimeout(() => setCopied(false), 2000);
                     }} 
                     className="absolute bottom-3 right-3 flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-md hover:bg-emerald-700 transition active:scale-95"
                   >
