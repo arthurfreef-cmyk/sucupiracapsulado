@@ -70,10 +70,10 @@ const isValidCPF = (raw: string) => {
 
 const isValidPhone = (raw: string) => {
   const d = onlyDigits(raw);
-  if (d.length < 10 || d.length > 11) return false;
+  if (d.length !== 11) return false;
   const ddd = Number(d.slice(0, 2));
   if (ddd < 11 || ddd > 99) return false;
-  return d.length === 11 ? d[2] === "9" : true;
+  return d[2] === "9";
 };
 
 const formatBRL = (cents: number) =>
@@ -225,16 +225,16 @@ function CheckoutPage() {
     const submittedPhoneValid = isValidPhone(submittedForm.phone);
     const submittedCpfValid = isValidCPF(submittedForm.document);
     const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
-    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number || !form.street.trim() || !form.city.trim() || !form.state.trim()) {
+    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number) {
       setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
-      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : !submittedForm.number ? "number" : !form.street.trim() ? "street" : !form.city.trim() ? "city" : "state";
+      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : "number";
       const messages: Record<string, string> = {
         name: "Informe seu nome e sobrenome.",
         email: "Confira o e-mail informado.",
         phone: "Informe um celular válido com DDD.",
         document: "Confira o CPF informado.",
         zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
-        number: "Informe o número do endereço.", street: "Informe a rua.", city: "Informe a cidade.", state: "Informe o estado (UF).",
+        number: "Informe o número do endereço.",
       };
       setError(messages[invalidField]);
       window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
@@ -557,24 +557,10 @@ function CheckoutPage() {
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
             {cepLoading && <div className="text-xs text-gray-500">Buscando endereço...</div>}
-            {(cepFilled || onlyDigits(form.zip).length === 8) && (
+            {cepFilled && (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field id="street" name="street" label="Rua / Logradouro" placeholder="Nome da rua" value={form.street}
-                    onChange={e => setForm({...form, street: e.target.value})} onBlur={() => touch("street")}
-                    error={err("street", !form.street.trim()) ? "Informe a rua" : undefined} ok={!!form.street.trim()} />
-                  <Field id="neighborhood" name="neighborhood" label="Bairro" placeholder="Seu bairro" value={form.neighborhood}
-                    onChange={e => setForm({...form, neighborhood: e.target.value})} onBlur={() => touch("neighborhood")}
-                    error={err("neighborhood", !form.neighborhood.trim()) ? "Informe o bairro" : undefined} ok={!!form.neighborhood.trim()} />
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <Field id="city" name="city" label="Cidade" placeholder="Sua cidade" value={form.city}
-                    onChange={e => setForm({...form, city: e.target.value})} onBlur={() => touch("city")}
-                    error={err("city", !form.city.trim()) ? "Informe a cidade" : undefined} ok={!!form.city.trim()} />
-                  <Field id="state" name="state" label="Estado (UF)" placeholder="EX: SP" value={form.state}
-                    maxLength={2}
-                    onChange={e => setForm({...form, state: e.target.value.toUpperCase().slice(0, 2)})} onBlur={() => touch("state")}
-                    error={err("state", form.state.trim().length !== 2) ? "UF inválida" : undefined} ok={form.state.trim().length === 2} />
+                <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
+                  {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
                 </div>
                 <details className="text-sm text-muted-foreground">
                   <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
@@ -587,7 +573,7 @@ function CheckoutPage() {
             )}
           </div>
 
-          {(cepFilled || onlyDigits(form.zip).length === 8) && (
+          {cepFilled && (
             <div className="space-y-3">
               <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
               {([
