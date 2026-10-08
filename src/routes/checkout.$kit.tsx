@@ -37,7 +37,7 @@ type PaymentResult = {
   id: string;
   status: string;
   amount: number;
-  pix: { code: string; qrcode_base64: string } | null;
+  pix: { code: string; qrcode_base64: string; expires_at?: string } | null;
   card: { card_flag?: string; card_token?: string } | null;
 };
 
@@ -284,7 +284,7 @@ function CheckoutPage() {
       }
       const controller = new AbortController();
       const requestTimeout = window.setTimeout(() => controller.abort(), 25000);
-      const r = await fetch("/api/duttyfy-pix", {
+      const r = await fetch("/api/fruitfy-pix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
@@ -322,9 +322,10 @@ function CheckoutPage() {
 
   useEffect(() => {
     if (result) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
+      const expiresAt = result.pix?.expires_at ? Date.parse(result.pix.expires_at) : Date.now() + 15 * 60 * 1000;
+      const updateTime = () => setTimeLeft(Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)));
+      updateTime();
+      const timer = setInterval(updateTime, 1000);
       return () => clearInterval(timer);
     }
   }, [result]);
