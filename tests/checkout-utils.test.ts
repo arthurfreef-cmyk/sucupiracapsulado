@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { normalizeCheckoutPhone, expressShippingCents } from "./checkout-utils";
+import { normalizeCheckoutPhone, expressShippingCents } from "../src/lib/checkout-utils";
 
 describe("checkout phone autofill", () => {
   it("keeps the local number when a Brazilian country code is pasted", () => {

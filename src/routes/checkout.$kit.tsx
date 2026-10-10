@@ -83,9 +83,9 @@ const isValidCPF = (raw: string) => {
 
 const isValidPhone = (raw: string) => {
   const d = onlyDigits(raw);
-  if (d.length < 10 || d.length > 11) return false;
+  if (d.length !== 11) return false;
   const ddd = Number(d.slice(0, 2));
-  return ddd >= 11 && ddd <= 99;
+  return ddd >= 11 && ddd <= 99 && d[2] === "9";
 };
 
 const formatBRL = (cents: number) =>
@@ -232,8 +232,6 @@ function CheckoutPage() {
       document: readValue("document"),
       zip: readValue("zip"),
       number: readValue("number").trim(),
-      street: readValue("street").trim(),
-      neighborhood: readValue("neighborhood").trim(),
       complement: readValue("complement"),
     };
     const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
@@ -241,17 +239,15 @@ function CheckoutPage() {
     const submittedPhoneValid = isValidPhone(submittedForm.phone);
     const submittedCpfValid = isValidCPF(submittedForm.document);
     const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
-    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number || !submittedForm.street || !submittedForm.neighborhood) {
-      setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true, street: true, neighborhood: true });
-      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : !submittedForm.street ? "street" : !submittedForm.neighborhood ? "neighborhood" : "number";
+    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number) {
+      setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
+      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : "number";
       const messages: Record<string, string> = {
         name: "Informe seu nome e sobrenome.",
         email: "Confira o e-mail informado.",
         phone: "Informe um celular válido com DDD.",
         document: "Confira o CPF informado.",
-        zip: cepError || "Informe um CEP válido.",
-        street: "Informe o nome da rua.",
-        neighborhood: "Informe o bairro.",
+        zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
         number: "Informe o número do endereço.",
       };
       setError(messages[invalidField]);
@@ -393,7 +389,7 @@ function CheckoutPage() {
                 <CheckCircle2 size={40} />
               </div>
               <h1 className="text-xl md:text-2xl font-bold">PIX Gerado com Sucesso!</h1>
-              <p className="text-checkout-success-foreground text-sm mt-1">Aguardando pagamento... Não feche esta página</p>
+              <p className="text-checkout-success-foreground text-sm mt-1">Aguardando confirmação do pagamento</p>
             </div>
 
             <div className="p-6 md:p-8 space-y-6">
@@ -483,13 +479,13 @@ function CheckoutPage() {
 
               <Button 
                 onClick={() => navigate({ to: "/obrigado" })}
-                className="w-full py-4 bg-checkout-success-soft text-checkout-success-strong border border-emerald-200 rounded-xl font-bold text-sm hover:bg-emerald-100 transition"
+                className="w-full min-h-12 py-4 bg-muted text-muted-foreground rounded-xl font-bold text-sm hover:bg-border transition"
               >
                 Já realizei o pagamento
               </Button>
             </div>
             
-            <div className="bg-checkout-neutral-soft p-4 border-t flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <div className="bg-checkout-neutral-soft p-4 border-t flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra Segura</span>
               <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Pagamento 100% seguro via PIX</span>
             </div>
@@ -528,12 +524,12 @@ function CheckoutPage() {
           </div>
           <div className="flex gap-4 items-center bg-background p-4 rounded-xl">
             <img src={kit.image} alt={kit.title} width={64} height={64} decoding="async" className="w-16 h-16 object-contain" />
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>
               <div className="text-[11px] text-checkout-success-strong mt-0.5">De <span className="line-through">{formatBRL(kit.fromCents)}</span> por <span className="font-bold">{kit.price}</span></div>
             </div>
-            <div className="text-lg font-bold text-primary">{kit.price}</div>
+            <div className="text-lg font-bold text-primary shrink-0">{kit.price}</div>
           </div>
 
 
@@ -566,71 +562,49 @@ function CheckoutPage() {
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
-            {cepLoading && <div className="text-xs text-muted-foreground flex items-center gap-2"><LoaderCircle size={14} className="animate-spin" /> Buscando endereço...</div>}
-            {(cepFilled || form.city) && (
-              <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                <Field id="street" name="street" label="Rua / Avenida" placeholder="Nome da rua" value={form.street}
-                  onChange={e => setForm({...form, street: e.target.value})} onBlur={() => touch("street")}
-                  error={err("street", !form.street.trim()) ? "Informe a rua" : undefined} ok={!!form.street.trim()} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field id="neighborhood" name="neighborhood" label="Bairro" placeholder="Seu bairro" value={form.neighborhood}
-                    onChange={e => setForm({...form, neighborhood: e.target.value})} onBlur={() => touch("neighborhood")}
-                    error={err("neighborhood", !form.neighborhood.trim()) ? "Informe o bairro" : undefined} ok={!!form.neighborhood.trim()} />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase">Cidade / UF</span>
-                    <div className="h-12 px-4 flex items-center bg-checkout-neutral-soft border rounded-lg text-muted-foreground text-sm font-medium">
-                      {form.city} / {form.state}
-                    </div>
-                  </div>
+            {cepLoading && <div role="status" className="text-xs text-muted-foreground flex items-center gap-2"><LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />Buscando endereço...</div>}
+            {cepFilled && (
+              <>
+                <div role="status" className="text-xs bg-checkout-success-soft p-3 rounded text-checkout-success-strong flex items-start gap-2">
+                  <CheckCircle2 size={16} className="shrink-0" aria-hidden="true" />
+                  <span>{form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}</span>
                 </div>
-                <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
-                  onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
-              </div>
-            )}
-          </div>
-
-          <div className={`space-y-3 transition-opacity duration-300 ${!cepFilled ? "opacity-50 pointer-events-none" : ""}`}>
-            <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
-            {!cepFilled ? (
-              <div className="p-4 rounded-xl border border-dashed border-border text-muted-foreground text-xs text-center">
-                Informe o CEP para ver as opções de frete
-              </div>
-            ) : (
-              ([ 
-                { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
-                { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
-              ] as const).map(o => (
-                <Button type="button" key={o.id} onClick={() => setShipping(o.id)}
-                  className={`w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition ${shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-border"}`}>
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
-                    <div>
-                      <p className="text-sm font-bold">{o.title}</p>
-                      <p className="text-xs text-muted-foreground">{o.eta}</p>
-                    </div>
+                <details className="text-sm text-muted-foreground">
+                  <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
+                  <div className="mt-3">
+                    <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
+                      onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
                   </div>
-                  <span className={`font-bold text-sm ${o.cents === 0 ? "text-checkout-success-strong" : ""}`}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
-                </Button>
-              ))
+                </details>
+              </>
             )}
           </div>
-
-          <div className={`space-y-4 transition-opacity duration-300 ${!cepFilled ? "opacity-50 pointer-events-none" : ""}`}>
+          {cepFilled && (
+            <div className="space-y-3">
+              <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
+              <RadioGroup aria-label="Frete" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
+                {([
+                  { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
+                  { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
+                ] as const).map(o => (
+                  <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition cursor-pointer gap-3", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
+                      <div><p className="text-sm font-bold">{o.title}</p><p className="text-xs text-muted-foreground">{o.eta}</p></div>
+                    </div>
+                    <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-checkout-success-strong")}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
+                  </label>
+                ))}
+              </RadioGroup>
+            </div>
+          )}
+          <div className="space-y-4">
             <h2 className="font-bold border-b pb-2 text-checkout-success-strong flex items-center gap-2">
-              <span className="w-2 h-2 bg-checkout-success-soft0 rounded-full" />
-              {cepFilled ? "4" : "3"}. Forma de Pagamento
+              <span className="w-2 h-2 bg-checkout-success rounded-full" />{cepFilled ? "4" : "3"}. Forma de Pagamento
             </h2>
-            <div className="p-4 rounded-xl border-2 border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <QrCode size={22} className="text-checkout-success-strong" />
-                <div>
-                  <p className="text-sm">PIX</p>
-                  <p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p>
-                </div>
-              </div>
-              <div className="bg-checkout-success-soft0 text-checkout-success-foreground text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                Selecionado
-              </div>
+            <div className="p-4 rounded-xl border-2 border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
+              <div className="bg-checkout-success text-checkout-success-foreground text-[10px] px-2 py-0.5 rounded-full uppercase shrink-0">Selecionado</div>
             </div>
           </div>
 
