@@ -1,11 +1,14 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { cn } from "@/lib/utils";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
 import imgKit1 from "@/assets/kit1.webp";
 import imgKit3 from "@/assets/kit3.webp";
 import imgKit5 from "@/assets/kit5.webp";
-import { decodeCampaignCookie, expressShippingCents } from "@/lib/checkout-utils";
+import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
 
 
 const KITS = {
@@ -61,7 +64,7 @@ const maskCPF = (s: string) => {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 };
 const maskPhone = (s: string) => {
-  const d = onlyDigits(s).slice(0, 11);
+  const d = normalizeCheckoutPhone(s);
   if (d.length <= 10) return d.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
   return d.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
 };
@@ -203,6 +206,10 @@ function CheckoutPage() {
     };
   }, [form.zip]);
 
+  useEffect(() => {
+    setError(null);
+  }, [form.name, form.email, form.phone, form.document, form.zip, form.number]);
+
   // Meta Pixel: InitiateCheckout ao abrir o checkout
   useEffect(() => {
       trackCheckout("track", "InitiateCheckout", {
@@ -221,17 +228,18 @@ function CheckoutPage() {
       ...form,
       name: readValue("name").trim(),
       email: readValue("email").trim(),
-      phone: readValue("phone"),
+      phone: normalizeCheckoutPhone(readValue("phone")),
       document: readValue("document"),
       zip: readValue("zip"),
       number: readValue("number").trim(),
+      street: readValue("street").trim(),
+      neighborhood: readValue("neighborhood").trim(),
       complement: readValue("complement"),
     };
     const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
     const submittedEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(submittedForm.email);
     const submittedPhoneValid = isValidPhone(submittedForm.phone);
     const submittedCpfValid = isValidCPF(submittedForm.document);
-    const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
     const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
     if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number || !submittedForm.street || !submittedForm.neighborhood) {
       setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true, street: true, neighborhood: true });
@@ -241,11 +249,13 @@ function CheckoutPage() {
         email: "Confira o e-mail informado.",
         phone: "Informe um celular válido com DDD.",
         document: "Confira o CPF informado.",
-        zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
+        zip: cepError || "Informe um CEP válido.",
         street: "Informe o nome da rua.",
         neighborhood: "Informe o bairro.",
         number: "Informe o número do endereço.",
       };
+      setError(messages[invalidField]);
+      window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
       return;
     }
     submitInFlight.current = true;
@@ -376,53 +386,52 @@ function CheckoutPage() {
   if (result) {
     if (result.pix) {
       return (
-        <div className="min-h-screen bg-gray-50 p-4 flex flex-col items-center justify-center">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="bg-emerald-600 p-6 text-white text-center">
+        <div className="min-h-screen bg-checkout-neutral-soft p-4 flex flex-col items-center justify-center">
+          <div className="w-full max-w-lg bg-card rounded-3xl shadow-xl overflow-hidden">
+            <div className="bg-checkout-success p-6 text-checkout-success-foreground text-center">
               <div className="flex justify-center mb-2">
                 <CheckCircle2 size={40} />
               </div>
               <h1 className="text-xl md:text-2xl font-bold">PIX Gerado com Sucesso!</h1>
-              <p className="text-emerald-100 text-sm mt-1">Aguardando confirmação do pagamento</p>
+              <p className="text-checkout-success-foreground text-sm mt-1">Aguardando pagamento... Não feche esta página</p>
             </div>
 
             <div className="p-6 md:p-8 space-y-6">
               <div className="flex flex-col items-center space-y-4">
-                <div className="bg-gray-100 p-4 rounded-2xl relative group">
+                <div className="bg-muted p-4 rounded-2xl relative group">
                   {qrCodeUrl ? (
                     <img 
                       src={qrCodeUrl}
                       alt="PIX QR Code"
                       width={224}
                       height={224}
-                      className="w-48 h-48 md:w-56 md:h-56 bg-white"
+                      className="w-48 h-48 md:w-56 md:h-56 bg-card"
                     />
                   ) : (
-                    <div className="w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center text-gray-400" role="status">
+                    <div className="w-48 h-48 md:w-56 md:h-56 flex flex-col items-center justify-center text-muted-foreground" role="status">
                       {qrCodeError ? <AlertCircle size={48} strokeWidth={1.5} /> : <QrCode size={64} strokeWidth={1} className="animate-pulse" />}
                       <p className="text-xs mt-2">{qrCodeError ? "Use o código PIX abaixo" : "Gerando QR Code..."}</p>
                     </div>
                   )}
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 opacity-0 group-hover:opacity-100 transition rounded-2xl pointer-events-none">
-                    <span className="text-emerald-600 font-bold text-sm">Escaneie para Pagar</span>
-                  </div>
+
                 </div>
                 
-                <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-4 py-2 rounded-full text-sm font-medium">
+                <div className="flex items-center gap-2 text-checkout-assurance bg-checkout-assurance-soft px-4 py-2 rounded-full text-sm font-medium">
                   <Clock size={16} />
                   <span>Expira em: <span className="font-bold tabular-nums">{formatTime(timeLeft)}</span></span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">Código PIX (Copia e Cola)</p>
+                <div className="flex items-center justify-between text-sm font-bold"><span>Total</span><span>{formatBRL(result.amount)}</span></div>
+                <p id="pix-code-label" className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Código PIX (Copia e Cola)</p>
                 <div className="relative">
                   <textarea 
-                    readOnly 
+                    readOnly aria-labelledby="pix-code-label"
                     value={result.pix.code} 
-                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono resize-none focus:outline-none h-24"
+                    className="w-full p-4 bg-checkout-neutral-soft border border-border rounded-xl text-xs font-mono resize-none focus:outline-none h-24 mb-3"
                   />
-                  <button 
+                  <Button 
                     onClick={async () => {
                       const code = result.pix?.code;
                       if (!code) return;
@@ -442,7 +451,7 @@ function CheckoutPage() {
                       setCopied(success);
                       if (success) setTimeout(() => setCopied(false), 2000);
                     }} 
-                    className="absolute bottom-3 right-3 flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-md hover:bg-emerald-700 transition active:scale-95"
+                    aria-live="polite" className="w-full min-h-12 flex items-center gap-2 bg-checkout-success text-checkout-success-foreground px-4 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-checkout-success-strong transition active:scale-95"
                   >
                     {copied ? (
                       <>
@@ -455,16 +464,16 @@ function CheckoutPage() {
                         COPIAR CÓDIGO
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
-                <h3 className="text-blue-800 font-bold text-sm flex items-center gap-2">
+              <div className="bg-checkout-info-soft border border-checkout-info-border rounded-2xl p-4 space-y-3">
+                <h3 className="text-checkout-info font-bold text-sm flex items-center gap-2">
                   <AlertCircle size={16} />
                   Como finalizar o pagamento?
                 </h3>
-                <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
+                <ol className="text-xs text-checkout-info space-y-2 list-decimal list-inside">
                   <li>Abra o aplicativo do seu banco.</li>
                   <li>Escolha a opção <strong>PIX</strong> e depois <strong>PIX Copia e Cola</strong> ou <strong>Ler QR Code</strong>.</li>
                   <li>Cole o código ou aponte a câmera para o QR Code acima.</li>
@@ -472,15 +481,15 @@ function CheckoutPage() {
                 </ol>
               </div>
 
-              <button 
+              <Button 
                 onClick={() => navigate({ to: "/obrigado" })}
-                className="w-full py-4 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition"
+                className="w-full py-4 bg-checkout-success-soft text-checkout-success-strong border border-emerald-200 rounded-xl font-bold text-sm hover:bg-emerald-100 transition"
               >
                 Já realizei o pagamento
-              </button>
+              </Button>
             </div>
             
-            <div className="bg-gray-50 p-4 border-t flex items-center justify-center gap-4 text-xs text-gray-400">
+            <div className="bg-checkout-neutral-soft p-4 border-t flex items-center justify-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra Segura</span>
               <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Pagamento 100% seguro via PIX</span>
             </div>
@@ -494,13 +503,13 @@ function CheckoutPage() {
   const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
 
   return (
-    <div className="min-h-screen bg-[var(--cream)]">
-      <header className="bg-white border-b p-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-[var(--brand)]">
+    <div className="min-h-screen bg-background">
+      <header className="bg-card border-b p-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
           <ArrowLeft size={18} /> Voltar
         </Link>
-        <span className="font-bold text-[var(--brand)]">Checkout Seguro</span>
-        <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700"><Lock size={14} /> SSL</span>
+        <span className="font-bold text-primary">Checkout Seguro</span>
+        <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong"><Lock size={14} /> SSL</span>
       </header>
       <main className="container mx-auto max-w-2xl p-4 md:p-8">
         <form
@@ -511,20 +520,20 @@ function CheckoutPage() {
             void submit();
           }}
           noValidate
-          className="bg-white rounded-2xl p-6 shadow-sm space-y-6"
+          className="bg-card rounded-2xl p-6 shadow-sm space-y-6"
         >
           <div>
             <h1 className="text-xl font-bold">Resumo do Pedido</h1>
-            <p className="text-xs text-gray-500 mt-0.5">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
-          <div className="flex gap-4 items-center bg-[var(--cream)] p-4 rounded-xl">
+          <div className="flex gap-4 items-center bg-background p-4 rounded-xl">
             <img src={kit.image} alt={kit.title} width={64} height={64} decoding="async" className="w-16 h-16 object-contain" />
             <div className="flex-1">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>
-              <div className="text-[11px] text-emerald-700 mt-0.5">De <span className="line-through">{formatBRL(kit.fromCents)}</span> por <span className="font-bold">{kit.price}</span></div>
+              <div className="text-[11px] text-checkout-success-strong mt-0.5">De <span className="line-through">{formatBRL(kit.fromCents)}</span> por <span className="font-bold">{kit.price}</span></div>
             </div>
-            <div className="text-lg font-bold text-[var(--brand)]">{kit.price}</div>
+            <div className="text-lg font-bold text-primary">{kit.price}</div>
           </div>
 
 
@@ -544,7 +553,7 @@ function CheckoutPage() {
             <Field id="document" name="document" label="CPF" inputMode="numeric" autoComplete="off" enterKeyHint="next" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
-            <p className="text-[11px] text-gray-400 -mt-2">CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
+            <p className="text-xs text-muted-foreground -mt-2">CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
           </div>
 
           <div className="space-y-4">
@@ -553,11 +562,11 @@ function CheckoutPage() {
               <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
                 error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
-              <Field id="number" name="number" label="Número" inputMode="numeric" autoComplete="address-line2" enterKeyHint="done" placeholder="Nº" value={form.number}
+              <Field id="number" name="number" label="Número" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
-            {cepLoading && <div className="text-xs text-gray-500 flex items-center gap-2"><LoaderCircle size={14} className="animate-spin" /> Buscando endereço...</div>}
+            {cepLoading && <div className="text-xs text-muted-foreground flex items-center gap-2"><LoaderCircle size={14} className="animate-spin" /> Buscando endereço...</div>}
             {(cepFilled || form.city) && (
               <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
                 <Field id="street" name="street" label="Rua / Avenida" placeholder="Nome da rua" value={form.street}
@@ -568,8 +577,8 @@ function CheckoutPage() {
                     onChange={e => setForm({...form, neighborhood: e.target.value})} onBlur={() => touch("neighborhood")}
                     error={err("neighborhood", !form.neighborhood.trim()) ? "Informe o bairro" : undefined} ok={!!form.neighborhood.trim()} />
                   <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-600 uppercase">Cidade / UF</span>
-                    <div className="h-12 px-4 flex items-center bg-gray-50 border rounded-lg text-gray-500 text-sm font-medium">
+                    <span className="text-xs font-bold text-muted-foreground uppercase">Cidade / UF</span>
+                    <div className="h-12 px-4 flex items-center bg-checkout-neutral-soft border rounded-lg text-muted-foreground text-sm font-medium">
                       {form.city} / {form.state}
                     </div>
                   </div>
@@ -580,79 +589,83 @@ function CheckoutPage() {
             )}
           </div>
 
-          {cepFilled && (
-            <div className="space-y-3">
-              <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
-              {([
+          <div className={`space-y-3 transition-opacity duration-300 ${!cepFilled ? "opacity-50 pointer-events-none" : ""}`}>
+            <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
+            {!cepFilled ? (
+              <div className="p-4 rounded-xl border border-dashed border-border text-muted-foreground text-xs text-center">
+                Informe o CEP para ver as opções de frete
+              </div>
+            ) : (
+              ([ 
                 { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
                 { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
               ] as const).map(o => (
-                <button type="button" key={o.id} onClick={() => setShipping(o.id)}
-                  className={`w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition ${shipping === o.id ? "border-emerald-500 bg-emerald-50" : "border-gray-200 hover:border-gray-300"}`}>
+                <Button type="button" key={o.id} onClick={() => setShipping(o.id)}
+                  className={`w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition ${shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-border"}`}>
                   <div className="flex items-center gap-3">
-                    <span className={`w-4 h-4 rounded-full border-2 ${shipping === o.id ? "border-emerald-600 bg-emerald-600" : "border-gray-300"}`} />
+                    <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
                     <div>
                       <p className="text-sm font-bold">{o.title}</p>
-                      <p className="text-xs text-gray-500">{o.eta}</p>
+                      <p className="text-xs text-muted-foreground">{o.eta}</p>
                     </div>
                   </div>
-                  <span className={`font-bold text-sm ${o.cents === 0 ? "text-emerald-600" : ""}`}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
-                </button>
-              ))}
-            </div>
-          )}
+                  <span className={`font-bold text-sm ${o.cents === 0 ? "text-checkout-success-strong" : ""}`}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
+                </Button>
+              ))
+            )}
+          </div>
 
-          <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2 text-emerald-700 flex items-center gap-2">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+          <div className={`space-y-4 transition-opacity duration-300 ${!cepFilled ? "opacity-50 pointer-events-none" : ""}`}>
+            <h2 className="font-bold border-b pb-2 text-checkout-success-strong flex items-center gap-2">
+              <span className="w-2 h-2 bg-checkout-success-soft0 rounded-full" />
               {cepFilled ? "4" : "3"}. Forma de Pagamento
             </h2>
-            <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-bold flex items-center justify-between">
+            <div className="p-4 rounded-xl border-2 border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <QrCode size={22} className="text-emerald-600" />
+                <QrCode size={22} className="text-checkout-success-strong" />
                 <div>
                   <p className="text-sm">PIX</p>
-                  <p className="text-xs text-emerald-600 font-normal">Aprovação imediata • sem cadastrar cartão</p>
+                  <p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p>
                 </div>
               </div>
-              <div className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
+              <div className="bg-checkout-success-soft0 text-checkout-success-foreground text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">
                 Selecionado
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1">
+          <div className="bg-checkout-neutral-soft rounded-xl p-4 text-sm space-y-1">
             <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
-            <div className="flex justify-between text-emerald-700"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
+            <div className="flex justify-between text-checkout-success-strong"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </div>
 
-          <div className="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-xl p-4">
-            <ShieldCheck size={28} className="text-amber-600 shrink-0" />
+          <div className="flex items-start gap-3 bg-checkout-assurance-soft border border-checkout-assurance-border rounded-xl p-4">
+            <ShieldCheck size={28} className="text-checkout-assurance shrink-0" />
             <div>
-              <p className="text-sm font-bold text-gray-800">Garantia incondicional de 30 dias</p>
-              <p className="text-xs text-gray-600">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
+              <p className="text-sm font-bold text-foreground">Garantia incondicional de 30 dias</p>
+              <p className="text-xs text-muted-foreground">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
             </div>
           </div>
 
-          {error && <div role="alert" aria-live="assertive" className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded">{error}</div>}
+          {error && <div role="alert" aria-live="assertive" className="text-destructive text-sm font-bold bg-destructive/10 p-3 rounded">{error}</div>}
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-xl font-bold text-lg shadow-lg hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
           >
-            {loading && <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />}
+            {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
-          </button>
-          <div className="flex items-center justify-center gap-4 text-[11px] text-gray-500 flex-wrap">
+          </Button>
+          <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
             <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 30 dias</span>
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
-          <p className="text-center text-[11px] text-gray-500">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
+          <p className="text-center text-[11px] text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
         </form>
       </main>
       <SiteFooter />
@@ -664,13 +677,13 @@ function Field({ label, error, ok, ...props }: { label: string; error?: string; 
   const errorId = props.id ? `${props.id}-error` : undefined;
   return (
     <label className="block space-y-1">
-      <span className="text-xs font-bold text-gray-600 uppercase">{label}</span>
+      <span className="text-xs font-bold text-muted-foreground uppercase">{label}</span>
       <div className="relative">
         <input {...props} required={props.required ?? true} aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
-          className={`w-full h-12 px-4 pr-10 text-base border rounded-lg focus:ring-2 outline-none ${error ? "border-red-400 focus:ring-red-300" : ok ? "border-emerald-400 focus:ring-emerald-500" : "focus:ring-emerald-500"}`} />
-        {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />}
+          className={cn("w-full h-12 px-4 pr-10 text-base border rounded-lg focus:ring-2 outline-none", error ? "border-destructive focus:ring-destructive/30" : ok ? "border-checkout-success focus:ring-checkout-success" : "focus:ring-checkout-success", props.className)} />
+        {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-checkout-success" />}
       </div>
-      {error && <span id={errorId} className="text-xs text-red-600">{error}</span>}
+      {error && <span id={errorId} className="text-xs text-destructive">{error}</span>}
     </label>
   );
 }
