@@ -1,4 +1,6 @@
 # Fruitfy PIX
+- [ ] Melhorar confiança e reduzir fricções do checkout sem alterar copy, identidade ou provedor.
+- [ ] Validar preenchimento, frete acessível e PIX copia e cola após os ajustes.
 - [x] Validar cobrança real dos três produtos após preenchimento do suporte.
 - [x] Integrar Fruitfy como principal, preservando Duttyfy e BuckPay.
 - [x] Testar validação, checkout, QR Code e compilação.

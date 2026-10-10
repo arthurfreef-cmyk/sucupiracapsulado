@@ -232,19 +232,20 @@ function CheckoutPage() {
     const submittedPhoneValid = isValidPhone(submittedForm.phone);
     const submittedCpfValid = isValidCPF(submittedForm.document);
     const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
-    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number) {
-      setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true });
-      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : "number";
+    const submittedZipValid = onlyDigits(submittedForm.zip).length === 8;
+    if (!submittedNameValid || !submittedEmailValid || !submittedPhoneValid || !submittedCpfValid || !submittedZipValid || !submittedForm.number || !submittedForm.street || !submittedForm.neighborhood) {
+      setTouched({ name: true, email: true, phone: true, document: true, zip: true, number: true, street: true, neighborhood: true });
+      const invalidField = !submittedNameValid ? "name" : !submittedEmailValid ? "email" : !submittedPhoneValid ? "phone" : !submittedCpfValid ? "document" : !submittedZipValid ? "zip" : !submittedForm.street ? "street" : !submittedForm.neighborhood ? "neighborhood" : "number";
       const messages: Record<string, string> = {
         name: "Informe seu nome e sobrenome.",
         email: "Confira o e-mail informado.",
         phone: "Informe um celular válido com DDD.",
         document: "Confira o CPF informado.",
         zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
+        street: "Informe o nome da rua.",
+        neighborhood: "Informe o bairro.",
         number: "Informe o número do endereço.",
       };
-      setError(messages[invalidField]);
-      window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
       return;
     }
     submitInFlight.current = true;
@@ -556,20 +557,26 @@ function CheckoutPage() {
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
-            {cepLoading && <div className="text-xs text-gray-500">Buscando endereço...</div>}
-            {cepFilled && (
-              <>
-                <div className="text-xs bg-emerald-50 p-2 rounded text-emerald-700">
-                  {form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}
-                </div>
-                <details className="text-sm text-muted-foreground">
-                  <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
-                  <div className="mt-3">
-                    <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
-                      onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
+            {cepLoading && <div className="text-xs text-gray-500 flex items-center gap-2"><LoaderCircle size={14} className="animate-spin" /> Buscando endereço...</div>}
+            {(cepFilled || form.city) && (
+              <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <Field id="street" name="street" label="Rua / Avenida" placeholder="Nome da rua" value={form.street}
+                  onChange={e => setForm({...form, street: e.target.value})} onBlur={() => touch("street")}
+                  error={err("street", !form.street.trim()) ? "Informe a rua" : undefined} ok={!!form.street.trim()} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field id="neighborhood" name="neighborhood" label="Bairro" placeholder="Seu bairro" value={form.neighborhood}
+                    onChange={e => setForm({...form, neighborhood: e.target.value})} onBlur={() => touch("neighborhood")}
+                    error={err("neighborhood", !form.neighborhood.trim()) ? "Informe o bairro" : undefined} ok={!!form.neighborhood.trim()} />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-600 uppercase">Cidade / UF</span>
+                    <div className="h-12 px-4 flex items-center bg-gray-50 border rounded-lg text-gray-500 text-sm font-medium">
+                      {form.city} / {form.state}
+                    </div>
                   </div>
-                </details>
-              </>
+                </div>
+                <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
+                  onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
+              </div>
             )}
           </div>
 

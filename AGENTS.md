@@ -15,3 +15,4 @@
 - Initialize Fruitfy Pixel Booster once in the root after hydration on all pages; this preserves checkout hydration while keeping provider tracking available throughout the site.
 - Use the shared checkout utility for express shipping display and request totals, and bind resolved addresses to their ZIP code; this prevents mismatched charges and stale delivery details.
 - Isolate checkout tracking calls from payment processing; third-party tracking exceptions must never prevent charge creation or hide a generated PIX.
+- Normalize country-coded phone autofill through the browser-safe checkout utility; pasted Brazilian numbers must retain their actual area code and subscriber number.
