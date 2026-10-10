@@ -80,10 +80,9 @@ const isValidCPF = (raw: string) => {
 
 const isValidPhone = (raw: string) => {
   const d = onlyDigits(raw);
-  if (d.length !== 11) return false;
+  if (d.length < 10 || d.length > 11) return false;
   const ddd = Number(d.slice(0, 2));
-  if (ddd < 11 || ddd > 99) return false;
-  return d[2] === "9";
+  return ddd >= 11 && ddd <= 99;
 };
 
 const formatBRL = (cents: number) =>
