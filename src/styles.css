@@ -1,10 +1,10 @@
-#lovable-badge {
-  display: none !important;
-}
-
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+
+#lovable-badge {
+  display: none !important;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -37,6 +37,17 @@
   --color-brand-light: var(--brand-light);
   --color-gold: var(--gold);
   --color-cream: var(--cream);
+  --color-checkout-success: var(--checkout-success);
+  --color-checkout-success-strong: var(--checkout-success-strong);
+  --color-checkout-success-soft: var(--checkout-success-soft);
+  --color-checkout-success-foreground: var(--checkout-success-foreground);
+  --color-checkout-neutral-soft: var(--checkout-neutral-soft);
+  --color-checkout-assurance: var(--checkout-assurance);
+  --color-checkout-assurance-soft: var(--checkout-assurance-soft);
+  --color-checkout-assurance-border: var(--checkout-assurance-border);
+  --color-checkout-info: var(--checkout-info);
+  --color-checkout-info-soft: var(--checkout-info-soft);
+  --color-checkout-info-border: var(--checkout-info-border);
 }
 
 :root {
@@ -66,6 +77,17 @@
   --gold: oklch(0.86 0.18 95);                  /* yellow-400 ish */
   --gold-light: oklch(0.93 0.11 92);            /* #F1D279-ish highlight */
   --cream: oklch(0.985 0.015 75);
+  --checkout-success: oklch(0.596 0.145 163.225);
+  --checkout-success-strong: oklch(0.508 0.118 165.612);
+  --checkout-success-soft: oklch(0.979 0.021 166.113);
+  --checkout-success-foreground: oklch(1 0 0);
+  --checkout-neutral-soft: oklch(0.985 0.002 247.839);
+  --checkout-assurance: oklch(0.555 0.163 48.998);
+  --checkout-assurance-soft: oklch(0.987 0.022 95.277);
+  --checkout-assurance-border: oklch(0.962 0.059 95.617);
+  --checkout-info: oklch(0.424 0.199 265.638);
+  --checkout-info-soft: oklch(0.97 0.014 254.604);
+  --checkout-info-border: oklch(0.932 0.032 255.585);
 }
 
 @layer base {

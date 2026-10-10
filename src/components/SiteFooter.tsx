@@ -16,7 +16,7 @@ export function SiteFooter() {
         {/* Company info */}
         <div className="text-center space-y-1 border-b border-white/15 pb-6">
           <p className="font-extrabold text-white text-lg">Sucupira Composta</p>
-          <p>©️ 2026 – Todos os direitos reservados.</p>
+          <p>©️ 2025 – Todos os direitos reservados.</p>
           <p>MJA – CNPJ: 17.797.109/0001-02</p>
           <p>Rua Cinco, N 112, Jardim Lucinda, Itaquaquecetuba - SP, 08593-289</p>
         </div>
