@@ -582,7 +582,7 @@ function CheckoutPage() {
           {cepFilled && (
             <div className="space-y-3">
               <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
-              <RadioGroup aria-label="Frete" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
+              <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
                   { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
                   { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
