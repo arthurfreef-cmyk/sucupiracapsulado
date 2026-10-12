@@ -9,6 +9,7 @@ import imgKit1 from "@/assets/kit1.webp";
 import imgKit3 from "@/assets/kit3.webp";
 import imgKit5 from "@/assets/kit5.webp";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
+import { AddressLookupError, fetchCheckoutAddress as fetchAddress, normalizeCheckoutZip } from "@/lib/checkout-address";
 
 
 const KITS = {
@@ -91,21 +92,6 @@ const isValidPhone = (raw: string) => {
 const formatBRL = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-type AddressResult = { logradouro?: string; bairro?: string; localidade?: string; uf?: string; erro?: boolean };
-
-const addressCache = new Map<string, AddressResult>();
-
-async function fetchAddress(cep: string, signal?: AbortSignal): Promise<AddressResult> {
-  const cached = addressCache.get(cep);
-  if (cached) return cached;
-  const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal });
-  if (!response.ok) throw new Error("Falha ao consultar CEP");
-  const address = (await response.json()) as AddressResult;
-  if (address.erro) throw new Error("CEP não encontrado");
-  addressCache.set(cep, address);
-  return address;
-}
-
 function getCampaignQuery(): string {
   const current = new URLSearchParams(window.location.search);
   const cookieValues = new Map(
@@ -141,6 +127,7 @@ function CheckoutPage() {
   const [cepLoading, setCepLoading] = useState(false);
   const [cepFilled, setCepFilled] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
+  const [manualAddress, setManualAddress] = useState(false);
   const [shipping, setShipping] = useState<"free" | "express">("free");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -168,11 +155,12 @@ function CheckoutPage() {
   const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
-    const cep = onlyDigits(form.zip);
+    const cep = cepDigits;
     setCepLoading(false);
     setCepError(null);
     resolvedCep.current = null;
     setCepFilled(false);
+    setManualAddress(false);
     setForm(current => ({ ...current, street: "", neighborhood: "", city: "", state: "" }));
     if (cep.length !== 8) {
       setCepFilled(false);
@@ -186,16 +174,22 @@ function CheckoutPage() {
     cepTimer.current = window.setTimeout(async () => {
       setCepLoading(true);
       try {
-        const timeout = window.setTimeout(() => controller.abort(), 5000);
-        const d = await fetchAddress(cep, controller.signal).finally(() => window.clearTimeout(timeout));
+        const d = await fetchAddress(cep, controller.signal);
         if (controller.signal.aborted) return;
         resolvedCep.current = cep;
-        setForm(f => ({ ...f, street: d.logradouro ?? "", neighborhood: d.bairro ?? "", city: d.localidade ?? "", state: d.uf ?? "" }));
+        setForm(f => ({ ...f, ...d }));
+        setManualAddress(!d.street || !d.neighborhood);
         setCepFilled(true);
       } catch (cause) {
-        if (cause instanceof DOMException && cause.name === "AbortError") return;
+        if (controller.signal.aborted) return;
         setCepFilled(false);
-        setCepError(cause instanceof Error && cause.message === "CEP não encontrado" ? "CEP não encontrado" : "Não foi possível buscar o CEP");
+        if (cause instanceof AddressLookupError && cause.reason === "not_found") {
+          setCepError("CEP não encontrado");
+        } else {
+          resolvedCep.current = cep;
+          setManualAddress(true);
+          setCepError(null);
+        }
       } finally {
         if (cepController.current === controller) setCepLoading(false);
       }
@@ -204,7 +198,7 @@ function CheckoutPage() {
       if (cepTimer.current) window.clearTimeout(cepTimer.current);
       controller.abort();
     };
-  }, [form.zip]);
+  }, [cepDigits]);
 
   useEffect(() => {
     setError(null);
@@ -230,9 +224,13 @@ function CheckoutPage() {
       email: readValue("email").trim(),
       phone: normalizeCheckoutPhone(readValue("phone")),
       document: readValue("document"),
-      zip: readValue("zip"),
+      zip: normalizeCheckoutZip(readValue("zip")),
       number: readValue("number").trim(),
       complement: readValue("complement"),
+      street: manualAddress ? readValue("street").trim() : form.street,
+      neighborhood: manualAddress ? readValue("neighborhood").trim() : form.neighborhood,
+      city: manualAddress ? readValue("city").trim() : form.city,
+      state: manualAddress ? readValue("state").trim().toUpperCase() : form.state,
     };
     const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
     const submittedEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(submittedForm.email);
@@ -257,40 +255,45 @@ function CheckoutPage() {
     submitInFlight.current = true;
     setLoading(true);
     setError(null);
+    if (cepTimer.current) window.clearTimeout(cepTimer.current);
+    cepController.current?.abort();
+    setCepLoading(false);
     let submittedAddress = {
       street: submittedForm.street,
       neighborhood: submittedForm.neighborhood,
       city: submittedForm.city,
       state: submittedForm.state,
     };
-    if (resolvedCep.current !== onlyDigits(submittedForm.zip) || !submittedAddress.city || !submittedAddress.state) {
+    if (resolvedCep.current !== submittedForm.zip || (!manualAddress && (!submittedAddress.city || !submittedAddress.state))) {
       try {
-        const address = await fetchAddress(onlyDigits(submittedForm.zip), AbortSignal.timeout(5000));
-        submittedAddress = {
-          street: address.logradouro ?? "",
-          neighborhood: address.bairro ?? "",
-          city: address.localidade ?? "",
-          state: address.uf ?? "",
-        };
-        resolvedCep.current = onlyDigits(submittedForm.zip);
+        submittedAddress = await fetchAddress(submittedForm.zip);
+        resolvedCep.current = submittedForm.zip;
         setForm((current) => ({ ...current, ...submittedForm, ...submittedAddress }));
         setCepFilled(true);
-      } catch {
+        setCepError(null);
+        setManualAddress(!submittedAddress.street || !submittedAddress.neighborhood);
+      } catch (cause) {
         // Never send an address belonging to the previous ZIP code.
-        setError("Não foi possível buscar o CEP");
+        const missing = cause instanceof AddressLookupError && cause.reason === "not_found";
+        setCepError(missing ? "CEP não encontrado" : null);
+        setManualAddress(!missing);
+        if (!missing) resolvedCep.current = submittedForm.zip;
+        setForm(current => ({ ...current, zip: maskCEP(submittedForm.zip), street: "", neighborhood: "", city: "", state: "" }));
+        setError(missing ? "CEP não encontrado" : "Preencha o endereço de entrega para continuar.");
         submitInFlight.current = false;
         setLoading(false);
         return;
       }
     }
     if (!submittedAddress.street || !submittedAddress.neighborhood || !submittedAddress.city || submittedAddress.state.length !== 2) {
-      setError("Não foi possível buscar o CEP");
+      setManualAddress(true);
+      setError("Preencha o endereço de entrega para continuar.");
       submitInFlight.current = false;
       setLoading(false);
       return;
     }
     const submittedExpressCents = expressShippingCents(submittedForm.zip);
-    const submittedShippingCents = cepFilled && shipping === "express" ? submittedExpressCents : 0;
+    const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
     const submittedShipping = submittedShippingCents > 0 ? "express" : "free";
     const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
@@ -563,12 +566,27 @@ function CheckoutPage() {
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
             </div>
             {cepLoading && <div role="status" className="text-xs text-muted-foreground flex items-center gap-2"><LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />Buscando endereço...</div>}
-            {cepFilled && (
+            {manualAddress && (
+              <div className="space-y-4">
+                {([
+                  { name: "street", label: "Rua", autoComplete: "address-line1", max: 255 },
+                  { name: "neighborhood", label: "Bairro", autoComplete: "address-level3", max: 100 },
+                  { name: "city", label: "Cidade", autoComplete: "address-level2", max: 100 },
+                  { name: "state", label: "UF", autoComplete: "address-level1", max: 2 },
+                ] as const).map(field => (
+                  <Field key={field.name} id={field.name} name={field.name} label={field.label} autoComplete={field.autoComplete}
+                    maxLength={field.max} value={form[field.name]} onBlur={() => touch(field.name)}
+                    onChange={e => setForm(current => ({ ...current, [field.name]: field.name === "state" ? e.target.value.toUpperCase().replace(/[^A-Z]/g, "") : e.target.value }))}
+                    error={err(field.name, !form[field.name].trim()) ? `Informe ${field.label.toLowerCase()}` : undefined} />
+                ))}
+              </div>
+            )}
+            {(cepFilled || manualAddress) && (
               <>
-                <div role="status" className="text-xs bg-checkout-success-soft p-3 rounded text-checkout-success-strong flex items-start gap-2">
+                {cepFilled && !manualAddress && <div role="status" className="text-xs bg-checkout-success-soft p-3 rounded text-checkout-success-strong flex items-start gap-2">
                   <CheckCircle2 size={16} className="shrink-0" aria-hidden="true" />
                   <span>{form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}</span>
-                </div>
+                </div>}
                 <details className="text-sm text-muted-foreground">
                   <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
                   <div className="mt-3">
