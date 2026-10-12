@@ -1,4 +1,5 @@
 # Fruitfy PIX
+- [ ] Corrigir consulta de CEP com alternativa, preenchimento de endereços incompletos e proteção contra respostas antigas; validar com testes.
 - [x] Melhorar confiança e reduzir fricções do checkout sem alterar copy, identidade ou provedor.
 - [x] Validar preenchimento, frete acessível e PIX copia e cola após os ajustes.
 - [x] Validar cobrança real dos três produtos após preenchimento do suporte.
