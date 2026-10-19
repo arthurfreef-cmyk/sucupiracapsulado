@@ -386,18 +386,18 @@ function CheckoutPage() {
     if (result.pix) {
       return (
         <div className="min-h-screen bg-checkout-neutral-soft p-4 flex flex-col items-center justify-center">
-          <div className="w-full max-w-lg bg-card rounded-3xl shadow-xl overflow-hidden">
+          <div className="w-full max-w-lg bg-card rounded-lg border border-border shadow-sm overflow-hidden">
             <div className="bg-checkout-success p-6 text-checkout-success-foreground text-center">
               <div className="flex justify-center mb-2">
                 <CheckCircle2 size={40} />
               </div>
-              <h1 className="text-xl md:text-2xl font-bold">PIX Gerado com Sucesso!</h1>
+              <h1 className="text-xl md:text-2xl font-bold font-sans tracking-normal">PIX Gerado com Sucesso!</h1>
               <p className="text-checkout-success-foreground text-sm mt-1">Aguardando confirmação do pagamento</p>
             </div>
 
             <div className="p-6 md:p-8 space-y-6">
               <div className="flex flex-col items-center space-y-4">
-                <div className="bg-muted p-4 rounded-2xl relative group">
+                <div className="bg-card p-3 rounded-lg border border-border relative group">
                   {qrCodeUrl ? (
                     <img 
                       src={qrCodeUrl}
@@ -428,7 +428,7 @@ function CheckoutPage() {
                   <textarea 
                     readOnly aria-labelledby="pix-code-label"
                     value={result.pix.code} 
-                    className="w-full p-4 bg-checkout-neutral-soft border border-border rounded-xl text-xs font-mono resize-none focus:outline-none h-24 mb-3"
+                    className="w-full p-4 bg-checkout-neutral-soft border border-border rounded-lg text-sm font-mono resize-none focus-visible:outline-2 focus-visible:outline-ring h-24 mb-3"
                   />
                   <Button 
                     onClick={async () => {
@@ -467,12 +467,12 @@ function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="bg-checkout-info-soft border border-checkout-info-border rounded-2xl p-4 space-y-3">
+              <div className="border-t border-border pt-5 space-y-3">
                 <h3 className="text-checkout-info font-bold text-sm flex items-center gap-2">
                   <AlertCircle size={16} />
                   Como finalizar o pagamento?
                 </h3>
-                <ol className="text-xs text-checkout-info space-y-2 list-decimal list-inside">
+                <ol className="text-sm leading-relaxed text-foreground space-y-2 list-decimal list-inside">
                   <li>Abra o aplicativo do seu banco.</li>
                   <li>Escolha a opção <strong>PIX</strong> e depois <strong>PIX Copia e Cola</strong> ou <strong>Ler QR Code</strong>.</li>
                   <li>Cole o código ou aponte a câmera para o QR Code acima.</li>
@@ -482,7 +482,7 @@ function CheckoutPage() {
 
               <Button 
                 onClick={() => navigate({ to: "/obrigado" })}
-                className="w-full min-h-12 py-4 bg-muted text-muted-foreground rounded-xl font-bold text-sm hover:bg-border transition"
+                className="w-full min-h-12 py-4 bg-muted text-foreground rounded-lg font-bold text-sm hover:bg-border transition"
               >
                 Já realizei o pagamento
               </Button>
@@ -502,15 +502,20 @@ function CheckoutPage() {
   const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b p-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary">
+    <div className="min-h-screen bg-card">
+      <header className="bg-card border-b px-4 py-3 flex items-center justify-between gap-3">
+        <Button asChild variant="ghost" className="px-2 text-muted-foreground">
+        <Link to="/" className="flex items-center gap-1 text-sm font-semibold">
           <ArrowLeft size={18} /> Voltar
         </Link>
-        <span className="font-bold text-primary">Checkout Seguro</span>
-        <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong"><Lock size={14} /> SSL</span>
+        </Button>
+        <div className="text-center min-w-0">
+          <span className="block text-sm sm:text-base font-bold text-primary">Sucupira Composta</span>
+          <span className="block text-xs text-muted-foreground">Checkout Seguro</span>
+        </div>
+        <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
-      <main className="container mx-auto max-w-2xl p-4 md:p-8">
+      <main className="container mx-auto max-w-2xl px-5 py-6 sm:px-8 sm:py-8">
         <form
           ref={checkoutForm}
           onSubmit={(event) => {
@@ -519,25 +524,25 @@ function CheckoutPage() {
             void submit();
           }}
           noValidate
-          className="bg-card rounded-2xl p-6 shadow-sm space-y-6"
+          className="space-y-7"
         >
           <div>
-            <h1 className="text-xl font-bold">Resumo do Pedido</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
+            <h1 className="text-xl font-bold font-sans tracking-normal">Resumo do Pedido</h1>
+            <p className="text-sm leading-relaxed text-muted-foreground mt-1">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
-          <div className="flex gap-4 items-center bg-background p-4 rounded-xl">
-            <img src={kit.image} alt={kit.title} width={64} height={64} decoding="async" className="w-16 h-16 object-contain" />
+          <div className="flex gap-3 sm:gap-4 items-center border-y border-border py-5">
+            <img src={kit.image} alt={kit.title} width={80} height={80} decoding="async" className="w-20 h-20 object-contain shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>
-              <div className="text-[11px] text-checkout-success-strong mt-0.5">De <span className="line-through">{formatBRL(kit.fromCents)}</span> por <span className="font-bold">{kit.price}</span></div>
+              <div className="text-xs text-muted-foreground mt-1">De <span className="line-through">{formatBRL(kit.fromCents)}</span> por <span className="font-bold text-foreground">{kit.price}</span></div>
             </div>
-            <div className="text-lg font-bold text-primary shrink-0">{kit.price}</div>
+            <div className="text-base sm:text-lg font-bold text-primary shrink-0 tabular-nums">{kit.price}</div>
           </div>
 
 
           <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2">1. Dados Pessoais</h2>
+            <h2 className="font-bold tracking-normal flex items-center gap-2"><span className="h-6 w-1 rounded-full bg-primary" aria-hidden="true" />1. Dados Pessoais</h2>
             <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
@@ -552,11 +557,11 @@ function CheckoutPage() {
             <Field id="document" name="document" label="CPF" inputMode="numeric" autoComplete="off" enterKeyHint="next" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
-            <p className="text-xs text-muted-foreground -mt-2">CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
+            <p className="text-sm leading-relaxed text-muted-foreground flex items-start gap-2"><Lock size={15} className="shrink-0 mt-0.5" aria-hidden="true" />CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
           </div>
 
           <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2">2. Endereço de Entrega</h2>
+            <h2 className="font-bold tracking-normal flex items-center gap-2"><span className="h-6 w-1 rounded-full bg-primary" aria-hidden="true" />2. Endereço de Entrega</h2>
             <div className="grid grid-cols-2 gap-4">
               <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
@@ -583,12 +588,12 @@ function CheckoutPage() {
             )}
             {(cepFilled || manualAddress) && (
               <>
-                {cepFilled && !manualAddress && <div role="status" className="text-xs bg-checkout-success-soft p-3 rounded text-checkout-success-strong flex items-start gap-2">
+                {cepFilled && !manualAddress && <div role="status" className="text-sm leading-relaxed bg-checkout-neutral-soft p-3 rounded-lg text-foreground flex items-start gap-2">
                   <CheckCircle2 size={16} className="shrink-0" aria-hidden="true" />
                   <span>{form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}</span>
                 </div>}
                 <details className="text-sm text-muted-foreground">
-                  <summary className="cursor-pointer focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
+                  <summary className="cursor-pointer py-2 min-h-10 focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
                   <div className="mt-3">
                     <Field id="complement" name="complement" label="Complemento (opcional)" required={false} placeholder="Apto, bloco, referência" value={form.complement}
                       onChange={e => setForm({...form, complement: e.target.value.slice(0, 60)})} />
@@ -599,13 +604,13 @@ function CheckoutPage() {
           </div>
           {cepFilled && (
             <div className="space-y-3">
-              <h2 className="font-bold border-b pb-2 flex items-center gap-2"><Truck size={18} /> 3. Frete</h2>
+              <h2 className="font-bold tracking-normal flex items-center gap-2"><Truck size={18} className="text-primary" aria-hidden="true" /> 3. Frete</h2>
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
                   { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
                   { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
                 ] as const).map(o => (
-                  <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-xl border-2 flex items-center justify-between text-left transition cursor-pointer gap-3", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
+                  <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
                     <div className="flex items-center gap-3">
                       <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
                       <div><p className="text-sm font-bold">{o.title}</p><p className="text-xs text-muted-foreground">{o.eta}</p></div>
@@ -617,27 +622,27 @@ function CheckoutPage() {
             </div>
           )}
           <div className="space-y-4">
-            <h2 className="font-bold border-b pb-2 text-checkout-success-strong flex items-center gap-2">
-              <span className="w-2 h-2 bg-checkout-success rounded-full" />{cepFilled ? "4" : "3"}. Forma de Pagamento
+            <h2 className="font-bold tracking-normal flex items-center gap-2">
+              <Lock size={18} className="text-primary" aria-hidden="true" />{cepFilled ? "4" : "3"}. Forma de Pagamento
             </h2>
-            <div className="p-4 rounded-xl border-2 border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between gap-2">
+            <div className="py-3 font-bold flex items-center justify-between gap-2">
               <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
-              <div className="bg-checkout-success text-checkout-success-foreground text-[10px] px-2 py-0.5 rounded-full uppercase shrink-0">Selecionado</div>
+              <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
           </div>
 
-          <div className="bg-checkout-neutral-soft rounded-xl p-4 text-sm space-y-1">
+          <div className="border-y border-border py-4 text-sm space-y-3 tabular-nums">
             <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between text-checkout-success-strong"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
-            <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
+            <div className="flex justify-between font-bold text-lg pt-3 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </div>
 
-          <div className="flex items-start gap-3 bg-checkout-assurance-soft border border-checkout-assurance-border rounded-xl p-4">
-            <ShieldCheck size={28} className="text-checkout-assurance shrink-0" />
+          <div className="flex items-start gap-3">
+            <ShieldCheck size={28} className="text-checkout-success-strong shrink-0" aria-hidden="true" />
             <div>
               <p className="text-sm font-bold text-foreground">Garantia incondicional de 30 dias</p>
-              <p className="text-xs text-muted-foreground">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
+              <p className="text-sm leading-relaxed text-muted-foreground mt-1">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
             </div>
           </div>
 
@@ -647,17 +652,17 @@ function CheckoutPage() {
             type="submit"
             disabled={loading}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-xl font-bold text-lg shadow-lg hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-lg font-bold text-lg shadow-sm hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
           </Button>
-          <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground flex-wrap">
+          <div className="flex items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
             <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 30 dias</span>
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
-          <p className="text-center text-[11px] text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
+          <p className="text-center text-xs text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
         </form>
       </main>
       <SiteFooter />
@@ -668,12 +673,12 @@ function CheckoutPage() {
 function Field({ label, error, ok, ...props }: { label: string; error?: string; ok?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
   const errorId = props.id ? `${props.id}-error` : undefined;
   return (
-    <label className="block space-y-1">
-      <span className="text-xs font-bold text-muted-foreground uppercase">{label}</span>
+    <label className="block space-y-2">
+      <span className="text-sm font-semibold text-foreground">{label}</span>
       <div className="relative">
         <input {...props} required={props.required ?? true} aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
-          className={cn("w-full h-12 px-4 pr-10 text-base border rounded-lg focus:ring-2 outline-none", error ? "border-destructive focus:ring-destructive/30" : ok ? "border-checkout-success focus:ring-checkout-success" : "focus:ring-checkout-success", props.className)} />
-        {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-checkout-success" />}
+          className={cn("w-full h-12 px-3 pr-10 text-base text-foreground bg-card placeholder:text-muted-foreground border rounded-lg focus:ring-2 outline-none transition-colors", error ? "border-destructive focus:ring-destructive/30" : "border-input hover:border-muted-foreground focus:border-checkout-success focus:ring-checkout-success/20", props.className)} />
+        {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-checkout-success" aria-hidden="true" />}
       </div>
       {error && <span id={errorId} className="text-xs text-destructive">{error}</span>}
     </label>
