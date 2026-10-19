@@ -155,6 +155,7 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
+    // LowTrack mutates page elements; retain checkout isolation and load only once after hydration.
     if (window.location.pathname.startsWith("/checkout/")) return;
 
     const trackerWindow = window as typeof window & { pixelId?: string };
@@ -162,6 +163,7 @@ function RootComponent() {
     if (document.querySelector('script[src="https://lowtrack.com.br/pixel.js"]')) return;
 
     const script = document.createElement("script");
+    script.dataset.lowtrackPixel = "true";
     script.async = true;
     script.defer = true;
     script.src = "https://lowtrack.com.br/pixel.js";
