@@ -17,3 +17,5 @@
 - Isolate checkout tracking calls from payment processing; third-party tracking exceptions must never prevent charge creation or hide a generated PIX.
 - Normalize country-coded phone autofill through the browser-safe checkout utility; pasted Brazilian numbers must retain their actual area code and subscriber number.
 - Resolve checkout ZIP codes through a validated browser-safe lookup with a secondary provider and manual completion for missing address data; provider outages must not invalidate ZIP codes or substitute invented delivery details.
+- Serve optimized site media through the shared browser-safe media manifest and CDN pointers; use responsive hero sources and poster-first, no-preload testimonial videos so media does not compete with initial rendering.
+- Initialize LowTrack once after hydration outside checkout pages; checkout document navigation isolates its DOM-mutating script to prevent form regressions.
