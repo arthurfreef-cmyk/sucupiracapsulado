@@ -1,5 +1,5 @@
 # Fruitfy PIX
-- [ ] Otimizar carregamento de imagens e vídeos sem mudar aparência ou conteúdo; verificar LowTrack solicitado e proteger checkout.
+- [x] Otimizar carregamento de imagens e vídeos; alinhar prazo de entrega e contato (sem WhatsApp).
 - [x] Refinar apresentação do checkout para clareza e confiança; formulário, entrega e PIX simulado verificados em telas grandes e pequenas, com 10 testes aprovados e sem erros observados.
 - [x] Corrigir consulta de CEP com alternativa, preenchimento de endereços incompletos e proteção contra respostas antigas; validar com testes.
 - [x] Melhorar confiança e reduzir fricções do checkout sem alterar copy, identidade ou provedor.

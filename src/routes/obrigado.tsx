@@ -95,7 +95,7 @@ function ObrigadoPage() {
           </div>
           
           <p className="text-xs text-gray-400 italic">
-            Dúvidas? Entre em contato com nosso suporte pelo e-mail ou WhatsApp.
+            Dúvidas? Entre em contato com nosso suporte pelo e-mail.
           </p>
         </div>
       </main>

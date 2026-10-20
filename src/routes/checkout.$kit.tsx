@@ -5,13 +5,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
-import imgKit1 from "@/assets/kit1.webp";
-import imgKit3 from "@/assets/kit3.webp";
-import imgKit5 from "@/assets/kit5.webp";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
 import { AddressLookupError, fetchCheckoutAddress as fetchAddress, normalizeCheckoutZip } from "@/lib/checkout-address";
 
 
+import { siteImages } from "@/lib/site-media";
+const imgKit1 = siteImages.kit1, imgKit3 = siteImages.kit3, imgKit5 = siteImages.kit5;
 const KITS = {
   k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: "R$ 27,00", priceCents: 2700, fromCents: 9700, image: imgKit1 },
   k3: { title: "3 Frascos", sub: "90 dias de tratamento", price: "R$ 97,00", priceCents: 9700, fromCents: 29100, image: imgKit3 },
@@ -607,7 +606,7 @@ function CheckoutPage() {
               <h2 className="font-bold tracking-normal flex items-center gap-2"><Truck size={18} className="text-primary" aria-hidden="true" /> 3. Frete</h2>
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
-                  { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
+                  { id: "free", title: "Frete Grátis", eta: "5 a 10 dias úteis", cents: 0 },
                   { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
                 ] as const).map(o => (
                   <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
