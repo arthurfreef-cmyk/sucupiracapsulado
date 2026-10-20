@@ -501,7 +501,7 @@ function CheckoutPage() {
   const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
 
   return (
-    <div className="min-h-screen bg-card">
+    <div className="min-h-screen bg-muted">
       <header className="bg-card border-b px-4 py-3 flex items-center justify-between gap-3">
         <Button asChild variant="ghost" className="px-2 text-muted-foreground">
         <Link to="/" className="flex items-center gap-1 text-sm font-semibold">
@@ -523,13 +523,13 @@ function CheckoutPage() {
             void submit();
           }}
           noValidate
-          className="space-y-7"
+          className="space-y-4"
         >
           <div>
             <h1 className="text-xl font-bold font-sans tracking-normal">Resumo do Pedido</h1>
             <p className="text-sm leading-relaxed text-muted-foreground mt-1">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
-          <div className="flex gap-3 sm:gap-4 items-center border-y border-border py-5">
+          <div className="flex gap-3 sm:gap-4 items-center rounded-lg border border-border bg-card p-4">
             <img src={kit.image} alt={kit.title} width={80} height={80} decoding="async" className="w-20 h-20 object-contain shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm">{kit.title}</div>
@@ -540,8 +540,8 @@ function CheckoutPage() {
           </div>
 
 
-          <div className="space-y-4">
-            <h2 className="font-bold tracking-normal flex items-center gap-2"><span className="h-6 w-1 rounded-full bg-primary" aria-hidden="true" />1. Dados Pessoais</h2>
+          <section className={STEP}>
+            <StepTitle n={1}>Dados Pessoais</StepTitle>
             <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
               onChange={e => setForm({...form, name: e.target.value})} onBlur={() => touch("name")}
               error={err("name", !nameValid) ? "Digite nome e sobrenome" : undefined} ok={nameValid} />
@@ -557,10 +557,10 @@ function CheckoutPage() {
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
             <p className="text-sm leading-relaxed text-muted-foreground flex items-start gap-2"><Lock size={15} className="shrink-0 mt-0.5" aria-hidden="true" />CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
-          </div>
+          </section>
 
-          <div className="space-y-4">
-            <h2 className="font-bold tracking-normal flex items-center gap-2"><span className="h-6 w-1 rounded-full bg-primary" aria-hidden="true" />2. Endereço de Entrega</h2>
+          <section className={STEP}>
+            <StepTitle n={2}>Endereço de Entrega</StepTitle>
             <div className="grid grid-cols-2 gap-4">
               <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
@@ -600,10 +600,10 @@ function CheckoutPage() {
                 </details>
               </>
             )}
-          </div>
-          {cepFilled && (
-            <div className="space-y-3">
-              <h2 className="font-bold tracking-normal flex items-center gap-2"><Truck size={18} className="text-primary" aria-hidden="true" /> 3. Frete</h2>
+          </section>
+          <section className={STEP}>
+              <StepTitle n={3}>Frete</StepTitle>
+              {!cepFilled ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
                   { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
@@ -617,20 +617,17 @@ function CheckoutPage() {
                     <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-checkout-success-strong")}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
                   </label>
                 ))}
-              </RadioGroup>
-            </div>
-          )}
-          <div className="space-y-4">
-            <h2 className="font-bold tracking-normal flex items-center gap-2">
-              <Lock size={18} className="text-primary" aria-hidden="true" />{cepFilled ? "4" : "3"}. Forma de Pagamento
-            </h2>
+              </RadioGroup>)}
+          </section>
+          <section className={STEP}>
+            <StepTitle n={4}>Forma de Pagamento</StepTitle>
             <div className="py-3 font-bold flex items-center justify-between gap-2">
               <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
               <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
-          </div>
+          </section>
 
-          <div className="border-y border-border py-4 text-sm space-y-3 tabular-nums">
+          <div className="rounded-lg border border-border bg-card p-4 text-sm space-y-3 tabular-nums">
             <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between text-checkout-success-strong"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
@@ -666,6 +663,17 @@ function CheckoutPage() {
       </main>
       <SiteFooter />
     </div>
+  );
+}
+
+const STEP = "space-y-4 rounded-lg border border-border bg-card p-4 sm:p-5";
+
+function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <h2 className="font-bold tracking-normal flex items-center gap-2.5">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground" aria-hidden="true">{n}</span>
+      {children}
+    </h2>
   );
 }
 
