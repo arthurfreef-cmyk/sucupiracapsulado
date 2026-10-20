@@ -44,23 +44,9 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
  */
 import { useEffect, useRef, useState } from "react";
 import { BadgeCheck, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
+import { siteImages, heroSrcSet, heroSizes, testimonialVideos } from "@/lib/site-media";
+import { LazyVideo } from "@/components/landing/LazyVideo";
 
-import imgHero from "@/assets/hero.webp";
-import imgMulher from "@/assets/mulher.webp";
-import imgSucupira from "@/assets/sucupira.webp";
-import imgCanela from "@/assets/canela.webp";
-import imgCalcio from "@/assets/calcio.webp";
-import imgAnvisa from "@/assets/anvisa.webp";
-import imgKit1 from "@/assets/kit1.webp";
-import imgKit3 from "@/assets/kit3.webp";
-import imgKit5 from "@/assets/kit5.webp";
-import imgDep1 from "@/assets/dep1.webp";
-import imgDep2 from "@/assets/dep2.webp";
-import imgDep3 from "@/assets/dep3.webp";
-import imgDep4 from "@/assets/dep4.webp";
-import imgDep5 from "@/assets/dep5.webp";
-import imgDep6 from "@/assets/dep6.webp";
-import imgDep7 from "@/assets/dep7.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,7 +67,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", as: "image", href: imgHero, fetchPriority: "high" },
+      { rel: "preload", as: "image", href: siteImages.hero, imageSrcSet: heroSrcSet, imageSizes: heroSizes, fetchPriority: "high" },
       { rel: "preconnect", href: "https://customer-assets.emergentagent.com", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://customer-assets.emergentagent.com" },
     ],
@@ -90,6 +76,23 @@ export const Route = createFileRoute("/")({
 });
 
 // ============ ASSETS (otimizados localmente em WebP) ============
+const imgHero = siteImages.hero;
+const imgMulher = siteImages.mulher;
+const imgSucupira = siteImages.sucupira;
+const imgCanela = siteImages.canela;
+const imgCalcio = siteImages.calcio;
+const imgAnvisa = siteImages.anvisa;
+const imgKit1 = siteImages.kit1;
+const imgKit3 = siteImages.kit3;
+const imgKit5 = siteImages.kit5;
+const imgDep1 = siteImages.dep1;
+const imgDep2 = siteImages.dep2;
+const imgDep3 = siteImages.dep3;
+const imgDep4 = siteImages.dep4;
+const imgDep5 = siteImages.dep5;
+const imgDep6 = siteImages.dep6;
+const imgDep7 = siteImages.dep7;
+
 const IMG = {
   hero: imgHero,
   mulher: imgMulher,
@@ -102,15 +105,7 @@ const IMG = {
   kit5: imgKit5,
 };
 
-const VIDEOS = [
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/jjqfp8kw_lv_0_20251030100424.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/st156lxv_VID-20251007-WA0065.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/vtetyyqo_VID-20251031-WA0002.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/e3895bwj_2025-10-29-090328761.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/pdo5k2bh_2026-04-01-185520729.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/1iq9htj4_2026-02-04-203212563.mp4",
-  "https://customer-assets.emergentagent.com/job_857178fa-987a-4690-992f-74c14319f819/artifacts/jcrxsk48_VID-20251123-WA0086.mp4",
-];
+const VIDEOS = testimonialVideos;
 
 const CHECKOUT = {
   k1: "k1" as const,
@@ -265,6 +260,8 @@ function Hero() {
           <div className="order-1 lg:order-2 relative">
             <img
               src={IMG.hero}
+              srcSet={heroSrcSet}
+              sizes={heroSizes}
               alt="Sucupira Composta"
               width={520}
               height={520}
@@ -621,48 +618,6 @@ function Testimonials() {
   );
 }
 
-function LazyVideo({ src, idx }: { src: string; idx: number }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (!ref.current || visible) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: "150px" },
-    );
-    io.observe(ref.current);
-    return () => io.disconnect();
-  }, [visible]);
-  return (
-    <div ref={ref} className="aspect-[9/16] rounded-2xl overflow-hidden bg-black shadow-lg">
-      {visible ? (
-        <video
-          src={`${src}#t=1`}
-          className="w-full h-full object-cover"
-          controls
-          preload="metadata"
-          playsInline
-          muted
-          data-testid={`video-testimonial-${idx + 1}`}
-          onLoadedMetadata={(e) => {
-            const v = e.currentTarget;
-            try { v.currentTime = 1; } catch {}
-          }}
-        >
-          Seu navegador não suporta vídeos.
-        </video>
-      ) : (
-        <div className="w-full h-full flex items-center justify-center text-white/50 text-3xl">▶</div>
-      )}
-    </div>
-  );
-}
-
 function VideoTestimonials() {
   return (
     <section id="depoimentos" className="py-12 md:py-20 bg-[var(--cream)]">
@@ -672,9 +627,9 @@ function VideoTestimonials() {
           <p className="text-muted-foreground mt-2">Pessoas reais que transformaram suas vidas</p>
         </div>
         <Carousel>
-          {VIDEOS.map((src, idx) => (
+          {VIDEOS.map(({ src, poster }, idx) => (
             <div key={src} className="snap-center shrink-0 w-[45%] sm:w-[32%] lg:w-[23%]">
-              <LazyVideo src={src} idx={idx} />
+              <LazyVideo src={src} poster={poster} idx={idx} />
             </div>
           ))}
         </Carousel>
@@ -695,7 +650,7 @@ function Guarantee() {
         <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4 shadow-lg border-4 border-white">30</div>
         <h3 className="text-2xl md:text-3xl font-bold mb-3">RISCO ZERO: Ou você ama os resultados ou devolvemos cada centavo</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-          Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>WhatsApp</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
+          Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>e-mail</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
         </p>
         <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 30 dias</p>
 
