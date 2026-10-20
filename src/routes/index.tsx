@@ -861,7 +861,7 @@ function FAQ() {
     { q: "Tem contraindicação?", a: "Contraindicado para gestantes, lactantes e menores de 18 anos." },
     { q: "O frete é grátis?", a: "Sim! Todos os kits têm FRETE GRÁTIS para todo o Brasil." },
     { q: "Como funciona a garantia?", a: "Você tem 30 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
-    { q: "Quanto tempo para chegar?", a: "O prazo médio de entrega é de 5 a 10 dias úteis, dependendo da sua região." },
+    { q: "Quanto tempo para chegar?", a: "O prazo médio de entrega é de 3 a 5 dias úteis, dependendo da sua região." },
     { q: "É aprovado pela ANVISA?", a: "Produto isento de registro segundo a RDC nº 240/2018 da ANVISA. 100% natural e seguro." },
     { q: "Posso tomar junto com outros suplementos?", a: "Sim, geralmente não há problema. Em caso de dúvida, consulte seu profissional de saúde." },
   ];

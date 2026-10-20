@@ -46,7 +46,7 @@ function ObrigadoPage() {
                 <Package size={24} />
               </div>
               <span className="text-xs font-bold uppercase text-gray-400">Preparação</span>
-              <p className="text-sm font-medium">1-2 dias úteis</p>
+              <p className="text-sm font-medium">Envio em até 24h</p>
             </div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center">
