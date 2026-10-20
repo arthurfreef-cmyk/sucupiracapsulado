@@ -606,7 +606,7 @@ function CheckoutPage() {
               <h2 className="font-bold tracking-normal flex items-center gap-2"><Truck size={18} className="text-primary" aria-hidden="true" /> 3. Frete</h2>
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
-                  { id: "free", title: "Frete Grátis", eta: "5 a 10 dias úteis", cents: 0 },
+                  { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
                   { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
                 ] as const).map(o => (
                   <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
