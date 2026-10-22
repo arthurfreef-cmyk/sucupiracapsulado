@@ -376,9 +376,13 @@ function CheckoutPage() {
   }, [result?.pix?.code]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    // Long provider expirations must read as hours, not thousands of minutes.
+    const s = Math.max(0, Math.floor(seconds));
+    const hours = Math.floor(s / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = (s % 60).toString().padStart(2, '0');
+    if (hours >= 24) return `${Math.floor(hours / 24)}d ${hours % 24}h`;
+    return hours > 0 ? `${hours}:${mins.toString().padStart(2, '0')}:${secs}` : `${mins}:${secs}`;
   };
 
   if (result) {
