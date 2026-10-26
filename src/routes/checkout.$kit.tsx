@@ -625,20 +625,20 @@ function CheckoutPage() {
           </section>
           <section className={STEP}>
             <StepTitle n={4}>Forma de Pagamento</StepTitle>
-            <div className="py-3 font-bold flex items-center justify-between gap-2">
+            <div className="p-4 rounded-lg border border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between gap-2">
               <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
               <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
           </section>
 
-          <div className="rounded-lg border border-border bg-card p-4 text-sm space-y-3 tabular-nums">
-            <div className="flex justify-between"><span>{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            <div className="flex justify-between"><span>Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
-            <div className="flex justify-between text-checkout-success-strong"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
-            <div className="flex justify-between font-bold text-lg pt-3 border-t"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-5 text-sm space-y-3 tabular-nums shadow-sm">
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
+            <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
           </div>
 
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
             <ShieldCheck size={28} className="text-checkout-success-strong shrink-0" aria-hidden="true" />
             <div>
               <p className="text-sm font-bold text-foreground">Garantia incondicional de 30 dias</p>
