@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
+import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
 import { Route as ApiDuttyfyPixRouteImport } from './routes/api/duttyfy-pix'
 import { Route as ApiFruitfyPixRouteImport } from './routes/api/fruitfy-pix'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const ObrigadoRoute = ObrigadoRouteImport.update({
   id: '/obrigado',
   path: '/obrigado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfertaRoute = OfertaRouteImport.update({
+  id: '/oferta',
+  path: '/oferta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBuckpayPixRoute = ApiBuckpayPixRouteImport.update({
@@ -68,6 +74,7 @@ const ApiPublicMangofyWebhookRoute = ApiPublicMangofyWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
+  '/oferta': typeof OfertaRoute
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
@@ -104,6 +111,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/obrigado'
+    | '/oferta'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
@@ -138,6 +146,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ObrigadoRoute: typeof ObrigadoRoute
+  OfertaRoute: typeof OfertaRoute
   ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
   ApiDuttyfyPixRoute: typeof ApiDuttyfyPixRoute
   ApiFruitfyPixRoute: typeof ApiFruitfyPixRoute
@@ -161,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/obrigado'
       fullPath: '/obrigado'
       preLoaderRoute: typeof ObrigadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oferta': {
+      id: '/oferta'
+      path: '/oferta'
+      fullPath: '/oferta'
+      preLoaderRoute: typeof OfertaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/buckpay-pix': {
@@ -218,6 +234,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ObrigadoRoute: ObrigadoRoute,
+  OfertaRoute: OfertaRoute,
   ApiBuckpayPixRoute: ApiBuckpayPixRoute,
   ApiDuttyfyPixRoute: ApiDuttyfyPixRoute,
   ApiFruitfyPixRoute: ApiFruitfyPixRoute,
