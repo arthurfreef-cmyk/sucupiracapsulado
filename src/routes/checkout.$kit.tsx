@@ -503,7 +503,7 @@ function CheckoutPage() {
                     const status = await response.json().catch(() => null);
                     if (!response.ok) throw new Error(status?.error || "Não foi possível confirmar o pagamento agora.");
                     if (!status?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    if (status.eligible) navigate({ to: "/oferta" }); else navigate({ to: "/obrigado" });
+                    if (status.eligible) navigate({ to: "/upsell1" }); else navigate({ to: "/obrigado" });
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}
