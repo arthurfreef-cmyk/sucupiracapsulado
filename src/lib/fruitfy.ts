@@ -1,15 +1,18 @@
 import { z } from "zod";
+import { UPSELL_PRICE_CENTS } from "./upsell";
 
 export const FRUITFY_KITS = {
   k1: { amount: 2700, id: "a2ee0c4c-bde0-4454-88b2-12665be6431c" },
   k3: { amount: 9700, id: "a2ee0cb3-9100-41b8-b663-e592c71b6d94" },
   k5: { amount: 14700, id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b" },
+  upsell5: { amount: UPSELL_PRICE_CENTS, id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b" },
 } as const;
 
 const digits = (value: string) => value.replace(/\D/g, "");
 
 export const fruitfyInput = z.object({
-  kit: z.enum(["k1", "k3", "k5"]),
+  kit: z.enum(["k1", "k3", "k5", "upsell5"]),
+  originalOrderProof: z.string().min(1).max(2048).optional(),
   buyer: z.object({
     name: z.string().trim().min(3).max(150).regex(/^\S+(\s+\S+)+$/),
     email: z.string().trim().email().max(254),
@@ -67,6 +70,7 @@ export const fruitfyResponse = z.object({
   success: z.literal(true),
   data: z.object({
     order_id: z.string().min(1),
+    order_uuid: z.string().min(1).optional(),
     status: z.string(),
     amount: z.number().int().positive(),
     pix: z.object({

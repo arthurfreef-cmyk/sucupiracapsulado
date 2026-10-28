@@ -1,4 +1,5 @@
 # Fruitfy PIX
+- [ ] Criar oferta opcional de 5 frascos por R$ 47,90, checkout abaixo e fluxo após pagamento confirmado.
 - [x] Otimizar carregamento de imagens e vídeos; alinhar prazo de entrega e contato (sem WhatsApp).
 - [x] Refinar apresentação do checkout para clareza e confiança; formulário, entrega e PIX simulado verificados em telas grandes e pequenas, com 10 testes aprovados e sem erros observados.
 - [x] Corrigir consulta de CEP com alternativa, preenchimento de endereços incompletos e proteção contra respostas antigas; validar com testes.
