@@ -43,6 +43,7 @@ type PaymentResult = {
   amount: number;
   pix: { code: string; qrcode_base64: string; expires_at?: string } | null;
   card: { card_flag?: string; card_token?: string } | null;
+  orderProof?: string;
 };
 
 // Tracking is optional: a third-party error must never interrupt payment.
@@ -320,7 +321,17 @@ function CheckoutPage() {
       }).finally(() => window.clearTimeout(requestTimeout));
       const json = await r.json().catch(() => null);
       if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
-      setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null });
+      setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null, orderProof: json.orderProof });
+      if (json.orderProof) {
+        try {
+          sessionStorage.setItem("sucupira_original_order", JSON.stringify({
+            proof: json.orderProof,
+            buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
+            address: { zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement, neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state },
+            utm: getCampaignQuery(),
+          }));
+        } catch { /* Storage is optional; checkout remains usable. */ }
+      }
       trackCheckout("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
       trackCheckout("trackCustom", "PixGerado", { ...fbData, order_id: json.id });
     } catch (err: unknown) {
@@ -483,12 +494,25 @@ function CheckoutPage() {
                 </ol>
               </div>
 
-              <Button 
-                onClick={() => navigate({ to: "/obrigado" })}
+              <Button
+                onClick={async () => {
+                  if (!result.orderProof) { setError("Não foi possível validar este pedido. Entre em contato com o suporte."); return; }
+                  setLoading(true); setError(null);
+                  try {
+                    const response = await fetch("/api/fruitfy-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ proof: result.orderProof }) });
+                    const status = await response.json().catch(() => null);
+                    if (!response.ok) throw new Error(status?.error || "Não foi possível confirmar o pagamento agora.");
+                    if (!status?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
+                    if (status.eligible) navigate({ to: "/oferta" }); else navigate({ to: "/obrigado" });
+                  } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
+                  finally { setLoading(false); }
+                }}
+                disabled={loading}
                 className="w-full min-h-12 py-4 bg-muted text-foreground rounded-lg font-bold text-sm hover:bg-border transition"
               >
-                Já realizei o pagamento
+                {loading ? "Verificando pagamento..." : "Já realizei o pagamento"}
               </Button>
+              {error && <p role="alert" className="text-sm text-destructive text-center">{error}</p>}
             </div>
             
             <div className="bg-checkout-neutral-soft p-4 border-t flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
