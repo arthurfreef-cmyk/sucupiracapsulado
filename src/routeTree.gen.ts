@@ -14,6 +14,7 @@ import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
 import { Route as ApiDuttyfyPixRouteImport } from './routes/api/duttyfy-pix'
 import { Route as ApiFruitfyPixRouteImport } from './routes/api/fruitfy-pix'
+import { Route as ApiFruitfyStatusRouteImport } from './routes/api/fruitfy-status'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
 import { Route as ApiPublicBuckpayWebhookRouteImport } from './routes/api/public/buckpay-webhook'
 import { Route as ApiPublicMangofyWebhookRouteImport } from './routes/api/public/mangofy-webhook'
@@ -43,6 +44,11 @@ const ApiFruitfyPixRoute = ApiFruitfyPixRouteImport.update({
   path: '/api/fruitfy-pix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFruitfyStatusRoute = ApiFruitfyStatusRouteImport.update({
+  id: '/api/fruitfy-status',
+  path: '/api/fruitfy-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutKitRoute = CheckoutKitRouteImport.update({
   id: '/checkout/$kit',
   path: '/checkout/$kit',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
   '/api/public/mangofy-webhook': typeof ApiPublicMangofyWebhookRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
+    | '/api/fruitfy-status'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
+    | '/api/fruitfy-status'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
+    | '/api/fruitfy-status'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
     | '/api/public/mangofy-webhook'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
   ApiDuttyfyPixRoute: typeof ApiDuttyfyPixRoute
   ApiFruitfyPixRoute: typeof ApiFruitfyPixRoute
+  ApiFruitfyStatusRoute: typeof ApiFruitfyStatusRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
   ApiPublicBuckpayWebhookRoute: typeof ApiPublicBuckpayWebhookRoute
   ApiPublicMangofyWebhookRoute: typeof ApiPublicMangofyWebhookRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFruitfyPixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/fruitfy-status': {
+      id: '/api/fruitfy-status'
+      path: '/api/fruitfy-status'
+      fullPath: '/api/fruitfy-status'
+      preLoaderRoute: typeof ApiFruitfyStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$kit': {
       id: '/checkout/$kit'
       path: '/checkout/$kit'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiBuckpayPixRoute: ApiBuckpayPixRoute,
   ApiDuttyfyPixRoute: ApiDuttyfyPixRoute,
   ApiFruitfyPixRoute: ApiFruitfyPixRoute,
+  ApiFruitfyStatusRoute: ApiFruitfyStatusRoute,
   CheckoutKitRoute: CheckoutKitRoute,
   ApiPublicBuckpayWebhookRoute: ApiPublicBuckpayWebhookRoute,
   ApiPublicMangofyWebhookRoute: ApiPublicMangofyWebhookRoute,
