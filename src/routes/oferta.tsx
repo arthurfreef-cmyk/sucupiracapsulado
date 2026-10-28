@@ -1,8 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/SiteFooter";
-import { CheckCircle2, Copy, Lock, PackageCheck, ShieldCheck, Truck, QrCode, LoaderCircle } from "lucide-react";
+import { Copy, Lock, PackageCheck, ShieldCheck, Truck, QrCode, LoaderCircle } from "lucide-react";
 
 type SavedOrder = {
   proof: string;
