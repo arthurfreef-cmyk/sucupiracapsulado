@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as OfertaRouteImport } from './routes/oferta'
+import { Route as UpsellRouteImport } from './routes/upsell'
 import { Route as Upsell1RouteImport } from './routes/upsell1'
 import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
 import { Route as ApiDuttyfyPixRouteImport } from './routes/api/duttyfy-pix'
@@ -34,6 +35,11 @@ const ObrigadoRoute = ObrigadoRouteImport.update({
 const OfertaRoute = OfertaRouteImport.update({
   id: '/oferta',
   path: '/oferta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpsellRoute = UpsellRouteImport.update({
+  id: '/upsell',
+  path: '/upsell',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Upsell1Route = Upsell1RouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
+  '/upsell': typeof UpsellRoute
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
+  '/upsell': typeof UpsellRoute
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
+  '/upsell': typeof UpsellRoute
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/oferta'
+    | '/upsell'
     | '/upsell1'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/oferta'
+    | '/upsell'
     | '/upsell1'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/obrigado'
     | '/oferta'
+    | '/upsell'
     | '/upsell1'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ObrigadoRoute: typeof ObrigadoRoute
   OfertaRoute: typeof OfertaRoute
+  UpsellRoute: typeof UpsellRoute
   Upsell1Route: typeof Upsell1Route
   ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
   ApiDuttyfyPixRoute: typeof ApiDuttyfyPixRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/oferta'
       fullPath: '/oferta'
       preLoaderRoute: typeof OfertaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upsell': {
+      id: '/upsell'
+      path: '/upsell'
+      fullPath: '/upsell'
+      preLoaderRoute: typeof UpsellRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/upsell1': {
@@ -259,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ObrigadoRoute: ObrigadoRoute,
   OfertaRoute: OfertaRoute,
+  UpsellRoute: UpsellRoute,
   Upsell1Route: Upsell1Route,
   ApiBuckpayPixRoute: ApiBuckpayPixRoute,
   ApiDuttyfyPixRoute: ApiDuttyfyPixRoute,
