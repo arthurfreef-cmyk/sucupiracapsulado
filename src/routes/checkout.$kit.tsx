@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
 import { AddressLookupError, fetchCheckoutAddress as fetchAddress, normalizeCheckoutZip } from "@/lib/checkout-address";
+import { useOrderPayment } from "@/hooks/use-order-payment";
 
 
 import { siteImages } from "@/lib/site-media";
@@ -141,6 +142,11 @@ function CheckoutPage() {
   const checkoutForm = useRef<HTMLFormElement | null>(null);
   const submitInFlight = useRef(false);
   const resolvedCep = useRef<string | null>(null);
+  const payment = useOrderPayment(result?.orderProof);
+
+  useEffect(() => {
+    if (payment.data?.paid) void navigate({ to: payment.data.eligible ? "/upsell" : "/obrigado" });
+  }, [payment.data?.paid, payment.data?.eligible, navigate]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -503,7 +509,7 @@ function CheckoutPage() {
                     const status = await response.json().catch(() => null);
                     if (!response.ok) throw new Error(status?.error || "Não foi possível confirmar o pagamento agora.");
                     if (!status?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    if (status.eligible) navigate({ to: "/upsell1" }); else navigate({ to: "/obrigado" });
+                    if (status.eligible) navigate({ to: "/upsell" }); else navigate({ to: "/obrigado" });
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}

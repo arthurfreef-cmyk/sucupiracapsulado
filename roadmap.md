@@ -1,4 +1,5 @@
 # Fruitfy PIX
+- [ ] Concluir `/upsell`, unificar páginas da oferta, confirmar pagamento automaticamente e validar aceitação/recusa e retorno ao PIX.
 - [x] Criar rota `/upsell1` para oferta opcional de 5 frascos por R$ 47,90, integrada ao pós-pagamento e ao PIX Fruitfy.
 - [x] Criar oferta opcional de 5 frascos por R$ 47,90, com página pós-pagamento, confirmação real via Fruitfy, checkout PIX separado e opção clara de recusar.
 - [x] Otimizar carregamento de imagens e vídeos; alinhar prazo de entrega e contato (sem WhatsApp).
