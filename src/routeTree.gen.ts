@@ -93,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
+  '/oferta': typeof OfertaRoute
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
@@ -106,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/obrigado': typeof ObrigadoRoute
+  '/oferta': typeof OfertaRoute
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
@@ -133,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/obrigado'
+    | '/oferta'
     | '/upsell1'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
@@ -145,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/obrigado'
+    | '/oferta'
     | '/upsell1'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
