@@ -39,7 +39,7 @@ export const fruitfyInput = z.object({
 
 export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
   const kit = FRUITFY_KITS[input.kit];
-  const shipping = input.shipping?.method === "express" ? input.shipping.amount : 0;
+  const shipping = input.kit !== "upsell5" && input.shipping?.method === "express" ? input.shipping.amount : 0;
   const amount = kit.amount + shipping;
   const query = new URLSearchParams(input.utm?.replace(/^\?/, ""));
   const utm: Record<string, string> = {};
