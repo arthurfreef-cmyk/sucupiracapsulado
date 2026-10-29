@@ -19,3 +19,4 @@
 - Resolve checkout ZIP codes through a validated browser-safe lookup with a secondary provider and manual completion for missing address data; provider outages must not invalidate ZIP codes or substitute invented delivery details.
 - Serve optimized site media through the shared browser-safe media manifest and CDN pointers; use responsive hero sources and poster-first, no-preload testimonial videos so media does not compete with initial rendering.
 - Initialize LowTrack once after hydration outside checkout pages; checkout document navigation isolates its DOM-mutating script to prevent form regressions.
+- Keep `/upsell` and its existing offer aliases on one shared page, poll signed payment references, and restore pending offer PIX per original order; this prevents divergent offers and repeat charges on refresh.

@@ -12,6 +12,10 @@ describe("five bottle optional offer", () => {
     const input = fruitfyInput.parse({ kit: "upsell5", buyer: { name: "Cliente Teste", email: "teste@example.com", document: "52998224725", phone: "11999999999" }, address: { zip: "01001000", street: "Praça da Sé", number: "10", neighborhood: "Sé", city: "São Paulo", state: "SP" }, shipping: { method: "free", amount: 0 } });
     expect(buildFruitfyPayload(input).items).toEqual([{ id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b", value: 4790, quantity: 1 }]);
   });
+  it("keeps the additional kit at R$ 47,90 even if express shipping is submitted", () => {
+    const input = fruitfyInput.parse({ kit: "upsell5", buyer: { name: "Cliente Teste", email: "teste@example.com", document: "52998224725", phone: "11999999999" }, address: { zip: "01001000", street: "Praça da Sé", number: "10", neighborhood: "Sé", city: "São Paulo", state: "SP" }, shipping: { method: "express", amount: 691 } });
+    expect(buildFruitfyPayload(input).items[0]?.value).toBe(4790);
+  });
 });
 const paidOrder = { status: "paid", paid_at: "2026-10-28T03:00:00Z", total_paid_amount: 2700, total_gross_amount: 2700, refunded_amount: 0 };
 describe("upsell requires confirmed original payment", () => {
