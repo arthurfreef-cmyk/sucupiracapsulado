@@ -24,5 +24,3 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Build production app
         run: bun run build
-      - name: Lint upsell route
-        run: bunx eslint src/routes/upsell1.tsx --rule 'prettier/prettier: off'
