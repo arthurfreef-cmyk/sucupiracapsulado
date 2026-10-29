@@ -1,5 +1,6 @@
 # Fruitfy PIX
-- [ ] Concluir `/upsell`, unificar páginas da oferta, confirmar pagamento automaticamente e validar aceitação/recusa e retorno ao PIX.
+- [x] Concluir `/upsell`, unificar páginas da oferta, confirmar pagamento automaticamente e validar aceitação/recusa e retorno ao PIX com respostas simuladas; 18 testes aprovados.
+- [ ] Validar oferta com pagamento real confirmado na Fruitfy — depende de um pedido inicial efetivamente pago; nenhuma transação paga foi realizada nesta verificação.
 - [x] Criar rota `/upsell1` para oferta opcional de 5 frascos por R$ 47,90, integrada ao pós-pagamento e ao PIX Fruitfy.
 - [x] Criar oferta opcional de 5 frascos por R$ 47,90, com página pós-pagamento, confirmação real via Fruitfy, checkout PIX separado e opção clara de recusar.
 - [x] Otimizar carregamento de imagens e vídeos; alinhar prazo de entrega e contato (sem WhatsApp).
