@@ -13,6 +13,7 @@
 - [x] Testar validação, checkout, QR Code e compilação.
 
 # Verificação da página e checkout
+- [x] Corrigir frete após endereço manual, recuperar PIX ao atualizar, isolar rastreamento e evitar oferta bloqueada sem armazenamento; 25 testes e geração real de PIX R$ 27 aprovados, sem pagamento ou publicação.
 - [x] Confirmar geração real de PIX Fruitfy de R$ 27, valor, CRC e leitura do QR Code.
 - [x] Verificar resistência a falhas do rastreador: uma única solicitação, PIX exibido mesmo com exceção externa, cópia confirmada; página e checkout publicados respondem 200.
 - [x] Reproduzir erros na página e no checkout sem alterar estrutura, visual ou copy.

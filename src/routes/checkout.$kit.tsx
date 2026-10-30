@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
-import { AddressLookupError, fetchCheckoutAddress as fetchAddress, normalizeCheckoutZip } from "@/lib/checkout-address";
+import { AddressLookupError, fetchCheckoutAddress as fetchAddress, isCheckoutDeliveryReady, normalizeCheckoutZip } from "@/lib/checkout-address";
 import { useOrderPayment } from "@/hooks/use-order-payment";
+import { checkoutPaymentSchema, pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
 
 
 import { siteImages } from "@/lib/site-media";
@@ -142,11 +143,32 @@ function CheckoutPage() {
   const checkoutForm = useRef<HTMLFormElement | null>(null);
   const submitInFlight = useRef(false);
   const resolvedCep = useRef<string | null>(null);
+  const offerHandoffReady = useRef(false);
+  const [restoringPayment, setRestoringPayment] = useState(true);
   const payment = useOrderPayment(result?.orderProof);
 
   useEffect(() => {
-    if (payment.data?.paid) void navigate({ to: payment.data.eligible ? "/upsell" : "/obrigado" });
-  }, [payment.data?.paid, payment.data?.eligible, navigate]);
+    try {
+      const pending = pendingCheckoutSchema.safeParse(JSON.parse(sessionStorage.getItem(pendingCheckoutKey(baseKitId)) || "null"));
+      if (pending.success && pending.data.kit === baseKitId) {
+        sessionStorage.setItem("sucupira_original_order", JSON.stringify(pending.data.original));
+        offerHandoffReady.current = true;
+        setResult({ ...pending.data.payment, card: null });
+      }
+    } catch { /* Storage can be unavailable; the form remains usable. */ }
+    setRestoringPayment(false);
+  }, [baseKitId]);
+
+  const finishPayment = (eligible: boolean) => {
+    try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
+    void navigate({ to: eligible && offerHandoffReady.current ? "/upsell" : "/obrigado" });
+  };
+
+  useEffect(() => {
+    if (!payment.data?.paid) return;
+    try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
+    void navigate({ to: payment.data.eligible && offerHandoffReady.current ? "/upsell" : "/obrigado" });
+  }, [payment.data?.paid, payment.data?.eligible, navigate, baseKitId]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -156,8 +178,9 @@ function CheckoutPage() {
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
+  const deliveryReady = isCheckoutDeliveryReady(cepDigits, resolvedCep.current, form);
   const expressCents = expressShippingCents(cepDigits);
-  const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
+  const shippingCents = deliveryReady && shipping === "express" ? expressCents : 0;
   const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
@@ -219,7 +242,7 @@ function CheckoutPage() {
   }, [baseKitId]);
 
   const submit = async () => {
-    if (submitInFlight.current) return;
+    if (submitInFlight.current || restoringPayment || result) return;
     const readValue = (name: string) => {
       const field = checkoutForm.current?.elements.namedItem(name);
       return field instanceof HTMLInputElement ? field.value : "";
@@ -307,7 +330,7 @@ function CheckoutPage() {
       value: submittedTotalCents / 100, currency: "BRL",
     };
     try {
-      trackCheckout("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" }, { eventID: `payment_${crypto.randomUUID()}` });
+      trackCheckout("trackCustom", "PixSolicitado", { ...fbData, payment_type: "pix" });
       const controller = new AbortController();
       const requestTimeout = window.setTimeout(() => controller.abort(), 25000);
       const r = await fetch("/api/fruitfy-pix", {
@@ -326,16 +349,20 @@ function CheckoutPage() {
         }),
       }).finally(() => window.clearTimeout(requestTimeout));
       const json = await r.json().catch(() => null);
-      if (!r.ok || !json?.pix?.code) throw new Error(json?.error || "Falha ao gerar PIX.");
-      setResult({ id: json.id, status: json.status, amount: json.amount, pix: json.pix, card: null, orderProof: json.orderProof });
-      if (json.orderProof) {
+      const parsedPayment = checkoutPaymentSchema.safeParse(json);
+      if (!r.ok || !parsedPayment.success || parsedPayment.data.amount !== submittedTotalCents) throw new Error(json?.error || "Falha ao gerar PIX.");
+      setResult({ ...parsedPayment.data, card: null });
+      if (parsedPayment.data.orderProof) {
         try {
-          sessionStorage.setItem("sucupira_original_order", JSON.stringify({
-            proof: json.orderProof,
+          const original = {
+            proof: parsedPayment.data.orderProof,
             buyer: { name: submittedForm.name, email: submittedForm.email, document: submittedForm.document, phone: submittedForm.phone },
             address: { zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement, neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state },
             utm: getCampaignQuery(),
-          }));
+          };
+          sessionStorage.setItem("sucupira_original_order", JSON.stringify(original));
+          offerHandoffReady.current = true;
+          sessionStorage.setItem(pendingCheckoutKey(baseKitId), JSON.stringify({ kit: baseKitId, original, payment: parsedPayment.data }));
         } catch { /* Storage is optional; checkout remains usable. */ }
       }
       trackCheckout("track", "AddPaymentInfo", { ...fbData, payment_type: "pix" }, { eventID: `pix_${json.id}` });
@@ -509,7 +536,7 @@ function CheckoutPage() {
                     const status = await response.json().catch(() => null);
                     if (!response.ok) throw new Error(status?.error || "Não foi possível confirmar o pagamento agora.");
                     if (!status?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    if (status.eligible) navigate({ to: "/upsell" }); else navigate({ to: "/obrigado" });
+                    finishPayment(status.eligible === true);
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}
@@ -598,7 +625,7 @@ function CheckoutPage() {
             <div className="grid grid-cols-2 gap-4">
               <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
-                error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
+                error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={deliveryReady} />
               <Field id="number" name="number" label="Número" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
@@ -637,7 +664,7 @@ function CheckoutPage() {
           </section>
           <section className={STEP}>
               <StepTitle n={3}>Frete</StepTitle>
-              {!cepFilled ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
+              {!deliveryReady ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
                   { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
@@ -663,7 +690,7 @@ function CheckoutPage() {
 
           <div className="rounded-lg border border-border bg-card p-4 sm:p-5 text-sm space-y-3 tabular-nums shadow-sm">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
           </div>
@@ -680,7 +707,7 @@ function CheckoutPage() {
 
           <Button
             type="submit"
-            disabled={loading}
+            disabled={loading || restoringPayment}
             aria-busy={loading}
             className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-lg font-bold text-lg shadow-sm hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
           >

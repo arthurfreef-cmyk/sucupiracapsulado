@@ -1,9 +1,22 @@
 import { afterEach, describe, expect, it } from "bun:test";
-import { AddressLookupError, fetchCheckoutAddress, normalizeCheckoutZip } from "../src/lib/checkout-address";
+import { AddressLookupError, fetchCheckoutAddress, isCheckoutDeliveryReady, normalizeCheckoutZip } from "../src/lib/checkout-address";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => { globalThis.fetch = originalFetch; });
 const json = (data: unknown, status = 200) => Response.json(data, { status });
+
+describe("manual delivery readiness", () => {
+  const address = { street: "Praça da Sé", neighborhood: "Sé", city: "São Paulo", state: "SP" };
+  it("makes completed manual addresses available for shipping", () => {
+    expect(isCheckoutDeliveryReady("01001000", "01001000", address)).toBe(true);
+  });
+  it("does not reuse delivery details after the CEP changes", () => {
+    expect(isCheckoutDeliveryReady("69900001", "01001000", address)).toBe(false);
+  });
+  it("does not release shipping for incomplete manual details", () => {
+    expect(isCheckoutDeliveryReady("01001000", "01001000", { ...address, street: " " })).toBe(false);
+  });
+});
 
 describe("CEP lookup", () => {
   it("preserves leading zeros and accepts pasted formatting", () => {
