@@ -7,6 +7,13 @@ export interface CheckoutAddress {
   state: string;
 }
 
+/** Manual delivery details are ready only when bound to the current ZIP. */
+export function isCheckoutDeliveryReady(zip: string, resolvedZip: string | null, address: CheckoutAddress): boolean {
+  return /^\d{8}$/.test(zip) && zip === resolvedZip
+    && Boolean(address.street.trim() && address.neighborhood.trim() && address.city.trim())
+    && /^[A-Z]{2}$/.test(address.state.trim());
+}
+
 const viaCepSchema = z.object({
   logradouro: z.string().optional(), bairro: z.string().optional(),
   localidade: z.string().trim().min(1), uf: z.string().regex(/^[A-Z]{2}$/),

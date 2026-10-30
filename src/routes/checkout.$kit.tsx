@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
-import { AddressLookupError, fetchCheckoutAddress as fetchAddress, normalizeCheckoutZip } from "@/lib/checkout-address";
+import { AddressLookupError, fetchCheckoutAddress as fetchAddress, isCheckoutDeliveryReady, normalizeCheckoutZip } from "@/lib/checkout-address";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 
 
@@ -156,8 +156,9 @@ function CheckoutPage() {
 
   // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
   const cepDigits = onlyDigits(form.zip);
+  const deliveryReady = isCheckoutDeliveryReady(cepDigits, resolvedCep.current, form);
   const expressCents = expressShippingCents(cepDigits);
-  const shippingCents = cepFilled && shipping === "express" ? expressCents : 0;
+  const shippingCents = deliveryReady && shipping === "express" ? expressCents : 0;
   const totalCents = kit.priceCents + shippingCents;
 
   useEffect(() => {
@@ -598,7 +599,7 @@ function CheckoutPage() {
             <div className="grid grid-cols-2 gap-4">
               <Field id="zip" name="zip" label="CEP" inputMode="numeric" autoComplete="postal-code" enterKeyHint="next" placeholder="00000-000" value={form.zip}
                 onChange={e => setForm({...form, zip: maskCEP(e.target.value)})} onBlur={() => touch("zip")}
-                error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={cepFilled} />
+                error={cepError ?? (err("zip", onlyDigits(form.zip).length !== 8) ? "CEP incompleto" : undefined)} ok={deliveryReady} />
               <Field id="number" name="number" label="Número" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="Nº" value={form.number}
                 onChange={e => setForm({...form, number: e.target.value.slice(0, 10)})} onBlur={() => touch("number")}
                 error={err("number", !form.number.trim()) ? "Informe o número" : undefined} ok={!!form.number.trim()} />
@@ -637,7 +638,7 @@ function CheckoutPage() {
           </section>
           <section className={STEP}>
               <StepTitle n={3}>Frete</StepTitle>
-              {!cepFilled ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
+              {!deliveryReady ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
                   { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
@@ -663,7 +664,7 @@ function CheckoutPage() {
 
           <div className="rounded-lg border border-border bg-card p-4 sm:p-5 text-sm space-y-3 tabular-nums shadow-sm">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!cepFilled ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
           </div>
