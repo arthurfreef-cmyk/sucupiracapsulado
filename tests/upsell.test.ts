@@ -3,10 +3,10 @@ import { FRUITFY_KITS, buildFruitfyPayload, fruitfyInput } from "../src/lib/frui
 import { isConfirmedPayment, UPSELL_PRICE_CENTS } from "../src/lib/upsell";
 
 describe("five bottle optional offer", () => {
-  it("costs exactly R$ 47,90 without changing the regular five bottle price", () => {
+  it("keeps the optional offer at R$ 47,90 separately from Black Friday", () => {
     expect(UPSELL_PRICE_CENTS).toBe(4790);
     expect(FRUITFY_KITS.upsell5.amount).toBe(4790);
-    expect(FRUITFY_KITS.k5.amount).toBe(14700);
+    expect(FRUITFY_KITS.k5.amount).toBe(9700);
   });
   it("charges one five-bottle kit for 4790 cents with free shipping", () => {
     const input = fruitfyInput.parse({ kit: "upsell5", buyer: { name: "Cliente Teste", email: "teste@example.com", document: "52998224725", phone: "11999999999" }, address: { zip: "01001000", street: "Praça da Sé", number: "10", neighborhood: "Sé", city: "São Paulo", state: "SP" }, shipping: { method: "free", amount: 0 } });

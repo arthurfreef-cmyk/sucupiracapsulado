@@ -46,22 +46,23 @@ import { useEffect, useRef, useState } from "react";
 import { BadgeCheck, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
 import { siteImages, heroSrcSet, heroSizes, testimonialVideos } from "@/lib/site-media";
 import { LazyVideo } from "@/components/landing/LazyVideo";
+import { KIT_PRICING, formatKitPrice } from "@/lib/kit-pricing";
 
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sucupira Composta — Alívio natural das dores em 24h" },
+      { title: "Black Friday Sucupira Composta — Kits a partir de R$ 12,90" },
       {
         name: "description",
         content:
-          "Fórmula 100% natural com Sucupira, Canela de Velho e Cálcio. Alívio das dores nas articulações, coluna e músculos já nas primeiras 24h.",
+          "Black Friday Sucupira Composta: 1 frasco por R$ 12,90, 3 por R$ 47,90 e 5 por R$ 97,00. Frete grátis e pagamento por PIX.",
       },
-      { property: "og:title", content: "Sucupira Composta — Alívio natural das dores" },
+      { property: "og:title", content: "Black Friday — Sucupira Composta" },
       {
         property: "og:description",
         content:
-          "Composto natural com Sucupira + Canela de Velho + Cálcio. 1 cápsula por dia. Garantia de 30 dias.",
+          "Kits Black Friday: 1 frasco por R$ 12,90, 3 por R$ 47,90 e 5 por R$ 97,00. Frete grátis e garantia de 30 dias.",
       },
       { property: "og:type", content: "website" },
       { property: "og:image", content: siteImages.hero },
@@ -210,7 +211,7 @@ function Hero() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="order-2 lg:order-1 text-center lg:text-left">
             <span className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider shadow-lg mb-4">
-              ✦ Acabe com as dores
+              ✦ Black Friday Sucupira
             </span>
             <h1 className="text-[28px] sm:text-4xl md:text-5xl font-bold text-white leading-[1.15] mb-4">
               O composto 100% natural que cura as <span className="text-[var(--gold)]">dores crônicas</span> e trata as <span className="text-[var(--gold)]">dificuldades</span> do dia a dia já nas <span className="text-[var(--gold)]">primeiras 24h!</span>
@@ -702,8 +703,8 @@ function Pricing() {
       title: "1 Frasco",
       sub: "30 dias de tratamento",
       img: IMG.kit1,
-      from: "R$ 97",
-      price: "R$ 27",
+      from: formatKitPrice(KIT_PRICING.k1.fromCents),
+      price: formatKitPrice(KIT_PRICING.k1.priceCents),
       href: CHECKOUT.k1,
       highlight: false,
     },
@@ -713,8 +714,8 @@ function Pricing() {
       tag: "Mais Vendido",
       meta: "Escolha de 73% dos clientes",
       img: IMG.kit3,
-      from: "R$ 291",
-      price: "R$ 97",
+      from: formatKitPrice(KIT_PRICING.k3.fromCents),
+      price: formatKitPrice(KIT_PRICING.k3.priceCents),
       href: CHECKOUT.k3,
       highlight: true,
       badge: "MELHOR CUSTO-BENEFÍCIO",
@@ -723,8 +724,8 @@ function Pricing() {
       title: "5 Frascos",
       sub: "150 dias de tratamento",
       img: IMG.kit5,
-      from: "R$ 485",
-      price: "R$ 147",
+      from: formatKitPrice(KIT_PRICING.k5.fromCents),
+      price: formatKitPrice(KIT_PRICING.k5.priceCents),
       href: CHECKOUT.k5,
       highlight: false,
     },
@@ -734,9 +735,8 @@ function Pricing() {
     <section id="precos" className="py-12 md:py-20 bg-[var(--cream)]">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-8">
-          <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">Aproveite o DESCONTO e FRETE GRÁTIS antes que acabe!</p>
-          <p className="text-muted-foreground mt-1 mb-5">Promoção encerra à meia-noite</p>
-          <Countdown />
+          <p className="text-primary font-bold uppercase text-sm">Black Friday Sucupira Composta</p>
+          <p className="text-muted-foreground mt-1 mb-5">Kits com preços especiais e FRETE GRÁTIS</p>
         </div>
 
         <h2 className="text-3xl md:text-4xl font-bold text-center mt-12 mb-2">Escolha seu Kit</h2>
@@ -774,7 +774,7 @@ function Pricing() {
                 </div>
                 <div className="text-4xl font-extrabold text-[var(--brand)]">{k.price}</div>
                 <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide mt-1">
-                  OFERTA EXCLUSIVA COM FRETE GRÁTIS
+                  BLACK FRIDAY COM FRETE GRÁTIS
                 </div>
 
               </div>
@@ -793,7 +793,7 @@ function Pricing() {
                 reloadDocument
                 onClick={() => {
                   const w = window as any;
-                  const value = Number(k.price.replace(/[^\d,]/g, "").replace(",", "."));
+                  const value = KIT_PRICING[k.href].priceCents / 100;
                   const num = k.href === "k5" ? 5 : k.href === "k3" ? 3 : 1;
                   if (typeof w.fbq === "function") {
                     w.fbq("track", "AddToCart", {

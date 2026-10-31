@@ -9,14 +9,15 @@ import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } fr
 import { AddressLookupError, fetchCheckoutAddress as fetchAddress, isCheckoutDeliveryReady, normalizeCheckoutZip } from "@/lib/checkout-address";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 import { checkoutPaymentSchema, pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
+import { KIT_PRICING, formatKitPrice } from "@/lib/kit-pricing";
 
 
 import { siteImages } from "@/lib/site-media";
 const imgKit1 = siteImages.kit1, imgKit3 = siteImages.kit3, imgKit5 = siteImages.kit5;
 const KITS = {
-  k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: "R$ 27,00", priceCents: 2700, fromCents: 9700, image: imgKit1 },
-  k3: { title: "3 Frascos", sub: "90 dias de tratamento", price: "R$ 97,00", priceCents: 9700, fromCents: 29100, image: imgKit3 },
-  k5: { title: "5 Frascos", sub: "150 dias de tratamento", price: "R$ 147,00", priceCents: 14700, fromCents: 48500, image: imgKit5 },
+  k1: { title: "1 Frasco", sub: "30 dias de tratamento", price: formatKitPrice(KIT_PRICING.k1.priceCents), ...KIT_PRICING.k1, image: imgKit1 },
+  k3: { title: "3 Frascos", sub: "90 dias de tratamento", price: formatKitPrice(KIT_PRICING.k3.priceCents), ...KIT_PRICING.k3, image: imgKit3 },
+  k5: { title: "5 Frascos", sub: "150 dias de tratamento", price: formatKitPrice(KIT_PRICING.k5.priceCents), ...KIT_PRICING.k5, image: imgKit5 },
 } as const;
 
 type KitId = keyof typeof KITS;
@@ -27,10 +28,10 @@ export const Route = createFileRoute("/checkout/$kit")({
   },
   head: () => ({
     meta: [
-      { title: "Checkout — Sucupira Composta" },
-      { name: "description", content: "Finalize sua compra com PIX com aprovação instantânea." },
-      { property: "og:title", content: "Checkout — Sucupira Composta" },
-      { property: "og:description", content: "Finalize sua compra com PIX com aprovação instantânea." },
+      { title: "Checkout Black Friday — Sucupira Composta" },
+      { name: "description", content: "Finalize seu kit Black Friday de Sucupira Composta com pagamento por PIX e frete grátis." },
+      { property: "og:title", content: "Checkout Black Friday — Sucupira Composta" },
+      { property: "og:description", content: "Finalize seu kit Black Friday de Sucupira Composta com pagamento por PIX e frete grátis." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -571,7 +572,7 @@ function CheckoutPage() {
         </Button>
         <div className="text-center min-w-0">
           <span className="block text-sm sm:text-base font-bold text-primary">Sucupira Composta</span>
-          <span className="block text-xs text-muted-foreground">Checkout Seguro</span>
+          <span className="block text-xs text-muted-foreground">Black Friday · Checkout Seguro</span>
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>

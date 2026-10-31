@@ -1,13 +1,14 @@
 // Cria cobrança PIX via BuckPay.
 import { createFileRoute } from "@tanstack/react-router";
+import { KIT_PRICING } from "@/lib/kit-pricing";
 
 const KITS = {
-  k1: { amount: 2700, name: "Sucupira Composta - 1 Frasco", qty: 1 },
-  k3: { amount: 9700, name: "Sucupira Composta - 3 Frascos", qty: 3 },
-  k5: { amount: 14700, name: "Sucupira Composta - 5 Frascos", qty: 5 },
+  k1: { amount: KIT_PRICING.k1.priceCents, name: "Sucupira Composta - 1 Frasco", qty: 1 },
+  k3: { amount: KIT_PRICING.k3.priceCents, name: "Sucupira Composta - 3 Frascos", qty: 3 },
+  k5: { amount: KIT_PRICING.k5.priceCents, name: "Sucupira Composta - 5 Frascos", qty: 5 },
   gel: { amount: 1290, name: "Gel Massageador Alívio Total", qty: 1 },
 } as const;
-// Prices: k1=R$27, k3=R$97, k5=R$147, gel=R$12,90
+// Regular kit prices follow the shared campaign pricing; gel is unchanged.
 
 type KitId = keyof typeof KITS;
 
