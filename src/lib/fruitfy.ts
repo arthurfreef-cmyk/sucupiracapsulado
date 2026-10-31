@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { UPSELL_PRICE_CENTS } from "./upsell";
+import { KIT_PRICING } from "./kit-pricing";
 
 export const FRUITFY_KITS = {
-  k1: { amount: 2700, id: "a2ee0c4c-bde0-4454-88b2-12665be6431c" },
-  k3: { amount: 9700, id: "a2ee0cb3-9100-41b8-b663-e592c71b6d94" },
-  k5: { amount: 14700, id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b" },
+  k1: { amount: KIT_PRICING.k1.priceCents, id: "a2ee0c4c-bde0-4454-88b2-12665be6431c" },
+  k3: { amount: KIT_PRICING.k3.priceCents, id: "a2ee0cb3-9100-41b8-b663-e592c71b6d94" },
+  k5: { amount: KIT_PRICING.k5.priceCents, id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b" },
   upsell5: { amount: UPSELL_PRICE_CENTS, id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b" },
 } as const;
 

@@ -1,10 +1,11 @@
 // Cria cobrança PIX via Duttyfy (gateway principal). BuckPay permanece em /api/buckpay-pix.
 import { createFileRoute } from "@tanstack/react-router";
+import { KIT_PRICING } from "@/lib/kit-pricing";
 
 const KITS = {
-  k1: { amount: 2700, name: "Sucupira Composta - 1 Frasco" },
-  k3: { amount: 9700, name: "Sucupira Composta - 3 Frascos" },
-  k5: { amount: 14700, name: "Sucupira Composta - 5 Frascos" },
+  k1: { amount: KIT_PRICING.k1.priceCents, name: "Sucupira Composta - 1 Frasco" },
+  k3: { amount: KIT_PRICING.k3.priceCents, name: "Sucupira Composta - 3 Frascos" },
+  k5: { amount: KIT_PRICING.k5.priceCents, name: "Sucupira Composta - 5 Frascos" },
   gel: { amount: 1290, name: "Gel Massageador Alívio Total" },
 } as const;
 type KitId = keyof typeof KITS;
