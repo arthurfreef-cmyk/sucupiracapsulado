@@ -159,7 +159,7 @@ function CheckoutPage() {
 
   const finishPayment = () => {
     try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
-    void navigate({ to: "/obrigado" });
+    void navigate({ to: "/upsell", search: { kit: baseKitId } });
   };
 
   useEffect(() => {
