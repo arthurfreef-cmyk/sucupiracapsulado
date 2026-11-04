@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ArrowLeft, CheckCircle2, Clipboard, Clock3, LoaderCircle, LockKeyhole, PackageCheck, QrCode, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,9 +78,6 @@ function ShippingUpsellPage() {
   }, [upsellStatus.data?.paid, payment, navigate]);
 
   const canGenerate = Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
-  const expiresAt = payment ? Date.parse(payment.pix.expires_at) : 0;
-  const timeLeft = useMemo(() => payment ? Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)) : 0, [payment, expiresAt]);
-  const timeLabel = payment ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, "0")}` : "";
 
   const generatePix = async () => {
     if (!pending || !canGenerate || loading || payment) return;
