@@ -101,8 +101,6 @@ function ProtectionUpsellPage() {
     } catch { setError("Não foi possível copiar automaticamente. Selecione e copie o código PIX."); }
   };
 
-  const decline = () => void navigate({ to: "/obrigado", replace: true });
-
   if (!loaded) {
     return <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center text-sm text-slate-600">Carregando oferta...</main>;
   }
@@ -115,7 +113,7 @@ function ProtectionUpsellPage() {
           <div className="bg-gradient-to-br from-emerald-950 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><ShieldCheck size={15}/> OFERTA OPCIONAL</div>
             <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">NÃO DEIXE SEU PEDIDO DESPROTEGIDO!</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Ative uma camada extra de proteção comercial por apenas R$ 15,90 e tenha a possibilidade de solicitar análise caso aconteça algum problema coberto com seu pedido.</p>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Ative uma proteção extra por apenas R$ 15,90 e tenha a possibilidade de solicitar reembolso se ocorrer uma situação coberta com seu pedido.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {payment ? (
@@ -133,7 +131,7 @@ function ProtectionUpsellPage() {
             ) : (
               <>
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed"><strong>Mais tranquilidade até a entrega:</strong> se houver extravio, avaria ou divergência comprovada no produto recebido, você poderá solicitar uma análise.</p></div>
+                  <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed"><strong>Mais tranquilidade até a entrega:</strong> em caso de extravio, avaria ou divergência comprovada no produto recebido, você poderá solicitar reembolso conforme as condições da proteção.</p></div>
                   <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed"><strong>Até 120% do valor elegível:</strong> nos casos cobertos e aprovados, o reembolso comercial poderá chegar a 120% do total elegível pago pelo produto e pelo complemento logístico.</p></div>
                 </div>
                 <div className="rounded-2xl border p-5">
@@ -144,7 +142,6 @@ function ProtectionUpsellPage() {
                 <Button onClick={generatePix} disabled={!pending || !shipping || !shippingStatus.data?.paid || loading || preview} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM! QUERO ADICIONAR PROTEÇÃO</>}
                 </Button>
-                {!preview && <Button onClick={decline} variant="outline" className="h-12 w-full">Não quero contratar, continuar</Button>}
               </>
             )}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
