@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ArrowLeft, Clipboard, Clock3, LoaderCircle, LockKeyhole, QrCode, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
+import { shippingUpsellCentsForOrder } from "@/lib/fruitfy";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 
 const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional() });
@@ -77,6 +78,7 @@ function ShippingUpsellPage() {
     void navigate({ to: "/obrigado", replace: true });
   }, [upsellStatus.data?.paid, payment, navigate]);
 
+  const individualAmount = pending ? shippingUpsellCentsForOrder(pending.original.proof) : null;
   const canGenerate = Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
 
   const generatePix = async () => {
@@ -122,10 +124,9 @@ function ShippingUpsellPage() {
           <div className="bg-emerald-800 px-6 py-7 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ETAPA DE PAGAMENTO LOGÍSTICO</div>
             <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Complemento de frete</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pagamento do produto principal foi registrado. Para liberar a separação e o envio, conclua agora o pagamento do complemento logístico. O valor exato será mostrado antes do pagamento.</p>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pagamento do produto principal foi registrado. Para liberar a separação e o envio, conclua agora o pagamento do complemento logístico pelo valor informado abaixo.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            {!pending && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Esta é a visualização da página. Para gerar um PIX real, acesse esta rota após concluir um pedido pago no checkout.</div>}
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
             {pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
@@ -145,11 +146,11 @@ function ShippingUpsellPage() {
               </section>
             ) : (
               <section className="space-y-4">
-                <div className="rounded-2xl border p-5">
+                {individualAmount !== null && <div className="rounded-2xl border p-5">
                   <p className="text-sm font-semibold text-slate-600">Valor do complemento logístico</p>
-                  <p className="mt-2 text-3xl font-extrabold text-slate-900">R$ 18,61 a R$ 21,00</p>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">O valor exato será exibido antes do pagamento. O produto principal já foi pago; esta cobrança é adicional e libera a separação e o envio. O pedido só será enviado após a confirmação do PIX.</p>
-                </div>
+                  <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
+                </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar frete e confirmar pedido</>}
                 </Button>
