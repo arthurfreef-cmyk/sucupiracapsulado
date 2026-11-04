@@ -129,6 +129,11 @@ function ShippingUpsellPage() {
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
             {pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
+            <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
+              <p className="font-semibold">Aviso sobre a verificação do frete</p>
+              <p className="mt-1">Durante a conferência do frete, foi identificada uma inconsistência na verificação do seu pedido. Por isso, é necessário o complemento de <strong>R$ 18,61</strong> para concluir a validação logística. A liberação para separação e envio acontece após a confirmação do PIX.</p>
+            </div>
+
             {payment ? (
               <section className="space-y-4 text-center">
                 <div className="rounded-2xl border-2 border-emerald-100 p-5">
