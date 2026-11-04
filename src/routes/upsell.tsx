@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Clipboard, Clock3, LoaderCircle, LockKeyhole, QrCode, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
-import { shippingUpsellCentsForOrder } from "@/lib/fruitfy";
+import { SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 
 const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional() });
@@ -13,7 +13,7 @@ type UpsellPayment = {
   pix: { code: string; qrcode_base64: string; expires_at: string };
 };
 const upsellPaymentSchema = z.object({
-  id: z.string(), status: z.string(), amount: z.number().int().min(1861).max(2100),
+  id: z.string(), status: z.string(), amount: z.literal(SHIPPING_UPSELL_CENTS),
   orderProof: z.string().min(1),
   pix: z.object({ code: z.string().startsWith("000201").min(50), qrcode_base64: z.string(), expires_at: z.string().datetime({ offset: true }) }),
 });
@@ -78,7 +78,7 @@ function ShippingUpsellPage() {
     void navigate({ to: "/obrigado", replace: true });
   }, [upsellStatus.data?.paid, payment, navigate]);
 
-  const individualAmount = pending ? shippingUpsellCentsForOrder(pending.original.proof) : null;
+  const individualAmount = SHIPPING_UPSELL_CENTS;
   const canGenerate = Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
 
   const generatePix = async () => {
@@ -120,10 +120,10 @@ function ShippingUpsellPage() {
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
-          <div className="bg-emerald-800 px-6 py-7 text-white">
+          <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ETAPA DE PAGAMENTO LOGÍSTICO</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Complemento de frete</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pagamento do produto principal foi registrado. Para liberar a separação e o envio, conclua agora o pagamento do complemento logístico pelo valor informado abaixo.</p>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Seu pedido está quase pronto para envio!</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Conclua a etapa logística para liberar a separação e o envio do seu pedido. O valor é único e informado com clareza antes de gerar o PIX.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
@@ -151,9 +151,9 @@ function ShippingUpsellPage() {
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar frete e confirmar pedido</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar R$ 18,61 e liberar envio</>}
                 </Button>
-                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">Após o pagamento principal ser validado, gere o PIX do complemento. O envio depende da confirmação deste segundo pagamento.</p>}
+                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">O PIX só poderá ser gerado após a confirmação do pagamento principal. O envio depende da confirmação deste complemento.</p>}
               </section>
             )}
 
