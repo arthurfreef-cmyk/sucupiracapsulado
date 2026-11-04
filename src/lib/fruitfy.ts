@@ -67,22 +67,15 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
 }
 
 
-/** Stable per original order: the same customer sees and pays the same individual amount. */
-export function shippingUpsellCentsForOrder(orderProof: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < orderProof.length; index++) {
-    hash ^= orderProof.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return 1861 + (hash >>> 0) % 240;
-}
+/** Fixed shipping add-on price: R$ 18,61. */
+export const SHIPPING_UPSELL_CENTS = 1861;
 
 export function buildShippingUpsellPayload(
   buyer: { name: string; email: string; document: string; phone: string },
   amount: number,
   rawUtm?: string,
 ) {
-  if (!Number.isInteger(amount) || amount < 1861 || amount > 2100) {
+  if (amount !== SHIPPING_UPSELL_CENTS) {
     throw new Error("Valor do complemento de frete inválido.");
   }
   const query = new URLSearchParams(rawUtm?.replace(/^\?/, "") ?? "");
