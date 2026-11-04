@@ -79,7 +79,7 @@ export function buildShippingUpsellPayload(
   if (!Number.isInteger(amount) || amount < 1861 || amount > 2100) {
     throw new Error("Valor do complemento de frete inválido.");
   }
-  const query = new URLSearchParams(rawUtm?.replace(/^\\?/, "") ?? "");
+  const query = new URLSearchParams(rawUtm?.replace(/^\?/, "") ?? "");
   const utm: Record<string, string> = {};
   for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     const value = query.get(key);
