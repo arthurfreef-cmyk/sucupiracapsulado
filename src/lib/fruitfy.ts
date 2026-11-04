@@ -94,7 +94,8 @@ export function buildShippingUpsellPayload(
     utm,
   };
 }
-\nexport const fruitfyResponse = z.object({
+
+export const fruitfyResponse = z.object({
   success: z.literal(true),
   data: z.object({
     order_id: z.string().min(1),
