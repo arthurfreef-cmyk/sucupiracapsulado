@@ -540,7 +540,7 @@ function CheckoutPage() {
                     const checked = await payment.refetch();
                     if (checked.error) throw checked.error;
                     if (!checked.data?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    finishPayment();
+                    setTransitioningToUpsell(true);
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}
