@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { ArrowLeft, Clipboard, Clock3, LoaderCircle, LockKeyhole, PackageCheck, QrCode, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, Clipboard, Clock3, LoaderCircle, LockKeyhole, QrCode, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
 import { useOrderPayment } from "@/hooks/use-order-payment";
