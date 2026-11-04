@@ -158,14 +158,12 @@ function CheckoutPage() {
   }, [baseKitId]);
 
   const finishPayment = () => {
-    try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
-    void navigate({ to: "/obrigado" });
+    void navigate({ to: "/upsell", search: { kit: baseKitId } });
   };
 
   useEffect(() => {
     if (!payment.data?.paid) return;
-    try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
-    void navigate({ to: "/obrigado" });
+    void navigate({ to: "/upsell", search: { kit: baseKitId } });
   }, [payment.data?.paid, navigate, baseKitId]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());

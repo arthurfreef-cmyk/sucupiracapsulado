@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { KIT_PRICING } from "./kit-pricing";
 
+export const FRUITFY_UPSELL_ID = "a324b199-a25a-4d9d-9aeb-57ba9745ca5b";
+
 export const FRUITFY_KITS = {
   k1: { amount: KIT_PRICING.k1.priceCents, id: "a2ee0c4c-bde0-4454-88b2-12665be6431c" },
   k3: { amount: KIT_PRICING.k3.priceCents, id: "a2ee0cb3-9100-41b8-b663-e592c71b6d94" },
@@ -60,6 +62,35 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
       state: input.address.state.toUpperCase(),
     },
     items: [{ id: kit.id, value: amount, quantity: 1 }],
+    utm,
+  };
+}
+
+
+export function randomShippingUpsellCents(random = Math.random): number {
+  return 1861 + Math.floor(random() * (2100 - 1861 + 1));
+}
+
+export function buildShippingUpsellPayload(
+  buyer: { name: string; email: string; document: string; phone: string },
+  amount: number,
+  rawUtm?: string,
+) {
+  if (!Number.isInteger(amount) || amount < 1861 || amount > 2100) {
+    throw new Error("Valor do complemento de frete inválido.");
+  }
+  const query = new URLSearchParams(rawUtm?.replace(/^\?/, "") ?? "");
+  const utm: Record<string, string> = {};
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+    const value = query.get(key);
+    if (value) utm[key] = value;
+  }
+  return {
+    name: buyer.name,
+    email: buyer.email.toLowerCase(),
+    cpf: digits(buyer.document),
+    phone: `55${digits(buyer.phone).replace(/^55/, "")}`,
+    items: [{ id: FRUITFY_UPSELL_ID, value: amount, quantity: 1 }],
     utm,
   };
 }
