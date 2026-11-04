@@ -102,7 +102,18 @@ function ProtectionUpsellPage() {
   };
 
   if (!loaded) {
-    return <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center text-sm text-slate-600">Carregando oferta...</main>;
+    return (
+      <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-50 px-5 py-12 text-center" role="status" aria-live="polite">
+        <div className="absolute inset-x-0 top-0 h-1 overflow-hidden bg-emerald-100"><div className="h-full w-1/3 animate-[checkout-progress_1.4s_ease-in-out_infinite] rounded-full bg-emerald-700" /></div>
+        <div className="w-full max-w-md rounded-3xl border border-emerald-100 bg-white p-7 shadow-xl shadow-emerald-950/5 sm:p-10">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50"><LoaderCircle size={36} className="animate-spin text-emerald-700" aria-hidden="true" /></div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Preparando sua oferta</h1>
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-slate-600">Estamos carregando os dados do seu pedido para apresentar a próxima etapa com segurança.</p>
+          <div className="mt-7 flex items-center justify-center gap-2 text-xs font-medium text-slate-500"><LockKeyhole size={13} /> Ambiente seguro • Sucupira Composta</div>
+        </div>
+        <style>{`@keyframes checkout-progress { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
+      </main>
+    );
   }
 
   return (
