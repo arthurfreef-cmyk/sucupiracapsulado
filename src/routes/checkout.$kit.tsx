@@ -144,7 +144,6 @@ function CheckoutPage() {
   const checkoutForm = useRef<HTMLFormElement | null>(null);
   const submitInFlight = useRef(false);
   const resolvedCep = useRef<string | null>(null);
-  const offerHandoffReady = useRef(false);
   const [restoringPayment, setRestoringPayment] = useState(true);
   const payment = useOrderPayment(result?.orderProof);
 
@@ -153,26 +152,21 @@ function CheckoutPage() {
       const pending = pendingCheckoutSchema.safeParse(JSON.parse(sessionStorage.getItem(pendingCheckoutKey(baseKitId)) || "null"));
       if (pending.success && pending.data.kit === baseKitId) {
         setResult({ ...pending.data.payment, card: null });
-        // Recover the existing charge even if storing the offer handoff fails.
-        try {
-          sessionStorage.setItem("sucupira_original_order", JSON.stringify(pending.data.original));
-          offerHandoffReady.current = true;
-        } catch { offerHandoffReady.current = false; }
       }
     } catch { /* Storage can be unavailable; the form remains usable. */ }
     setRestoringPayment(false);
   }, [baseKitId]);
 
-  const finishPayment = (eligible: boolean) => {
+  const finishPayment = () => {
     try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
-    void navigate({ to: eligible && offerHandoffReady.current ? "/upsell" : "/obrigado" });
+    void navigate({ to: "/obrigado" });
   };
 
   useEffect(() => {
     if (!payment.data?.paid) return;
     try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
-    void navigate({ to: payment.data.eligible && offerHandoffReady.current ? "/upsell" : "/obrigado" });
-  }, [payment.data?.paid, payment.data?.eligible, navigate, baseKitId]);
+    void navigate({ to: "/obrigado" });
+  }, [payment.data?.paid, navigate, baseKitId]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
@@ -373,8 +367,6 @@ function CheckoutPage() {
             address: { zip: submittedForm.zip, street: submittedAddress.street, number: submittedForm.number, complement: submittedForm.complement, neighborhood: submittedAddress.neighborhood, city: submittedAddress.city, state: submittedAddress.state },
             utm: getCampaignQuery(),
           };
-          sessionStorage.setItem("sucupira_original_order", JSON.stringify(original));
-          offerHandoffReady.current = true;
           sessionStorage.setItem(pendingCheckoutKey(baseKitId), JSON.stringify({ kit: baseKitId, original, payment: parsedPayment.data }));
         } catch { /* Storage is optional; checkout remains usable. */ }
       }
@@ -549,7 +541,7 @@ function CheckoutPage() {
                     const checked = await payment.refetch();
                     if (checked.error) throw checked.error;
                     if (!checked.data?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    finishPayment(checked.data.eligible);
+                    finishPayment();
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}

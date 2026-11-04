@@ -23,18 +23,7 @@ export const Route = createFileRoute("/api/fruitfy-pix")({
         if (!token || !storeId) {
           return Response.json({ error: "Pagamento indisponível no momento." }, { status: 503 });
         }
-        const { verifyOrderProof, checkOrderPaid, signOrderProof } = await import("@/lib/fruitfy-order.server");
-        if (parsed.data.kit === "upsell5") {
-          const original = await verifyOrderProof(parsed.data.originalOrderProof ?? "");
-          if (!original || original.kit === "upsell5") {
-            return Response.json({ error: "Esta oferta precisa de um pedido inicial confirmado." }, { status: 403 });
-          }
-          try {
-            if (!(await checkOrderPaid(original))) return Response.json({ error: "Aguardamos a confirmação do pagamento do primeiro pedido." }, { status: 409 });
-          } catch {
-            return Response.json({ error: "Não foi possível confirmar o primeiro pedido. Tente novamente." }, { status: 502 });
-          }
-        }
+        const { signOrderProof } = await import("@/lib/fruitfy-order.server");
         const payload = buildFruitfyPayload(parsed.data);
         try {
           // Never retry a charge or fall back automatically: a timed-out request may
