@@ -613,7 +613,7 @@ function CheckoutPage() {
             <div className="text-base sm:text-lg font-bold text-primary shrink-0 tabular-nums">{kit.price}</div>
           </div>
 
-          <div className="min-w-0 space-y-6">
+          <fieldset disabled={loading || restoringPayment} className="min-w-0 space-y-6 border-0 p-0 m-0 disabled:opacity-75">
           <section className={STEP}>
             <StepTitle n={1}>Dados Pessoais</StepTitle>
             <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
@@ -707,7 +707,7 @@ function CheckoutPage() {
               <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
           </section>
-          </div>
+          </fieldset>
           <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:self-start" aria-label="Resumo e finalização do pedido">
           <div className="border-y border-border py-5 text-sm space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
