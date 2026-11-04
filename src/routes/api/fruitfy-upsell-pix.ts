@@ -67,6 +67,7 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
             id: data.order_uuid ?? data.order_id,
             kit: "upsell5",
             amount,
+            buyer: originalOrder.buyer ?? parsed.data.buyer,
           });
           return Response.json({
             id: data.order_id,
