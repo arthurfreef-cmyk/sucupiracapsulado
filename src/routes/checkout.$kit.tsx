@@ -163,7 +163,7 @@ function CheckoutPage() {
     setTransitioningToUpsell(true);
     const timer = window.setTimeout(() => {
       void navigate({ to: "/upsell", search: { kit: baseKitId } });
-    }, 1100);
+    }, 1800);
     return () => window.clearTimeout(timer);
   }, [payment.data?.paid, navigate, baseKitId]);
 
@@ -567,10 +567,22 @@ function CheckoutPage() {
 
   if (transitioningToUpsell) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center" role="status" aria-live="polite">
-        <LoaderCircle size={42} className="animate-spin text-primary" aria-hidden="true" />
-        <h1 className="text-xl font-bold text-foreground">Pagamento confirmado!</h1>
-        <p className="max-w-sm text-sm text-muted-foreground">Estamos preparando a próxima etapa do seu pedido...</p>
+      <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--cream)] px-5 py-12 text-center" role="status" aria-live="polite">
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--brand)]/10"><div className="h-full w-1/3 animate-[checkout-progress_1.4s_ease-in-out_infinite] rounded-full bg-[var(--brand)]" /></div>
+        <div className="w-full max-w-md rounded-3xl border border-[var(--brand)]/10 bg-white p-7 shadow-xl shadow-[var(--brand)]/10 sm:p-10">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/60">
+            <ShieldCheck size={38} className="text-emerald-700" aria-hidden="true" />
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-800"><CheckCircle2 size={14} /> Pagamento aprovado</span>
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-[var(--brand)] sm:text-3xl">Tudo certo com seu pedido!</h1>
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">Estamos validando os dados e preparando a próxima etapa. Não feche esta página.</p>
+          <div className="mt-7 flex items-center justify-center gap-3 rounded-xl bg-[var(--cream)] px-4 py-3 text-left">
+            <LoaderCircle size={20} className="shrink-0 animate-spin text-[var(--brand)]" aria-hidden="true" />
+            <div><p className="text-sm font-bold text-foreground">Preparando sua próxima etapa</p><p className="text-xs text-muted-foreground">Isso levará apenas alguns instantes</p></div>
+          </div>
+          <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground"><Lock size={13} /> Ambiente seguro • Sucupira Composta</div>
+        </div>
+        <style>{`@keyframes checkout-progress { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
       </main>
     );
   }
