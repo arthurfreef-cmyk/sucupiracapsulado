@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api/fruitfy-status")({
     if (!order) return Response.json({ error: "Referência do pedido inválida ou expirada." }, { status: 403 });
     try {
       const paid = await checkOrderPaid(order);
-      return Response.json({ paid, eligible: paid && order.kit !== "upsell5" }, { headers: { "Cache-Control": "no-store" } });
+      return Response.json({ paid, eligible: false }, { headers: { "Cache-Control": "no-store" } });
     } catch {
       return Response.json({ error: "Não foi possível consultar o pagamento agora. Tente novamente." }, { status: 502 });
     }

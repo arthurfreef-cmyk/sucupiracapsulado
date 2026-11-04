@@ -3,10 +3,6 @@
 - [x] Integrar rastreamento UTMify e verificar checkout com PIX simulado.
 - [ ] Ativar redirecionamento ao voltar UTMify — redirecionamento ao voltar aguarda URL real do usuário, pois o arquivo contém endereço de exemplo.
 - [x] Atualizar Black Friday para R$ 12,90 / R$ 47,90 / R$ 97,00; ancoragens reduzidas para R$ 79 / R$ 237 / R$ 395; 31 testes aprovados e PIX reais dos três kits gerados, exibidos e recuperados após atualizar, sem pagamento ou publicação.
-- [x] Concluir `/upsell`, unificar páginas da oferta, confirmar pagamento automaticamente e validar aceitação/recusa e retorno ao PIX com respostas simuladas; 18 testes aprovados.
-- [ ] Validar oferta com pagamento real confirmado na Fruitfy — depende de um pedido inicial efetivamente pago; nenhuma transação paga foi realizada nesta verificação.
-- [x] Criar rota `/upsell1` para oferta opcional de 5 frascos por R$ 47,90, integrada ao pós-pagamento e ao PIX Fruitfy.
-- [x] Criar oferta opcional de 5 frascos por R$ 47,90, com página pós-pagamento, confirmação real via Fruitfy, checkout PIX separado e opção clara de recusar.
 - [x] Otimizar carregamento de imagens e vídeos; alinhar prazo de entrega e contato (sem WhatsApp).
 - [x] Refinar apresentação do checkout para clareza e confiança; formulário, entrega e PIX simulado verificados em telas grandes e pequenas, com 10 testes aprovados e sem erros observados.
 - [x] Corrigir consulta de CEP com alternativa, preenchimento de endereços incompletos e proteção contra respostas antigas; validar com testes.
@@ -24,3 +20,6 @@
 - [x] Reproduzir erros na página e no checkout sem alterar estrutura, visual ou copy.
 - [x] Corrigir divergência de frete, endereço de CEP anterior, cópia sem confirmação e leitura de cookies malformados; validar fluxo com pagamento simulado, sem criar cobrança real.
 - [ ] Confirmar eventos do Pixel Booster — bloqueado pela proteção externa da Fruitfy; depende de liberação do fornecedor.
+
+# Remover upsells
+- [x] Remover todas as ofertas adicionais e bloquear novas cobranças; 29 testes aprovados e fluxo PIX simulado confirmado diretamente em `/obrigado`, com os três links antigos redirecionados e compilação sem erros.

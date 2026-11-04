@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isConfirmedPayment } from "./upsell";
+import { isConfirmedPayment } from "./payment-status";
 
 const proofSchema = z.object({
   id: z.string().min(1).max(128),

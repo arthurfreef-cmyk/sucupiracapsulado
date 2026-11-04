@@ -52,6 +52,18 @@ async def main():
   await page.reload(wait_until='networkidle')
   await page.get_by_role('heading',name='PIX Gerado com Sucesso!').wait_for()
   assert len(requests)==1
+  # Confirmed payments skip all retired offers, even if an old response says eligible.
+  await page.unroute('**/api/fruitfy-status')
+  await page.route('**/api/fruitfy-status',lambda r:r.fulfill(json={"paid":True,"eligible":True}))
+  await page.get_by_role('button',name='Já realizei o pagamento').click()
+  await page.wait_for_url('**/obrigado')
+  await page.get_by_role('heading',name='Pedido Recebido!').wait_for()
+  assert len(requests)==1
+  await page.screenshot(path='/tmp/browser/checkout-refine/confirmed-no-upsell.png')
+  for retired in ['upsell','upsell1','oferta']:
+   await page.goto(f'http://localhost:8080/{retired}',wait_until='networkidle')
+   await page.wait_for_url('**/obrigado')
+   await page.get_by_role('heading',name='Pedido Recebido!').wait_for()
   for width in [390,320]:
    mobile=await browser.new_page(viewport={"width":width,"height":844})
    await mobile.goto('http://localhost:8080/checkout/k5',wait_until='networkidle')
