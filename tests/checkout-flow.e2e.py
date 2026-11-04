@@ -8,7 +8,7 @@ async def main():
   errors=[]; requests=[]
   page.on('pageerror',lambda e:errors.append(str(e)))
   # The sandbox's optional event collector is not running; isolate it from checkout checks.
-  await page.route('http://localhost:3001/tracking/v1/events**',lambda r:r.fulfill(json={}))
+  await page.route('http://localhost:3001/tracking/v1/events**',lambda r:r.fulfill(json={"lead":{},"event":{}}))
   await page.route('**/viacep.com.br/**',lambda r:r.fulfill(json={"logradouro":"Praça da Sé","bairro":"Sé","localidade":"São Paulo","uf":"SP"}))
   async def charge(r):
    requests.append(json.loads(r.request.post_data));await asyncio.sleep(.5)
