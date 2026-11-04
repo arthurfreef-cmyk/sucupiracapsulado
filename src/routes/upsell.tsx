@@ -38,6 +38,7 @@ function ShippingUpsellPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [transitioningToProtection, setTransitioningToProtection] = useState(false);
   const originalStatus = useOrderPayment(pending?.original.proof);
   const upsellStatus = useOrderPayment(payment?.orderProof);
 
@@ -75,8 +76,12 @@ function ShippingUpsellPage() {
         sessionStorage.setItem(marker, "1");
       }
     } catch { /* Tracking must never block the confirmed payment flow. */ }
-    void navigate({ to: "/upsell1", search: { kit }, replace: true });
-  }, [upsellStatus.data?.paid, payment, navigate]);
+    setTransitioningToProtection(true);
+    const timer = window.setTimeout(() => {
+      void navigate({ to: "/upsell1", search: { kit }, replace: true });
+    }, 1100);
+    return () => window.clearTimeout(timer);
+  }, [upsellStatus.data?.paid, payment, navigate, kit]);
 
   const individualAmount = SHIPPING_UPSELL_CENTS;
   const canGenerate = Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
@@ -114,6 +119,16 @@ function ShippingUpsellPage() {
       window.setTimeout(() => setCopied(false), 1800);
     } catch { setError("Não foi possível copiar automaticamente. Selecione e copie o código PIX."); }
   };
+
+  if (transitioningToProtection) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 px-6 text-center" role="status" aria-live="polite">
+        <LoaderCircle size={42} className="animate-spin text-emerald-700" aria-hidden="true" />
+        <h1 className="text-xl font-bold text-slate-900">Pagamento confirmado!</h1>
+        <p className="max-w-sm text-sm text-slate-600">Estamos preparando a próxima etapa do seu pedido...</p>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
