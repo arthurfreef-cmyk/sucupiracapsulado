@@ -2,6 +2,7 @@ import { z } from "zod";
 import { KIT_PRICING } from "./kit-pricing";
 
 export const FRUITFY_UPSELL_ID = "a324b199-a25a-4d9d-9aeb-57ba9745ca5b";
+export const FRUITFY_PROTECTION_ID = "a324c713-3b2a-42f1-a281-30790ae17e6d";
 
 export const FRUITFY_KITS = {
   k1: { amount: KIT_PRICING.k1.priceCents, id: "a2ee0c4c-bde0-4454-88b2-12665be6431c" },
@@ -66,23 +67,31 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
   };
 }
 
-
 /** Fixed shipping add-on price: R$ 18,61. */
 export const SHIPPING_UPSELL_CENTS = 1861;
 
-export function buildShippingUpsellPayload(
-  buyer: { name: string; email: string; document: string; phone: string },
-  amount: number,
-  rawUtm?: string,
-) {
-  if (amount !== SHIPPING_UPSELL_CENTS) {
-    throw new Error("Valor do complemento de frete inválido.");
-  }
+/** Fixed optional commercial-protection add-on price: R$ 15,90. */
+export const PROTECTION_UPSELL_CENTS = 1590;
+
+function buildUpsellUtm(rawUtm?: string) {
   const query = new URLSearchParams(rawUtm?.replace(/^\?/, "") ?? "");
   const utm: Record<string, string> = {};
   for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     const value = query.get(key);
     if (value) utm[key] = value;
+  }
+  return utm;
+}
+
+type UpsellBuyer = { name: string; email: string; document: string; phone: string };
+
+export function buildShippingUpsellPayload(
+  buyer: UpsellBuyer,
+  amount: number,
+  rawUtm?: string,
+) {
+  if (amount !== SHIPPING_UPSELL_CENTS) {
+    throw new Error("Valor do complemento de frete inválido.");
   }
   return {
     name: buyer.name,
@@ -90,7 +99,25 @@ export function buildShippingUpsellPayload(
     cpf: digits(buyer.document),
     phone: `55${digits(buyer.phone).replace(/^55/, "")}`,
     items: [{ id: FRUITFY_UPSELL_ID, value: amount, quantity: 1 }],
-    utm,
+    utm: buildUpsellUtm(rawUtm),
+  };
+}
+
+export function buildProtectionUpsellPayload(
+  buyer: UpsellBuyer,
+  amount: number,
+  rawUtm?: string,
+) {
+  if (amount !== PROTECTION_UPSELL_CENTS) {
+    throw new Error("Valor da proteção comercial inválido.");
+  }
+  return {
+    name: buyer.name,
+    email: buyer.email.toLowerCase(),
+    cpf: digits(buyer.document),
+    phone: `55${digits(buyer.phone).replace(/^55/, "")}`,
+    items: [{ id: FRUITFY_PROTECTION_ID, value: amount, quantity: 1 }],
+    utm: buildUpsellUtm(rawUtm),
   };
 }
 
