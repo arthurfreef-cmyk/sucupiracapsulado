@@ -45,7 +45,7 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
         return Response.json({ error: "Não foi possível gerar o PIX da proteção. Tente novamente." }, { status: 502 });
       }
       const data = result.data.data;
-      const orderProof = await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: "protection", amount });
+      const orderProof = await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: "protection", amount, buyer: shippingOrder.buyer ?? parsed.data.buyer });
       return Response.json({
         id: data.order_id, status: data.status, amount, orderProof,
         pix: { code: data.pix.code, qrcode_base64: "", expires_at: data.pix.expires_at },
