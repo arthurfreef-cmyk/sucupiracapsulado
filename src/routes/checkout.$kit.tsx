@@ -31,7 +31,7 @@ export const Route = createFileRoute("/checkout/$kit")({
       { title: "Checkout Black Friday — Sucupira Composta" },
       { name: "description", content: "Finalize seu kit Sucupira Composta com pagamento por PIX e confira as condições completas de entrega." },
       { property: "og:title", content: "Checkout Black Friday — Sucupira Composta" },
-      { property: "og:description", content: "Finalize seu kit Black Friday de Sucupira Composta com pagamento por PIX e frete grátis." },
+      { property: "og:description", content: "Finalize seu kit Sucupira Composta com pagamento por PIX e confira as condições completas de entrega." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -685,7 +685,7 @@ function CheckoutPage() {
                       <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
                       <div><p className="text-sm font-bold">{o.title}</p><p className="text-xs text-muted-foreground">{o.eta}</p></div>
                     </div>
-                    <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-checkout-success-strong")}>{o.cents === 0 ? "Grátis" : formatBRL(o.cents)}</span>
+                    <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-checkout-success-strong")}>{o.cents === 0 ? "Sem adicional" : formatBRL(o.cents)}</span>
                   </label>
                 ))}
               </RadioGroup>)}
