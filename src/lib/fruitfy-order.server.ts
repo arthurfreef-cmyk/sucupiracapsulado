@@ -4,6 +4,7 @@ import { isConfirmedPayment } from "./payment-status";
 const proofSchema = z.object({
   id: z.string().min(1).max(128),
   kit: z.enum(["k1", "k3", "k5", "upsell5", "protection"]),
+  buyer: z.object({ name: z.string().min(3).max(150), email: z.string().email().max(254), document: z.string().length(11), phone: z.string().regex(/^\\d{10,11}$/) }).optional(),
   amount: z.number().int().positive(),
   expires: z.number().int().positive(),
 });
