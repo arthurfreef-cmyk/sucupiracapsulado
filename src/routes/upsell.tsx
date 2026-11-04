@@ -75,7 +75,7 @@ function ShippingUpsellPage() {
         sessionStorage.setItem(marker, "1");
       }
     } catch { /* Tracking must never block the confirmed payment flow. */ }
-    void navigate({ to: "/obrigado", replace: true });
+    void navigate({ to: "/upsell-protecao", search: { kit }, replace: true });
   }, [upsellStatus.data?.paid, payment, navigate]);
 
   const individualAmount = SHIPPING_UPSELL_CENTS;
