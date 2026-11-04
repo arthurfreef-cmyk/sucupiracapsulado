@@ -1,5 +1,6 @@
 # Fruitfy PIX
-- [ ] Integrar rastreamento UTMify e verificar checkout; redirecionamento ao voltar aguarda URL real do usuário, pois o arquivo contém endereço de exemplo.
+- [x] Integrar rastreamento UTMify e verificar checkout com PIX simulado.
+- [ ] Ativar redirecionamento ao voltar UTMify — redirecionamento ao voltar aguarda URL real do usuário, pois o arquivo contém endereço de exemplo.
 - [x] Atualizar Black Friday para R$ 12,90 / R$ 47,90 / R$ 97,00; ancoragens reduzidas para R$ 79 / R$ 237 / R$ 395; 31 testes aprovados e PIX reais dos três kits gerados, exibidos e recuperados após atualizar, sem pagamento ou publicação.
 - [x] Concluir `/upsell`, unificar páginas da oferta, confirmar pagamento automaticamente e validar aceitação/recusa e retorno ao PIX com respostas simuladas; 18 testes aprovados.
 - [ ] Validar oferta com pagamento real confirmado na Fruitfy — depende de um pedido inicial efetivamente pago; nenhuma transação paga foi realizada nesta verificação.
