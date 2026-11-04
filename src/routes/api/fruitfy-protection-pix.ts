@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { buildProtectionUpsellPayload, fruitfyInput, fruitfyResponse, PROTECTION_UPSELL_CENTS, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
+import { buildProtectionUpsellPayload, fruitfyInput, fruitfyResponse, describeFruitfyRejection, PROTECTION_UPSELL_CENTS, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 
 const inputSchema = z.object({
   shippingProof: z.string().min(1).max(2048),
@@ -41,8 +41,9 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
       const raw: unknown = await response.json().catch(() => null);
       const result = fruitfyResponse.safeParse(raw);
       if (!response.ok || !result.success || result.data.data.amount !== amount) {
-        console.error("Fruitfy protection charge rejected", response.status);
-        return Response.json({ error: "Não foi possível gerar o PIX da proteção. Tente novamente." }, { status: 502 });
+        const rejection = describeFruitfyRejection(response.status, raw);
+        console.error("Fruitfy protection charge rejected", rejection.log);
+        return Response.json({ error: rejection.userMessage ?? "Não foi possível gerar o PIX da proteção. Tente novamente." }, { status: 502 });
       }
       const data = result.data.data;
       const orderProof = await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: "protection", amount, buyer: shippingOrder.buyer ?? parsed.data.buyer });

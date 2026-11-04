@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { buildShippingUpsellPayload, fruitfyInput, fruitfyResponse, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
+import { buildShippingUpsellPayload, fruitfyInput, fruitfyResponse, describeFruitfyRejection, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 
 const upsellInput = z.object({
   originalProof: z.string().min(1).max(2048),
@@ -59,8 +59,9 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
           const raw: unknown = await response.json().catch(() => null);
           const result = fruitfyResponse.safeParse(raw);
           if (!response.ok || !result.success || result.data.data.amount !== amount) {
-            console.error("Fruitfy shipping add-on charge rejected", response.status);
-            return Response.json({ error: "Não foi possível gerar o PIX do complemento. Tente novamente." }, { status: 502 });
+            const rejection = describeFruitfyRejection(response.status, raw);
+            console.error("Fruitfy shipping add-on charge rejected", rejection.log);
+            return Response.json({ error: rejection.userMessage ?? "Não foi possível gerar o PIX do complemento. Tente novamente." }, { status: 502 });
           }
           const data = result.data.data;
           const orderProof = await signOrderProof({

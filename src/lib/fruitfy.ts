@@ -134,3 +134,22 @@ export const fruitfyResponse = z.object({
     }),
   }),
 });
+
+const fruitfyValidationError = z.object({ errors: z.record(z.string(), z.array(z.string())) });
+
+/**
+ * Turns a Fruitfy rejection into a safe diagnostic: field names and provider
+ * validation messages only (never tokens, buyer data or raw bodies).
+ */
+export function describeFruitfyRejection(status: number, raw: unknown): { log: string; userMessage: string | null } {
+  const parsed = fruitfyValidationError.safeParse(raw);
+  if (!parsed.success) return { log: `status=${status}`, userMessage: null };
+  const entries = Object.entries(parsed.data.errors);
+  const productIssue = entries.find(([field]) => field.startsWith("items."));
+  return {
+    log: `status=${status} fields=${entries.map(([f, m]) => `${f}: ${m.join(" | ")}`).join("; ").slice(0, 600)}`,
+    userMessage: productIssue
+      ? "Este produto está temporariamente indisponível para pagamento. Nossa equipe já foi notificada; tente novamente mais tarde."
+      : null,
+  };
+}
