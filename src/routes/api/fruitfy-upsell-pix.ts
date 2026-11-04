@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { buildShippingUpsellPayload, fruitfyInput, fruitfyResponse, shippingUpsellCentsForOrder } from "@/lib/fruitfy";
+import { buildShippingUpsellPayload, fruitfyInput, fruitfyResponse, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 
 const upsellInput = z.object({
   originalProof: z.string().min(1).max(2048),
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
           return Response.json({ error: "Pagamento indisponível no momento." }, { status: 503 });
         }
 
-        const amount = shippingUpsellCentsForOrder(parsed.data.originalProof);
+        const amount = SHIPPING_UPSELL_CENTS;
         const payload = buildShippingUpsellPayload(parsed.data.buyer, amount, parsed.data.utm);
         try {
           const response = await fetch("https://api.fruitfy.io/api/pix/charge", {
