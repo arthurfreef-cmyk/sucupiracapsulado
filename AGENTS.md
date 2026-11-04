@@ -23,3 +23,4 @@
 - Initialize LowTrack once after hydration outside checkout pages; checkout document navigation isolates its DOM-mutating script to prevent form regressions.
 - Keep `/upsell` and its existing offer aliases on one shared page, poll signed payment references, and restore pending offer PIX per original order; this prevents divergent offers and repeat charges on refresh.
 - Keep checkout totals alongside the form on wide screens and after it on mobile, with one shared submit control; this preserves a consistent flow without duplicate charges or hidden fields.
+- Load UTMify attribution once after hydration using the supplied prevent-xcod-sck and prevent-subids attributes; this keeps vendor DOM changes outside initial checkout hydration.
