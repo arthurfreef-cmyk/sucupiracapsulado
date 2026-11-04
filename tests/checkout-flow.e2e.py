@@ -32,7 +32,10 @@ async def main():
   await page.get_by_alt_text('PIX QR Code').wait_for()
   assert len(requests)==1 and requests[0]['address']['street']=='Rua corrigida'
   assert requests[0]['shipping']['amount']==0
-  assert 'utm_source=meta' in requests[0].get('utm','') and await page.locator('script[src*="cdn.utmify.com.br"]').count()==1
+   assert 'utm_source=meta' in requests[0].get('utm','') and await page.locator('script[src="https://cdn.utmify.com.br/scripts/utms/latest.js"]').count()==1
+   assert await page.locator('script[src="https://cdn.utmify.com.br/scripts/pixel/pixel.js"]').count()==1
+   assert await page.evaluate('window.pixelId')=='6aeadbedd7624bf4356aba7a'
+   assert await page.locator('script[src*="lowtrack.com.br"]').count()==0
   await page.get_by_role('button',name='COPIAR CÓDIGO').click()
   await page.get_by_role('button',name='COPIADO').wait_for()
   await page.get_by_role('button',name='Já realizei o pagamento').click()
