@@ -567,8 +567,8 @@ function CheckoutPage() {
 
   if (transitioningToUpsell) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-checkout-neutral-soft px-6 text-center" role="status" aria-live="polite">
-        <LoaderCircle size={42} className="animate-spin text-checkout-success-strong" aria-hidden="true" />
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center" role="status" aria-live="polite">
+        <LoaderCircle size={42} className="animate-spin text-primary" aria-hidden="true" />
         <h1 className="text-xl font-bold text-foreground">Pagamento confirmado!</h1>
         <p className="max-w-sm text-sm text-muted-foreground">Estamos preparando a próxima etapa do seu pedido...</p>
       </main>
@@ -576,7 +576,7 @@ function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-checkout-neutral-soft">
+    <div className="min-h-screen bg-background">
       <header className="bg-card border-b px-4 py-3 flex items-center justify-between gap-3">
         <Button asChild variant="ghost" className="px-2 text-muted-foreground">
         <Link to="/" className="flex items-center gap-1 text-sm font-semibold">
@@ -587,7 +587,7 @@ function CheckoutPage() {
           <span className="block text-sm sm:text-base font-bold text-primary">Sucupira Composta</span>
           <span className="block text-xs text-muted-foreground">Black Friday · Checkout Seguro</span>
         </div>
-        <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
+        <span className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
       <main className="container mx-auto max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
         <form
@@ -691,34 +691,35 @@ function CheckoutPage() {
                   { id: "free", title: "Entrega padrão", eta: "3 a 5 dias úteis • sem adicional nesta etapa", cents: 0 },
                   { id: "express", title: "Entrega expressa", eta: "1 a 2 dias úteis • adicional nesta etapa", cents: expressCents },
                 ] as const).map(o => (
-                  <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
+                  <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-primary bg-secondary ring-1 ring-primary" : "border-border hover:border-muted-foreground")}>
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-checkout-success text-checkout-success [&_svg]:fill-checkout-success" />
+                      <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-primary text-primary [&_svg]:fill-primary" />
                       <div><p className="text-sm font-bold">{o.title}</p><p className="text-xs text-muted-foreground">{o.eta}</p></div>
                     </div>
-                    <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-checkout-success-strong")}>{o.cents === 0 ? "Sem adicional" : formatBRL(o.cents)}</span>
+                    <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-primary")}>{o.cents === 0 ? "Sem adicional" : formatBRL(o.cents)}</span>
                   </label>
                 ))}
               </RadioGroup>)}
           </section>
           <section className={STEP}>
             <StepTitle n={4}>Forma de Pagamento</StepTitle>
-            <div className="p-4 rounded-lg border border-checkout-success bg-checkout-success-soft font-bold flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
-              <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
+            <div className="p-4 rounded-lg border border-primary bg-secondary ring-1 ring-primary font-bold flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-primary" /><div><p className="text-sm">PIX</p><p className="text-xs text-muted-foreground font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
+              <div className="text-primary text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
           </section>
           </fieldset>
           <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:self-start" aria-label="Resumo e finalização do pedido">
-          <div className="border-y border-border py-5 text-sm space-y-4 tabular-nums">
+          <h2 className="text-base font-bold text-foreground">Resumo do pedido</h2>
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm text-sm space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">Entrega escolhida (nesta etapa)</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Sem adicional" : formatBRL(shippingCents)}</span></div>
-            <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
-            <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total nesta etapa</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
+            <div className="flex justify-between gap-3 text-primary font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
+            <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total nesta etapa</span><span className="text-2xl text-primary">{formatBRL(totalCents)}</span></div>
           </div>
 
-          <div className="flex items-start gap-3 py-2">
-            <ShieldCheck size={28} className="text-checkout-success-strong shrink-0" aria-hidden="true" />
+          <div className="flex items-start gap-3 rounded-xl border border-gold bg-gold-light/40 p-4">
+            <ShieldCheck size={28} className="text-primary shrink-0" aria-hidden="true" />
             <div>
               <p className="text-sm font-bold text-foreground">Garantia incondicional de 60 dias</p>
               <p className="text-sm leading-relaxed text-muted-foreground mt-1">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
@@ -731,17 +732,16 @@ function CheckoutPage() {
             type="submit"
             disabled={loading || restoringPayment}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-lg font-bold text-lg shadow-sm hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full min-h-14 py-4 bg-primary text-primary-foreground rounded-lg font-bold text-lg shadow-md hover:bg-brand-dark focus-visible:ring-4 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
-            {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
+            {loading ? "Gerando PIX..." : "GERAR PIX SEGURO"}
           </Button>
           <div className="flex items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
             <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 60 dias</span>
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
-          <p className="text-center text-xs text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
           </aside>
         </form>
       </main>
@@ -768,7 +768,7 @@ function Field({ label, error, ok, ...props }: { label: string; error?: string; 
       <span className="text-sm font-semibold text-foreground">{label}</span>
       <div className="relative">
         <input {...props} required={props.required ?? true} aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
-          className={cn("w-full h-12 px-3 pr-10 text-base text-foreground bg-card placeholder:text-muted-foreground border rounded-lg focus:ring-2 outline-none transition-colors", error ? "border-destructive focus:ring-destructive/30" : "border-input hover:border-muted-foreground focus:border-checkout-success focus:ring-checkout-success/20", props.className)} />
+          className={cn("w-full h-12 px-3 pr-10 text-base text-foreground bg-card placeholder:text-muted-foreground border rounded-lg focus:ring-2 outline-none transition-colors", error ? "border-destructive focus:ring-destructive/30" : "border-input hover:border-muted-foreground focus:border-primary focus:ring-ring/30", props.className)} />
         {ok && !error && <CheckCircle2 size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-checkout-success" aria-hidden="true" />}
       </div>
       {error && <span id={errorId} className="text-xs text-destructive">{error}</span>}
