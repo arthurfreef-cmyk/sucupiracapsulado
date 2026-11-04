@@ -1,6 +1,6 @@
-/** The promotional kit is separate from the regular five-bottle kit. */
-export const UPSELL_PRICE_CENTS = 4790;
-export const UPSELL_REFERENCE_CENTS = 48500;
+/** Optional shipping-complement offer shown after the original order is confirmed. */
+export const UPSELL_PRICE_CENTS = 1790;
+export const UPSELL_REFERENCE_CENTS = 2000;
 
 export interface ProviderPayment {
   paid_at: string | null;
