@@ -125,11 +125,6 @@ function ShippingUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Uma cobrança adicional e separada do pedido principal. Confira o valor antes de decidir pagar.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            <div className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
-              <PackageCheck className="mt-0.5 shrink-0 text-emerald-700" size={22}/>
-              <div><p className="font-bold">Seu pedido principal permanece confirmado</p><p className="mt-1 text-sm text-slate-600">Este complemento não substitui nem cancela a compra que você já realizou.</p></div>
-            </div>
-
             {!pending && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Esta é a visualização da página. Para gerar um PIX real, acesse esta rota após concluir um pedido pago no checkout.</div>}
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
             {pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
