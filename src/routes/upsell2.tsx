@@ -7,7 +7,7 @@ import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pendin
 import { PROTECTION_UPSELL_CENTS, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 
-const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional() });
+const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional(), preview: z.boolean().optional() });
 const shippingSchema = z.object({
   id: z.string(), status: z.string(), amount: z.literal(SHIPPING_UPSELL_CENTS), orderProof: z.string().min(1),
   pix: z.object({ code: z.string().startsWith("000201").min(50), qrcode_base64: z.string(), expires_at: z.string().datetime({ offset: true }) }),
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/upsell2")({
 });
 
 function ProtectionUpsellPage() {
-  const { kit = "k1" } = Route.useSearch();
+  const { kit = "k1", preview = false } = Route.useSearch();
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
@@ -55,8 +55,8 @@ function ProtectionUpsellPage() {
 
   useEffect(() => {
     if (!loaded) return;
-    if (!pending || !shipping) void navigate({ to: "/obrigado", replace: true });
-  }, [loaded, pending, shipping, navigate]);
+    if (!preview && (!pending || !shipping)) void navigate({ to: "/obrigado", replace: true });
+  }, [loaded, pending, shipping, preview, navigate]);
 
   useEffect(() => {
     if (!payment?.pix.code) return;
@@ -108,7 +108,7 @@ function ProtectionUpsellPage() {
 
   const decline = () => void navigate({ to: "/obrigado", replace: true });
 
-  if (!loaded || !pending || !shipping) {
+  if (!loaded || (!preview && (!pending || !shipping))) {
     return <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center text-sm text-slate-600">Validando a etapa anterior do pedido...</main>;
   }
 
@@ -123,7 +123,7 @@ function ProtectionUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Uma camada adicional de proteção comercial para ocorrências comprovadas relacionadas ao transporte ou ao produto.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            {!shippingStatus.data?.paid ? (
+            {!shippingStatus.data?.paid && !preview ? (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                 {shippingStatus.isError ? "Não foi possível validar o pagamento logístico. Atualize a página para tentar novamente." : "Confirmando o pagamento da etapa logística. A oferta será liberada após a confirmação."}
               </div>
@@ -156,11 +156,11 @@ function ProtectionUpsellPage() {
                 <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Quero contratar por R$ 15,90</>}
                 </Button>
-                <Button onClick={decline} variant="outline" className="h-12 w-full">Não quero contratar, continuar</Button>
+                {!preview && <Button onClick={decline} variant="outline" className="h-12 w-full">Não quero contratar, continuar</Button>}
               </>
             )}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento opcional processado pela Fruitfy. A contratação só é efetivada após confirmação do PIX.</div>
+            {preview && <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800">Modo de visualização: esta é uma prévia da oferta. Nenhuma cobrança PIX pode ser iniciada.</p>}\n            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento opcional processado pela Fruitfy. A contratação só é efetivada após confirmação do PIX.</div>
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-slate-400">Sucupira Composta • Atendimento e suporte ao cliente</p>
