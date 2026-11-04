@@ -29,7 +29,7 @@ export const Route = createFileRoute("/checkout/$kit")({
   head: () => ({
     meta: [
       { title: "Checkout Black Friday — Sucupira Composta" },
-      { name: "description", content: "Finalize seu kit Black Friday de Sucupira Composta com pagamento por PIX e frete grátis." },
+      { name: "description", content: "Finalize seu kit Sucupira Composta com pagamento por PIX e confira as condições completas de entrega." },
       { property: "og:title", content: "Checkout Black Friday — Sucupira Composta" },
       { property: "og:description", content: "Finalize seu kit Black Friday de Sucupira Composta com pagamento por PIX e frete grátis." },
       { property: "og:type", content: "website" },
@@ -677,8 +677,8 @@ function CheckoutPage() {
               {!deliveryReady ? <p className="text-sm text-muted-foreground flex items-center gap-2"><Truck size={16} aria-hidden="true" />Informe o CEP para ver as opções de entrega.</p> : (
               <RadioGroup aria-label="Frete" orientation="vertical" value={shipping} onValueChange={value => { if (value === "free" || value === "express") setShipping(value); }}>
                 {([
-                  { id: "free", title: "Frete Grátis", eta: "3 a 5 dias úteis", cents: 0 },
-                  { id: "express", title: "Entrega Expressa", eta: "1 a 2 dias úteis", cents: expressCents },
+                  { id: "free", title: "Entrega padrão", eta: "3 a 5 dias úteis • sem adicional nesta etapa", cents: 0 },
+                  { id: "express", title: "Entrega expressa", eta: "1 a 2 dias úteis • adicional nesta etapa", cents: expressCents },
                 ] as const).map(o => (
                   <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-checkout-success bg-checkout-success-soft" : "border-border hover:border-muted-foreground")}>
                     <div className="flex items-center gap-3">
@@ -689,6 +689,11 @@ function CheckoutPage() {
                   </label>
                 ))}
               </RadioGroup>)}
+              <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+                <p className="font-bold">Importante: há um complemento logístico após este pagamento.</p>
+                <p className="mt-1">Depois da aprovação do PIX do produto, você será direcionado para pagar um complemento de <strong>R$ 18,61 a R$ 21,00</strong>. O valor exato será informado na próxima etapa. A separação e o envio do produto só serão liberados após a confirmação desse segundo pagamento.</p>
+                <p className="mt-1">O valor exibido nesta tela não inclui esse complemento logístico.</p>
+              </div>
           </section>
           <section className={STEP}>
             <StepTitle n={4}>Forma de Pagamento</StepTitle>
@@ -701,9 +706,11 @@ function CheckoutPage() {
           <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:self-start" aria-label="Resumo e finalização do pedido">
           <div className="border-y border-border py-5 text-sm space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
-            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Entrega escolhida (nesta etapa)</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Sem adicional" : formatBRL(shippingCents)}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Complemento logístico posterior</span><span>R$ 18,61 a R$ 21,00</span></div>
             <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
-            <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
+            <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total nesta etapa</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
+            <div className="rounded-md bg-amber-50 p-3 text-xs leading-relaxed text-amber-950"><strong>Total estimado com logística:</strong> {formatBRL(totalCents + 1861)} a {formatBRL(totalCents + 2100)}. O complemento será cobrado separadamente após a aprovação deste PIX.</div>
           </div>
 
           <div className="flex items-start gap-3 py-2">
