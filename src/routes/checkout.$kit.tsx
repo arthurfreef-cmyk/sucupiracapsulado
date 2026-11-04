@@ -145,6 +145,7 @@ function CheckoutPage() {
   const submitInFlight = useRef(false);
   const resolvedCep = useRef<string | null>(null);
   const [restoringPayment, setRestoringPayment] = useState(true);
+  const [transitioningToUpsell, setTransitioningToUpsell] = useState(false);
   const payment = useOrderPayment(result?.orderProof);
 
   useEffect(() => {
@@ -157,13 +158,13 @@ function CheckoutPage() {
     setRestoringPayment(false);
   }, [baseKitId]);
 
-  const finishPayment = () => {
-    void navigate({ to: "/upsell", search: { kit: baseKitId } });
-  };
-
   useEffect(() => {
     if (!payment.data?.paid) return;
-    void navigate({ to: "/upsell", search: { kit: baseKitId } });
+    setTransitioningToUpsell(true);
+    const timer = window.setTimeout(() => {
+      void navigate({ to: "/upsell", search: { kit: baseKitId } });
+    }, 1100);
+    return () => window.clearTimeout(timer);
   }, [payment.data?.paid, navigate, baseKitId]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
@@ -563,6 +564,16 @@ function CheckoutPage() {
 
 
   const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
+
+  if (transitioningToUpsell) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-checkout-neutral-soft px-6 text-center" role="status" aria-live="polite">
+        <LoaderCircle size={42} className="animate-spin text-checkout-success-strong" aria-hidden="true" />
+        <h1 className="text-xl font-bold text-foreground">Pagamento confirmado!</h1>
+        <p className="max-w-sm text-sm text-muted-foreground">Estamos preparando a próxima etapa do seu pedido...</p>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-checkout-neutral-soft">
