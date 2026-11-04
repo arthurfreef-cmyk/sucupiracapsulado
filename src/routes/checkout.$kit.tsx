@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle } from "lucide-react";
+import { ShieldCheck, Copy, CheckCircle2, Clock, QrCode, AlertCircle, ArrowLeft, Lock, Truck, LoaderCircle, Pencil } from "lucide-react";
 import { decodeCampaignCookie, expressShippingCents, normalizeCheckoutPhone } from "@/lib/checkout-utils";
 import { AddressLookupError, fetchCheckoutAddress as fetchAddress, isCheckoutDeliveryReady, normalizeCheckoutZip } from "@/lib/checkout-address";
 import { useOrderPayment } from "@/hooks/use-order-payment";
@@ -152,9 +152,12 @@ function CheckoutPage() {
     try {
       const pending = pendingCheckoutSchema.safeParse(JSON.parse(sessionStorage.getItem(pendingCheckoutKey(baseKitId)) || "null"));
       if (pending.success && pending.data.kit === baseKitId) {
-        sessionStorage.setItem("sucupira_original_order", JSON.stringify(pending.data.original));
-        offerHandoffReady.current = true;
         setResult({ ...pending.data.payment, card: null });
+        // Recover the existing charge even if storing the offer handoff fails.
+        try {
+          sessionStorage.setItem("sucupira_original_order", JSON.stringify(pending.data.original));
+          offerHandoffReady.current = true;
+        } catch { offerHandoffReady.current = false; }
       }
     } catch { /* Storage can be unavailable; the form remains usable. */ }
     setRestoringPayment(false);
@@ -279,7 +282,7 @@ function CheckoutPage() {
         number: "Informe o número do endereço.",
       };
       setError(messages[invalidField]);
-      window.requestAnimationFrame(() => document.getElementById(invalidField)?.focus());
+      window.requestAnimationFrame(() => checkoutForm.current?.elements.namedItem(invalidField) instanceof HTMLInputElement && (checkoutForm.current.elements.namedItem(invalidField) as HTMLInputElement).focus());
       return;
     }
     submitInFlight.current = true;
@@ -317,7 +320,13 @@ function CheckoutPage() {
     }
     if (!submittedAddress.street || !submittedAddress.neighborhood || !submittedAddress.city || submittedAddress.state.length !== 2) {
       setManualAddress(true);
+      setTouched(current => ({ ...current, street: true, neighborhood: true, city: true, state: true }));
       setError("Preencha o endereço de entrega para continuar.");
+      const missingField = !submittedAddress.street ? "street" : !submittedAddress.neighborhood ? "neighborhood" : !submittedAddress.city ? "city" : "state";
+      window.requestAnimationFrame(() => {
+        const field = checkoutForm.current?.elements.namedItem(missingField);
+        if (field instanceof HTMLInputElement) field.focus();
+      });
       submitInFlight.current = false;
       setLoading(false);
       return;
@@ -497,6 +506,7 @@ function CheckoutPage() {
                       }
                       setCopied(success);
                       if (success) setTimeout(() => setCopied(false), 2000);
+                      else setError("Selecione e copie o código PIX acima.");
                     }} 
                     aria-live="polite" className="w-full min-h-12 flex items-center gap-2 bg-checkout-success text-checkout-success-foreground px-4 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-checkout-success-strong transition active:scale-95"
                   >
@@ -533,11 +543,10 @@ function CheckoutPage() {
                   if (!result.orderProof) { setError("Não foi possível validar este pedido. Entre em contato com o suporte."); return; }
                   setLoading(true); setError(null);
                   try {
-                    const response = await fetch("/api/fruitfy-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ proof: result.orderProof }) });
-                    const status = await response.json().catch(() => null);
-                    if (!response.ok) throw new Error(status?.error || "Não foi possível confirmar o pagamento agora.");
-                    if (!status?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
-                    finishPayment(status.eligible === true);
+                    const checked = await payment.refetch();
+                    if (checked.error) throw checked.error;
+                    if (!checked.data?.paid) { setError("O pagamento ainda não foi confirmado pela instituição. Aguarde alguns instantes e tente novamente."); return; }
+                    finishPayment(checked.data.eligible);
                   } catch (cause) { setError(cause instanceof Error ? cause.message : "Falha ao consultar o pagamento."); }
                   finally { setLoading(false); }
                 }}
@@ -563,7 +572,7 @@ function CheckoutPage() {
   const err = (k: string, bad: boolean) => (touched[k] && bad ? true : false);
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-checkout-neutral-soft">
       <header className="bg-card border-b px-4 py-3 flex items-center justify-between gap-3">
         <Button asChild variant="ghost" className="px-2 text-muted-foreground">
         <Link to="/" className="flex items-center gap-1 text-sm font-semibold">
@@ -576,7 +585,7 @@ function CheckoutPage() {
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
-      <main className="container mx-auto max-w-2xl px-5 py-6 sm:px-8 sm:py-8">
+      <main className="container mx-auto max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
         <form
           ref={checkoutForm}
           onSubmit={(event) => {
@@ -585,13 +594,13 @@ function CheckoutPage() {
             void submit();
           }}
           noValidate
-          className="space-y-4"
+          className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-x-10 lg:gap-y-8"
         >
-          <div>
+          <div className="lg:col-span-2">
             <h1 className="text-xl font-bold font-sans tracking-normal">Resumo do Pedido</h1>
             <p className="text-sm leading-relaxed text-muted-foreground mt-1">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
-          <div className="flex gap-3 sm:gap-4 items-center rounded-lg border border-border bg-card p-4">
+          <div className="flex gap-3 sm:gap-4 items-center border-y border-border py-4 lg:col-span-2">
             <img src={kit.image} alt={kit.title} width={80} height={80} decoding="async" className="w-20 h-20 object-contain shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm">{kit.title}</div>
@@ -601,7 +610,7 @@ function CheckoutPage() {
             <div className="text-base sm:text-lg font-bold text-primary shrink-0 tabular-nums">{kit.price}</div>
           </div>
 
-
+          <div className="min-w-0 space-y-6">
           <section className={STEP}>
             <StepTitle n={1}>Dados Pessoais</StepTitle>
             <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
@@ -649,9 +658,16 @@ function CheckoutPage() {
             )}
             {(cepFilled || manualAddress) && (
               <>
-                {cepFilled && !manualAddress && <div role="status" className="text-sm leading-relaxed bg-checkout-neutral-soft p-3 rounded-lg text-foreground flex items-start gap-2">
+                {cepFilled && !manualAddress && <div role="status" className="text-sm leading-relaxed bg-checkout-success-soft p-3 rounded-lg text-foreground flex items-start gap-2">
                   <CheckCircle2 size={16} className="shrink-0" aria-hidden="true" />
-                  <span>{form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}</span>
+                  <span className="flex-1 min-w-0 break-words">{form.street || "Endereço"}{form.neighborhood ? `, ${form.neighborhood}` : ""} — {form.city}/{form.state}</span>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0 -my-1" aria-label="Editar endereço" title="Editar endereço" onClick={() => {
+                    setManualAddress(true);
+                    window.requestAnimationFrame(() => {
+                      const field = checkoutForm.current?.elements.namedItem("street");
+                      if (field instanceof HTMLInputElement) field.focus();
+                    });
+                  }}><Pencil size={16} aria-hidden="true" /></Button>
                 </div>}
                 <details className="text-sm text-muted-foreground">
                   <summary className="cursor-pointer py-2 min-h-10 focus-visible:outline-2 focus-visible:outline-ring">Complemento (opcional)</summary>
@@ -683,20 +699,21 @@ function CheckoutPage() {
           </section>
           <section className={STEP}>
             <StepTitle n={4}>Forma de Pagamento</StepTitle>
-            <div className="p-4 rounded-lg border border-checkout-success bg-checkout-success-soft font-bold flex items-center justify-between gap-2">
+            <div className="p-4 rounded-lg border border-checkout-success bg-checkout-success-soft font-bold flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3"><QrCode size={22} className="shrink-0 text-checkout-success-strong" /><div><p className="text-sm">PIX</p><p className="text-xs text-checkout-success-strong font-normal">Aprovação imediata • sem cadastrar cartão</p></div></div>
               <div className="text-checkout-success-strong text-xs flex items-center gap-1 shrink-0"><CheckCircle2 size={16} aria-hidden="true" />Selecionado</div>
             </div>
           </section>
-
-          <div className="rounded-lg border border-border bg-card p-4 sm:p-5 text-sm space-y-3 tabular-nums shadow-sm">
+          </div>
+          <aside className="min-w-0 space-y-5 lg:sticky lg:top-6 lg:self-start" aria-label="Resumo e finalização do pedido">
+          <div className="border-y border-border py-5 text-sm space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
           </div>
 
-          <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+          <div className="flex items-start gap-3 py-2">
             <ShieldCheck size={28} className="text-checkout-success-strong shrink-0" aria-hidden="true" />
             <div>
               <p className="text-sm font-bold text-foreground">Garantia incondicional de 30 dias</p>
@@ -721,6 +738,7 @@ function CheckoutPage() {
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
           <p className="text-center text-xs text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
+          </aside>
         </form>
       </main>
       <SiteFooter />
@@ -728,12 +746,12 @@ function CheckoutPage() {
   );
 }
 
-const STEP = "space-y-4 rounded-lg border border-border bg-card p-4 sm:p-5";
+const STEP = "space-y-4 border-b border-border pb-6";
 
 function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
   return (
-    <h2 className="font-bold tracking-normal flex items-center gap-2.5">
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground" aria-hidden="true">{n}</span>
+    <h2 className="font-bold tracking-normal flex items-center gap-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-sm text-primary" aria-hidden="true">{n}</span>
       {children}
     </h2>
   );
