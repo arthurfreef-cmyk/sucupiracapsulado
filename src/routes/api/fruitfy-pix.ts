@@ -50,7 +50,7 @@ export const Route = createFileRoute("/api/fruitfy-pix")({
           }
           return Response.json({
             id: data.order_id, status: data.status, amount: data.amount,
-            orderProof: await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: parsed.data.kit, amount: data.amount }),
+            orderProof: await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: parsed.data.kit, amount: data.amount, buyer: parsed.data.buyer }),
             pix: { code: data.pix.code, qrcode_base64: "", expires_at: data.pix.expires_at },
           }, { headers: { "Cache-Control": "no-store" } });
         } catch {
