@@ -146,6 +146,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    // Keep third-party DOM changes after hydration and avoid duplicate trackers.
+    const src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
+    if (document.querySelector(`script[src="${src}"]`)) return;
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.defer = true;
+    script.setAttribute("data-utmify-prevent-xcod-sck", "");
+    script.setAttribute("data-utmify-prevent-subids", "");
+    document.head.appendChild(script);
+  }, []);
+
+  useEffect(() => {
     // Load after hydration so third-party tracking cannot alter the initial checkout DOM.
     if (document.querySelector('script[data-fruitfy-booster]')) return;
     const script = document.createElement("script");
