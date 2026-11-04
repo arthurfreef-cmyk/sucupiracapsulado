@@ -62,7 +62,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Kits Black Friday: 1 frasco por R$ 12,90, 3 por R$ 47,90 e 5 por R$ 97,00. Frete grátis e garantia de 30 dias.",
+          "Kits Black Friday: 1 frasco por R$ 12,90, 3 por R$ 47,90 e 5 por R$ 97,00. Frete grátis e garantia de 60 dias.",
       },
       { property: "og:type", content: "website" },
       { property: "og:image", content: siteImages.hero },
@@ -279,7 +279,7 @@ function Hero() {
             <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 bg-[var(--gold)] rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl text-center">
               <ShieldCheck size={16} className="mx-auto mb-0.5 text-[var(--brand)]" aria-hidden="true" />
               <div className="text-[var(--brand)] font-bold text-[10px] md:text-xs">Garantia</div>
-              <div className="text-[var(--brand)] font-extrabold text-sm md:text-base">30 dias</div>
+              <div className="text-[var(--brand)] font-extrabold text-sm md:text-base">60 dias</div>
             </div>
           </div>
         </div>
@@ -653,12 +653,12 @@ function Guarantee() {
         <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4 shadow-lg border-4 border-white">30</div>
         <h3 className="text-2xl md:text-3xl font-bold mb-3">RISCO ZERO: Ou você ama os resultados ou devolvemos cada centavo</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-          Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>e-mail</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
+          Teste o Sucupira Composta por 60 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>e-mail</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
         </p>
-        <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 30 dias</p>
+        <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 60 dias</p>
 
         <div className="flex flex-wrap justify-center gap-3 text-sm">
-          <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">30 dias para testar</span>
+          <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">60 dias para testar</span>
           <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">Reembolso total</span>
           <span className="bg-white px-4 py-2 rounded-full border border-[var(--border)] font-semibold">Sem burocracia</span>
         </div>
@@ -783,7 +783,7 @@ function Pricing() {
                 {k.badge && (
                   <span className="bg-[var(--gold)] text-[var(--brand)] px-3 py-1 rounded-full font-bold">{k.badge}</span>
                 )}
-                <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold"><BadgeCheck size={13} aria-hidden="true" /> Garantia 30 dias</span>
+                <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold"><BadgeCheck size={13} aria-hidden="true" /> Garantia 60 dias</span>
               </div>
 
               <Link
@@ -826,7 +826,7 @@ function Pricing() {
           <span className="inline-flex items-center gap-1.5"><LockKeyhole size={15} className="text-[var(--brand)]" aria-hidden="true" /> Compra Segura</span>
           <span className="inline-flex items-center gap-1.5"><BadgeCheck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Pagamento via PIX</span>
           <span className="inline-flex items-center gap-1.5"><Truck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Frete Grátis</span>
-          <span className="inline-flex items-center gap-1.5"><ShieldCheck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Garantia 30 Dias</span>
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck size={15} className="text-[var(--brand)]" aria-hidden="true" /> Garantia 60 Dias</span>
         </div>
       </div>
     </section>
@@ -862,7 +862,7 @@ function FAQ() {
     { q: "Tem interação com outros remédios?", a: "Por ser natural, geralmente não há interações. Em caso de uso de medicamentos contínuos, consulte seu médico." },
     { q: "Tem contraindicação?", a: "Contraindicado para gestantes, lactantes e menores de 18 anos." },
     { q: "O frete é grátis?", a: "Sim! Todos os kits têm FRETE GRÁTIS para todo o Brasil." },
-    { q: "Como funciona a garantia?", a: "Você tem 30 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
+    { q: "Como funciona a garantia?", a: "Você tem 60 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
     { q: "Quanto tempo para chegar?", a: "O prazo médio de entrega é de 3 a 5 dias úteis, dependendo da sua região." },
     { q: "É aprovado pela ANVISA?", a: "Produto isento de registro segundo a RDC nº 240/2018 da ANVISA. 100% natural e seguro." },
     { q: "Posso tomar junto com outros suplementos?", a: "Sim, geralmente não há problema. Em caso de dúvida, consulte seu profissional de saúde." },
@@ -897,7 +897,7 @@ function FinalCTA() {
           Quero Minha Sucupira Composta →
         </a>
         <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-white/80">
-          <span>✓ Garantia 30 dias</span>
+          <span>✓ Garantia 60 dias</span>
           <span>✓ Frete Grátis</span>
           <span>✓ +2.000 clientes</span>
         </div>
@@ -947,7 +947,7 @@ function ScarcityStrip() {
         <span className="hidden md:inline opacity-50">•</span>
         <span>🚚 Envio em até 24h</span>
         <span className="hidden md:inline opacity-50">•</span>
-        <span>🛡️ Garantia incondicional de 30 dias</span>
+        <span>🛡️ Garantia incondicional de 60 dias</span>
       </div>
     </section>
   );

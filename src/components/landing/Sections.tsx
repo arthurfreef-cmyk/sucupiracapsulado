@@ -182,9 +182,9 @@ export function Guarantee() {
         <div className="w-20 h-20 rounded-full bg-[var(--gold)] text-[var(--brand)] mx-auto flex items-center justify-center font-extrabold text-2xl mb-4 shadow-lg border-4 border-white">30</div>
         <h3 className="text-2xl md:text-3xl font-bold mb-3">RISCO ZERO: Ou você ama os resultados ou devolvemos cada centavo</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-          Teste o Sucupira Composta por 30 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>WhatsApp</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
+          Teste o Sucupira Composta por 60 dias. Se não sentir resultado, basta entrar em contato pelo nosso <strong>WhatsApp</strong> que devolvemos <strong>100% do seu dinheiro</strong> — sem perguntas, sem burocracia.
         </p>
-        <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 30 dias</p>
+        <p className="text-xl font-bold text-[var(--brand)] mb-6">Garantia blindada de 60 dias</p>
       </div>
     </section>
   );
@@ -211,7 +211,7 @@ export function FAQ() {
     { q: "Quais são as formas de pagamento?", a: "Para garantir a melhor agilidade no envio e os menores preços, aceitamos pagamentos via PIX. A aprovação é instantânea e o envio ocorre em até 24h." },
     { q: "Como devo tomar?", a: "Tome 1 cápsula por dia, preferencialmente antes de dormir, com um copo de água." },
     { q: "O frete é grátis?", a: "Sim! Todos os kits têm FRETE GRÁTIS para todo o Brasil." },
-    { q: "Como funciona a garantia?", a: "Você tem 30 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
+    { q: "Como funciona a garantia?", a: "Você tem 60 dias para testar. Se não gostar, devolvemos 100% do seu dinheiro, sem burocracia." },
   ];
   return (
     <section id="faq" className="py-12 md:py-20 bg-white">
@@ -239,7 +239,7 @@ export function FinalCTA() {
 export function ScarcityStrip() {
   return (
     <section className="bg-[var(--brand-dark)] text-white py-4 border-y border-[var(--gold)]/30 text-center text-sm font-semibold">
-      🚚 Envio em até 24h • 🛡️ Garantia incondicional de 30 dias
+      🚚 Envio em até 24h • 🛡️ Garantia incondicional de 60 dias
     </section>
   );
 }

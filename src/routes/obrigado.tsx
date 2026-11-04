@@ -60,7 +60,7 @@ function ObrigadoPage() {
                 <ShieldCheck size={24} />
               </div>
               <span className="text-xs font-bold uppercase text-gray-400">Garantia</span>
-              <p className="text-sm font-medium">30 dias incondicional</p>
+              <p className="text-sm font-medium">60 dias incondicional</p>
             </div>
           </div>
 
