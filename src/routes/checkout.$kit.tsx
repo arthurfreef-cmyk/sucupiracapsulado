@@ -163,7 +163,6 @@ function CheckoutPage() {
 
   useEffect(() => {
     if (!payment.data?.paid) return;
-    try { sessionStorage.removeItem(pendingCheckoutKey(baseKitId)); } catch { /* Optional cleanup. */ }
     void navigate({ to: "/obrigado" });
   }, [payment.data?.paid, navigate, baseKitId]);
 
