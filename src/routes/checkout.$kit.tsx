@@ -163,7 +163,7 @@ function CheckoutPage() {
 
   useEffect(() => {
     if (!payment.data?.paid) return;
-    void navigate({ to: "/obrigado" });
+    void navigate({ to: "/upsell", search: { kit: baseKitId } });
   }, [payment.data?.paid, navigate, baseKitId]);
 
   const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
