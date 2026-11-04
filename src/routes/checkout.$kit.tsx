@@ -735,7 +735,7 @@ function CheckoutPage() {
             className="w-full min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
-            {loading ? "Gerando PIX..." : "GERAR PIX SEGURO"}
+            {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
           </Button>
           <div className="flex items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
