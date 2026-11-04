@@ -689,11 +689,6 @@ function CheckoutPage() {
                   </label>
                 ))}
               </RadioGroup>)}
-              <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
-                <p className="font-bold">Importante: há um complemento logístico após este pagamento.</p>
-                <p className="mt-1">Depois da aprovação do PIX do produto, você será direcionado para pagar um complemento de <strong>R$ 18,61 a R$ 21,00</strong>. O valor exato será informado na próxima etapa. A separação e o envio do produto só serão liberados após a confirmação desse segundo pagamento.</p>
-                <p className="mt-1">O valor exibido nesta tela não inclui esse complemento logístico.</p>
-              </div>
           </section>
           <section className={STEP}>
             <StepTitle n={4}>Forma de Pagamento</StepTitle>
@@ -707,10 +702,8 @@ function CheckoutPage() {
           <div className="border-y border-border py-5 text-sm space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">Entrega escolhida (nesta etapa)</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Sem adicional" : formatBRL(shippingCents)}</span></div>
-            <div className="flex justify-between gap-3"><span className="text-muted-foreground">Complemento logístico posterior</span><span>R$ 18,61 a R$ 21,00</span></div>
             <div className="flex justify-between gap-3 text-checkout-success-strong font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total nesta etapa</span><span className="text-xl text-foreground">{formatBRL(totalCents)}</span></div>
-            <div className="rounded-md bg-amber-50 p-3 text-xs leading-relaxed text-amber-950"><strong>Total estimado com logística:</strong> {formatBRL(totalCents + 1861)} a {formatBRL(totalCents + 2100)}. O complemento será cobrado separadamente após a aprovação deste PIX.</div>
           </div>
 
           <div className="flex items-start gap-3 py-2">
