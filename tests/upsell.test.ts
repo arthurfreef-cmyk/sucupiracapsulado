@@ -2,19 +2,19 @@ import { describe, expect, it } from "bun:test";
 import { FRUITFY_KITS, buildFruitfyPayload, fruitfyInput } from "../src/lib/fruitfy";
 import { isConfirmedPayment, UPSELL_PRICE_CENTS } from "../src/lib/upsell";
 
-describe("five bottle optional offer", () => {
-  it("keeps the optional offer at R$ 47,90 separately from Black Friday", () => {
-    expect(UPSELL_PRICE_CENTS).toBe(4790);
-    expect(FRUITFY_KITS.upsell5.amount).toBe(4790);
+describe("optional shipping offer", () => {
+  it("keeps the shipping complement at R$ 17,90, separate from regular kit prices", () => {
+    expect(UPSELL_PRICE_CENTS).toBe(1790);
+    expect(FRUITFY_KITS.upsell5.amount).toBe(1790);
     expect(FRUITFY_KITS.k5.amount).toBe(9700);
   });
-  it("charges one five-bottle kit for 4790 cents with free shipping", () => {
+  it("charges exactly R$ 17,90 through the existing Fruitfy PIX integration", () => {
     const input = fruitfyInput.parse({ kit: "upsell5", buyer: { name: "Cliente Teste", email: "teste@example.com", document: "52998224725", phone: "11999999999" }, address: { zip: "01001000", street: "Praça da Sé", number: "10", neighborhood: "Sé", city: "São Paulo", state: "SP" }, shipping: { method: "free", amount: 0 } });
-    expect(buildFruitfyPayload(input).items).toEqual([{ id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b", value: 4790, quantity: 1 }]);
+    expect(buildFruitfyPayload(input).items).toEqual([{ id: "a2ee0cf3-ab89-44c1-82ae-a023853ae25b", value: 1790, quantity: 1 }]);
   });
-  it("keeps the additional kit at R$ 47,90 even if express shipping is submitted", () => {
+  it("does not let a submitted shipping method change the fixed offer amount", () => {
     const input = fruitfyInput.parse({ kit: "upsell5", buyer: { name: "Cliente Teste", email: "teste@example.com", document: "52998224725", phone: "11999999999" }, address: { zip: "01001000", street: "Praça da Sé", number: "10", neighborhood: "Sé", city: "São Paulo", state: "SP" }, shipping: { method: "express", amount: 691 } });
-    expect(buildFruitfyPayload(input).items[0]?.value).toBe(4790);
+    expect(buildFruitfyPayload(input).items[0]?.value).toBe(1790);
   });
 });
 const paidOrder = { status: "paid", paid_at: "2026-10-28T03:00:00Z", total_paid_amount: 2700, total_gross_amount: 2700, refunded_amount: 0 };
