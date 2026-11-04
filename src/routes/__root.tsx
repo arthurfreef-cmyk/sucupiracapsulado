@@ -168,18 +168,17 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    // LowTrack mutates page elements; retain checkout isolation and load only once after hydration.
-    if (window.location.pathname.startsWith("/checkout/")) return;
-
+    // Initialize the replacement pixel after hydration, independently of payments.
     const trackerWindow = window as typeof window & { pixelId?: string };
-    trackerWindow.pixelId = "lt_px_7124c79da5bc";
-    if (document.querySelector('script[src="https://lowtrack.com.br/pixel.js"]')) return;
+    trackerWindow.pixelId = "6aeadbedd7624bf4356aba7a";
+    const src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
+    if (document.querySelector(`script[src="${src}"]`)) return;
 
     const script = document.createElement("script");
-    script.dataset.lowtrackPixel = "true";
+    script.dataset.utmifyPixel = "true";
     script.async = true;
     script.defer = true;
-    script.src = "https://lowtrack.com.br/pixel.js";
+    script.src = src;
     document.head.appendChild(script);
   }, []);
 

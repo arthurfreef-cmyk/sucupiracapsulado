@@ -20,7 +20,7 @@
 - Normalize country-coded phone autofill through the browser-safe checkout utility; pasted Brazilian numbers must retain their actual area code and subscriber number.
 - Resolve checkout ZIP codes through a validated browser-safe lookup with a secondary provider and manual completion for missing address data; provider outages must not invalidate ZIP codes or substitute invented delivery details.
 - Serve optimized site media through the shared browser-safe media manifest and CDN pointers; use responsive hero sources and poster-first, no-preload testimonial videos so media does not compete with initial rendering.
-- Initialize LowTrack once after hydration outside checkout pages; checkout document navigation isolates its DOM-mutating script to prevent form regressions.
+- Initialize the UTMify pixel once after hydration on all pages, independently of attribution and payments; this replaces LowTrack without changing initial checkout rendering.
 - Keep `/upsell` and its existing offer aliases on one shared page, poll signed payment references, and restore pending offer PIX per original order; this prevents divergent offers and repeat charges on refresh.
 - Keep checkout totals alongside the form on wide screens and after it on mobile, with one shared submit control; this preserves a consistent flow without duplicate charges or hidden fields.
 - Load UTMify attribution once after hydration using the supplied prevent-xcod-sck and prevent-subids attributes; this keeps vendor DOM changes outside initial checkout hydration.

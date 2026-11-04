@@ -1,4 +1,5 @@
 # Fruitfy PIX
+- [x] Substituir LowTrack pelo pixel UTMify enviado; script respondeu 200 na página e no checkout, sem LowTrack, com PIX simulado exibido e recuperado.
 - [x] Integrar rastreamento UTMify e verificar checkout com PIX simulado.
 - [ ] Ativar redirecionamento ao voltar UTMify — redirecionamento ao voltar aguarda URL real do usuário, pois o arquivo contém endereço de exemplo.
 - [x] Atualizar Black Friday para R$ 12,90 / R$ 47,90 / R$ 97,00; ancoragens reduzidas para R$ 79 / R$ 237 / R$ 395; 31 testes aprovados e PIX reais dos três kits gerados, exibidos e recuperados após atualizar, sem pagamento ou publicação.
