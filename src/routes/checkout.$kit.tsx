@@ -585,7 +585,7 @@ function CheckoutPage() {
         </Button>
         <div className="text-center min-w-0">
           <span className="block text-sm sm:text-base font-bold text-primary">Sucupira Composta</span>
-          <span className="block text-xs text-muted-foreground">Black Friday · Checkout Seguro</span>
+          <span className="block text-xs text-muted-foreground">Checkout seguro</span>
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-checkout-success-strong shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
@@ -734,14 +734,14 @@ function CheckoutPage() {
             className="w-full min-h-14 py-4 bg-checkout-success text-checkout-success-foreground rounded-lg font-bold text-lg shadow-sm hover:bg-checkout-success-strong focus-visible:ring-2 focus-visible:ring-checkout-success disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
-            {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
+            {loading ? "Gerando PIX..." : "GERAR PIX SEGURO"}
           </Button>
           <div className="flex items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
             <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 60 dias</span>
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
-          <p className="text-center text-xs text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
+          <p className="text-center text-xs text-muted-foreground"></p>
           </aside>
         </form>
       </main>
