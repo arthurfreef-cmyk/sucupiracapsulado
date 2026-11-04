@@ -67,8 +67,14 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
 }
 
 
-export function randomShippingUpsellCents(random = Math.random): number {
-  return 1861 + Math.floor(random() * (2100 - 1861 + 1));
+/** Stable per original order: the same customer sees and pays the same individual amount. */
+export function shippingUpsellCentsForOrder(orderProof: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < orderProof.length; index++) {
+    hash ^= orderProof.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return 1861 + (hash >>> 0) % 240;
 }
 
 export function buildShippingUpsellPayload(
