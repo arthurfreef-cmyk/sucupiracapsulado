@@ -54,11 +54,6 @@ function ProtectionUpsellPage() {
   }, [kit]);
 
   useEffect(() => {
-    if (!loaded) return;
-    if (!preview && (!pending || !shipping)) void navigate({ to: "/obrigado", replace: true });
-  }, [loaded, pending, shipping, preview, navigate]);
-
-  useEffect(() => {
     if (!payment?.pix.code) return;
     let active = true;
     let objectUrl: string | null = null;
@@ -108,8 +103,8 @@ function ProtectionUpsellPage() {
 
   const decline = () => void navigate({ to: "/obrigado", replace: true });
 
-  if (!loaded || (!preview && (!pending || !shipping))) {
-    return <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center text-sm text-slate-600">Validando a etapa anterior do pedido...</main>;
+  if (!loaded) {
+    return <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center text-sm text-slate-600">Carregando oferta...</main>;
   }
 
   return (
@@ -123,11 +118,12 @@ function ProtectionUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Uma camada adicional de proteção comercial para ocorrências comprovadas relacionadas ao transporte ou ao produto.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            {!shippingStatus.data?.paid && !preview ? (
+            {!shippingStatus.data?.paid && !preview && (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                {shippingStatus.isError ? "Não foi possível validar o pagamento logístico. Atualize a página para tentar novamente." : "Confirmando o pagamento da etapa logística. A oferta será liberada após a confirmação."}
+                {shippingStatus.isError ? "Não foi possível validar o pagamento logístico. Você pode conhecer a oferta, mas a contratação ficará disponível após a confirmação do pagamento anterior." : "Você já pode conhecer esta oferta. A contratação por PIX será liberada após a confirmação do pagamento da etapa logística."}
               </div>
-            ) : payment ? (
+            )}
+            {payment ? (
               <section className="space-y-4 text-center">
                 <div className="rounded-2xl border-2 border-emerald-100 p-5">
                   <p className="text-sm text-slate-500">Proteção comercial opcional</p>
@@ -153,7 +149,7 @@ function ProtectionUpsellPage() {
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(PROTECTION_UPSELL_CENTS)}</p>
                   <p className="mt-1 text-xs text-slate-500">Sem recorrência. Pagamento separado do pedido e do complemento logístico.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!pending || !shipping || !shippingStatus.data?.paid || loading || preview} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Quero contratar por R$ 15,90</>}
                 </Button>
                 {!preview && <Button onClick={decline} variant="outline" className="h-12 w-full">Não quero contratar, continuar</Button>}
