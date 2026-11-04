@@ -13,10 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as UpsellRouteImport } from './routes/upsell'
+import { Route as UpsellProtectionRouteImport } from './routes/upsell-protecao'
+import { Route as Upsell2RouteImport } from './routes/upsell2'
 import { Route as Upsell1RouteImport } from './routes/upsell1'
 import { Route as ApiBuckpayPixRouteImport } from './routes/api/buckpay-pix'
 import { Route as ApiDuttyfyPixRouteImport } from './routes/api/duttyfy-pix'
 import { Route as ApiFruitfyPixRouteImport } from './routes/api/fruitfy-pix'
+import { Route as ApiFruitfyUpsellPixRouteImport } from './routes/api/fruitfy-upsell-pix'
+import { Route as ApiFruitfyProtectionPixRouteImport } from './routes/api/fruitfy-protection-pix'
 import { Route as ApiFruitfyStatusRouteImport } from './routes/api/fruitfy-status'
 import { Route as CheckoutKitRouteImport } from './routes/checkout.$kit'
 import { Route as ApiPublicBuckpayWebhookRouteImport } from './routes/api/public/buckpay-webhook'
@@ -42,6 +46,16 @@ const UpsellRoute = UpsellRouteImport.update({
   path: '/upsell',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpsellProtectionRoute = UpsellProtectionRouteImport.update({
+  id: '/upsell-protecao',
+  path: '/upsell-protecao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Upsell2Route = Upsell2RouteImport.update({
+  id: '/upsell2',
+  path: '/upsell2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Upsell1Route = Upsell1RouteImport.update({
   id: '/upsell1',
   path: '/upsell1',
@@ -60,6 +74,16 @@ const ApiDuttyfyPixRoute = ApiDuttyfyPixRouteImport.update({
 const ApiFruitfyPixRoute = ApiFruitfyPixRouteImport.update({
   id: '/api/fruitfy-pix',
   path: '/api/fruitfy-pix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFruitfyUpsellPixRoute = ApiFruitfyUpsellPixRouteImport.update({
+  id: '/api/fruitfy-upsell-pix',
+  path: '/api/fruitfy-upsell-pix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFruitfyProtectionPixRoute = ApiFruitfyProtectionPixRouteImport.update({
+  id: '/api/fruitfy-protection-pix',
+  path: '/api/fruitfy-protection-pix',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiFruitfyStatusRoute = ApiFruitfyStatusRouteImport.update({
@@ -88,10 +112,14 @@ export interface FileRoutesByFullPath {
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
   '/upsell': typeof UpsellRoute
+  '/upsell-protecao': typeof UpsellProtectionRoute
+  '/upsell2': typeof Upsell2Route
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-upsell-pix': typeof ApiFruitfyUpsellPixRoute
+  '/api/fruitfy-protection-pix': typeof ApiFruitfyProtectionPixRoute
   '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
@@ -102,10 +130,14 @@ export interface FileRoutesByTo {
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
   '/upsell': typeof UpsellRoute
+  '/upsell-protecao': typeof UpsellProtectionRoute
+  '/upsell2': typeof Upsell2Route
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-upsell-pix': typeof ApiFruitfyUpsellPixRoute
+  '/api/fruitfy-protection-pix': typeof ApiFruitfyProtectionPixRoute
   '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
@@ -117,10 +149,14 @@ export interface FileRoutesById {
   '/obrigado': typeof ObrigadoRoute
   '/oferta': typeof OfertaRoute
   '/upsell': typeof UpsellRoute
+  '/upsell-protecao': typeof UpsellProtectionRoute
+  '/upsell2': typeof Upsell2Route
   '/upsell1': typeof Upsell1Route
   '/api/buckpay-pix': typeof ApiBuckpayPixRoute
   '/api/duttyfy-pix': typeof ApiDuttyfyPixRoute
   '/api/fruitfy-pix': typeof ApiFruitfyPixRoute
+  '/api/fruitfy-upsell-pix': typeof ApiFruitfyUpsellPixRoute
+  '/api/fruitfy-protection-pix': typeof ApiFruitfyProtectionPixRoute
   '/api/fruitfy-status': typeof ApiFruitfyStatusRoute
   '/checkout/$kit': typeof CheckoutKitRoute
   '/api/public/buckpay-webhook': typeof ApiPublicBuckpayWebhookRoute
@@ -133,10 +169,17 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/oferta'
     | '/upsell'
-    | '/upsell1'
+    | '/upsell-protecao'
+    | '/upsell2'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
+    | '/api/fruitfy-upsell-pix'
+    | '/api/fruitfy-protection-pix'
+    | '/api/fruitfy-upsell-pix'
+    | '/api/fruitfy-protection-pix'
+    | '/api/fruitfy-upsell-pix'
+    | '/api/fruitfy-protection-pix'
     | '/api/fruitfy-status'
     | '/checkout/$kit'
     | '/api/public/buckpay-webhook'
@@ -147,7 +190,8 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/oferta'
     | '/upsell'
-    | '/upsell1'
+    | '/upsell-protecao'
+    | '/upsell2'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
@@ -161,7 +205,8 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/oferta'
     | '/upsell'
-    | '/upsell1'
+    | '/upsell-protecao'
+    | '/upsell2'
     | '/api/buckpay-pix'
     | '/api/duttyfy-pix'
     | '/api/fruitfy-pix'
@@ -176,10 +221,14 @@ export interface RootRouteChildren {
   ObrigadoRoute: typeof ObrigadoRoute
   OfertaRoute: typeof OfertaRoute
   UpsellRoute: typeof UpsellRoute
+  UpsellProtectionRoute: typeof UpsellProtectionRoute
+  Upsell2Route: typeof Upsell2Route
   Upsell1Route: typeof Upsell1Route
   ApiBuckpayPixRoute: typeof ApiBuckpayPixRoute
   ApiDuttyfyPixRoute: typeof ApiDuttyfyPixRoute
   ApiFruitfyPixRoute: typeof ApiFruitfyPixRoute
+  ApiFruitfyUpsellPixRoute: typeof ApiFruitfyUpsellPixRoute
+  ApiFruitfyProtectionPixRoute: typeof ApiFruitfyProtectionPixRoute
   ApiFruitfyStatusRoute: typeof ApiFruitfyStatusRoute
   CheckoutKitRoute: typeof CheckoutKitRoute
   ApiPublicBuckpayWebhookRoute: typeof ApiPublicBuckpayWebhookRoute
@@ -216,6 +265,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpsellRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/upsell-protecao': {
+      id: '/upsell-protecao'
+      path: '/upsell-protecao'
+      fullPath: '/upsell-protecao'
+      preLoaderRoute: typeof UpsellProtectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upsell2': {
+      id: '/upsell2'
+      path: '/upsell2'
+      fullPath: '/upsell2'
+      preLoaderRoute: typeof Upsell2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/upsell1': {
       id: '/upsell1'
       path: '/upsell1'
@@ -242,6 +305,20 @@ declare module '@tanstack/react-router' {
       path: '/api/fruitfy-pix'
       fullPath: '/api/fruitfy-pix'
       preLoaderRoute: typeof ApiFruitfyPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/fruitfy-upsell-pix': {
+      id: '/api/fruitfy-upsell-pix'
+      path: '/api/fruitfy-upsell-pix'
+      fullPath: '/api/fruitfy-upsell-pix'
+      preLoaderRoute: typeof ApiFruitfyUpsellPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/fruitfy-protection-pix': {
+      id: '/api/fruitfy-protection-pix'
+      path: '/api/fruitfy-protection-pix'
+      fullPath: '/api/fruitfy-protection-pix'
+      preLoaderRoute: typeof ApiFruitfyProtectionPixRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/fruitfy-status': {
@@ -280,10 +357,14 @@ const rootRouteChildren: RootRouteChildren = {
   ObrigadoRoute: ObrigadoRoute,
   OfertaRoute: OfertaRoute,
   UpsellRoute: UpsellRoute,
+  UpsellProtectionRoute: UpsellProtectionRoute,
+  Upsell2Route: Upsell2Route,
   Upsell1Route: Upsell1Route,
   ApiBuckpayPixRoute: ApiBuckpayPixRoute,
   ApiDuttyfyPixRoute: ApiDuttyfyPixRoute,
   ApiFruitfyPixRoute: ApiFruitfyPixRoute,
+  ApiFruitfyUpsellPixRoute: ApiFruitfyUpsellPixRoute,
+  ApiFruitfyProtectionPixRoute: ApiFruitfyProtectionPixRoute,
   ApiFruitfyStatusRoute: ApiFruitfyStatusRoute,
   CheckoutKitRoute: CheckoutKitRoute,
   ApiPublicBuckpayWebhookRoute: ApiPublicBuckpayWebhookRoute,
