@@ -26,8 +26,8 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
       return Response.json({ error: "Não foi possível confirmar a etapa logística. Tente novamente." }, { status: 502 });
     }
 
-    const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\\s+/i, "");
-    const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\\s]?id\\s*[:=]\\s*/i, "");
+    const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
+    const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\s]?id\s*[:=]\s*/i, "");
     if (!token || !storeId) return Response.json({ error: "Pagamento indisponível no momento." }, { status: 503 });
 
     const amount = PROTECTION_UPSELL_CENTS;
