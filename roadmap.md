@@ -22,4 +22,4 @@
 - [ ] Confirmar eventos do Pixel Booster — bloqueado pela proteção externa da Fruitfy; depende de liberação do fornecedor.
 
 # Remover upsells
-- [ ] Remover todas as ofertas adicionais, bloquear novas cobranças da oferta e validar confirmação direta e links antigos.
+- [x] Remover todas as ofertas adicionais e bloquear novas cobranças; 29 testes aprovados e fluxo PIX simulado confirmado diretamente em `/obrigado`, com os três links antigos redirecionados e compilação sem erros.
