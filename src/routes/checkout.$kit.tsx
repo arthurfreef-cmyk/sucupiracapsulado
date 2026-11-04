@@ -719,7 +719,7 @@ function CheckoutPage() {
           <div className="flex items-start gap-3 py-2">
             <ShieldCheck size={28} className="text-checkout-success-strong shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-sm font-bold text-foreground">Garantia incondicional de 30 dias</p>
+              <p className="text-sm font-bold text-foreground">Garantia incondicional de 60 dias</p>
               <p className="text-sm leading-relaxed text-muted-foreground mt-1">Se você não ficar satisfeito(a) com o produto, devolvemos 100% do valor. Sem perguntas.</p>
             </div>
           </div>
@@ -737,7 +737,7 @@ function CheckoutPage() {
           </Button>
           <div className="flex items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1"><ShieldCheck size={12} /> Compra segura</span>
-            <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 30 dias</span>
+            <span className="flex items-center gap-1"><CheckCircle2 size={12} /> Garantia de 60 dias</span>
             <span className="flex items-center gap-1"><Clock size={12} /> PIX aprovado na hora</span>
           </div>
           <p className="text-center text-xs text-muted-foreground">★ 4,9/5 de satisfação — +2.847 clientes satisfeitos</p>
