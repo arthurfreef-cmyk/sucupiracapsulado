@@ -282,7 +282,10 @@ function CheckoutPage() {
         number: "Informe o número do endereço.",
       };
       setError(messages[invalidField]);
-      window.requestAnimationFrame(() => checkoutForm.current?.elements.namedItem(invalidField) instanceof HTMLInputElement && (checkoutForm.current.elements.namedItem(invalidField) as HTMLInputElement).focus());
+      window.requestAnimationFrame(() => {
+        const field = checkoutForm.current?.elements.namedItem(invalidField);
+        if (field instanceof HTMLInputElement) field.focus();
+      });
       return;
     }
     submitInFlight.current = true;
