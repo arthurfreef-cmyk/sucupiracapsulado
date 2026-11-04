@@ -750,12 +750,12 @@ function CheckoutPage() {
   );
 }
 
-const STEP = "space-y-4 border-b border-border pb-6";
+const STEP = "space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6";
 
 function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <h2 className="font-bold tracking-normal flex items-center gap-3">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-sm text-primary" aria-hidden="true">{n}</span>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground ring-2 ring-gold" aria-hidden="true">{n}</span>
       {children}
     </h2>
   );
