@@ -105,3 +105,105 @@
   }
   html { scroll-behavior: smooth; }
 }
+
+/* Refinos visuais de conversão: hierarquia, leitura, foco e interação.
+   Mantém integralmente os textos, preços, prazos e promessas existentes. */
+@layer components {
+  :where(a, button, input, select, textarea, summary) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :where(a, button):focus-visible,
+  :where(input, select, textarea):focus-visible,
+  summary:focus-visible {
+    outline: 3px solid color-mix(in oklab, var(--gold) 82%, white);
+    outline-offset: 3px;
+  }
+
+  :where(button, a) {
+    transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: 180ms;
+    transition-timing-function: ease-out;
+  }
+
+  /* Checkout: fundo mais limpo e cartões com profundidade discreta. */
+  body:has(form.grid) {
+    background: linear-gradient(180deg, #fffaf4 0%, #f7f8fa 340px, #f7f8fa 100%);
+  }
+
+  form.grid section.space-y-4.rounded-2xl {
+    border-color: color-mix(in oklab, var(--brand) 12%, white);
+    box-shadow: 0 8px 28px rgb(44 20 12 / 5%);
+    transition: box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  form.grid section.space-y-4.rounded-2xl:focus-within {
+    border-color: color-mix(in oklab, var(--brand) 32%, white);
+    box-shadow: 0 10px 30px rgb(44 20 12 / 8%);
+  }
+
+  form.grid input:not([type="radio"]):not([type="checkbox"]) {
+    min-height: 50px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: inset 0 1px 2px rgb(15 23 42 / 3%);
+  }
+
+  form.grid input:not([type="radio"]):not([type="checkbox"]):focus {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 10%, transparent);
+  }
+
+  form.grid aside > div.rounded-2xl {
+    border-color: color-mix(in oklab, var(--brand) 15%, white);
+    box-shadow: 0 12px 34px rgb(44 20 12 / 7%);
+  }
+
+  form.grid aside button[type="submit"] {
+    min-height: 58px;
+    border-radius: 14px;
+    box-shadow: 0 10px 22px color-mix(in oklab, var(--brand) 22%, transparent);
+    letter-spacing: .01em;
+  }
+
+  form.grid aside button[type="submit"]:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 26px color-mix(in oklab, var(--brand) 28%, transparent);
+  }
+
+  /* Landing page: cartões e imagens com acabamento consistente. */
+  main section .rounded-2xl,
+  main section .rounded-3xl {
+    scroll-margin-top: 5.5rem;
+  }
+
+  main section img {
+    image-rendering: auto;
+  }
+
+  @media (max-width: 640px) {
+    form.grid {
+      gap: 14px;
+    }
+
+    form.grid section.space-y-4.rounded-2xl {
+      padding: 16px;
+      border-radius: 18px;
+    }
+
+    form.grid aside {
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    form.grid aside button[type="submit"] {
+      min-height: 60px;
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where(a, button) {
+      transition-duration: 0.01ms;
+    }
+  }
+}
+
