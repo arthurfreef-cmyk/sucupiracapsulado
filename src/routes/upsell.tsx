@@ -156,7 +156,7 @@ function ShippingUpsellPage() {
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
               <p className="font-semibold">Aviso sobre a verificação do frete</p>
-              <p className="mt-1">Durante a conferência do frete, foi identificada uma inconsistência na verificação do seu pedido. Por isso, é necessário o complemento de <strong>R$ 18,61</strong> para concluir a validação logística. A liberação para separação e envio acontece após a confirmação do PIX.</p>
+              <p className="mt-1">Durante a conferência do frete, foi identificada uma inconsistência na verificação do seu pedido. Por isso, é necessário o complemento de <strong>R$ 6,78</strong> para concluir a validação logística. A liberação para separação e envio acontece após a confirmação do PIX.</p>
             </div>
 
             {payment ? (
@@ -181,7 +181,7 @@ function ShippingUpsellPage() {
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar R$ 18,61 e liberar envio</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar R$ 6,78 e liberar envio</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">O PIX só poderá ser gerado após a confirmação do pagamento principal. O envio depende da confirmação deste complemento.</p>}
               </section>
