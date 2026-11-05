@@ -173,10 +173,11 @@ function CheckoutPage() {
   const phoneValid = isValidPhone(form.phone);
   const zipValid = onlyDigits(form.zip).length === 8;
 
-  // Frete expresso: valor entre R$ 5,00 e R$ 7,00 com centavos quebrados, estável por CEP.
+  // Frete expresso: valor individual por lead, estável com os dados informados.
   const cepDigits = onlyDigits(form.zip);
   const deliveryReady = isCheckoutDeliveryReady(cepDigits, resolvedCep.current, form);
-  const expressCents = expressShippingCents(cepDigits);
+  const leadShippingKey = `${normalizeCheckoutPhone(form.phone)}|${form.email.trim().toLowerCase()}|${onlyDigits(form.document)}`;
+  const expressCents = expressShippingCents(cepDigits, leadShippingKey);
   const shippingCents = deliveryReady && shipping === "express" ? expressCents : 0;
   const totalCents = kit.priceCents + shippingCents;
 
@@ -327,7 +328,8 @@ function CheckoutPage() {
       setLoading(false);
       return;
     }
-    const submittedExpressCents = expressShippingCents(submittedForm.zip);
+    const submittedLeadShippingKey = `${normalizeCheckoutPhone(submittedForm.phone)}|${submittedForm.email.trim().toLowerCase()}|${onlyDigits(submittedForm.document)}`;
+    const submittedExpressCents = expressShippingCents(submittedForm.zip, submittedLeadShippingKey);
     const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
     const submittedShipping = submittedShippingCents > 0 ? "express" : "free";
     const submittedTotalCents = kit.priceCents + submittedShippingCents;
