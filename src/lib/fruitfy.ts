@@ -67,8 +67,8 @@ export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
   };
 }
 
-/** Fixed shipping add-on price: R$ 18,61. */
-export const SHIPPING_UPSELL_CENTS = 1861;
+/** Fixed shipping add-on price: R$ 6,78. */
+export const SHIPPING_UPSELL_CENTS = 678;
 
 /** Fixed optional commercial-protection add-on price: R$ 15,90. */
 export const PROTECTION_UPSELL_CENTS = 1590;
