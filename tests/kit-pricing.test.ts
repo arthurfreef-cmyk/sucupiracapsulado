@@ -7,7 +7,7 @@ const address = { zip: "01001000", street: "Praça da Sé", number: "10", neighb
 
 describe("Black Friday pricing", () => {
   for (const [kit, cents, anchor, savings] of [
-    ["k1", 1290, 7900, 6610], ["k3", 4790, 23700, 18910], ["k5", 9700, 39500, 29800],
+    ["k1", 1290, 7900, 6610], ["k3", 4790, 19700, 14910], ["k5", 9700, 29700, 20000],
   ] as const) {
     it(`${kit} displays and charges ${cents} cents with matching savings`, () => {
       expect(KIT_PRICING[kit].priceCents).toBe(cents);
