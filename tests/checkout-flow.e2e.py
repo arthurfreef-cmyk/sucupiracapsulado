@@ -56,13 +56,13 @@ async def main():
   await page.unroute('**/api/fruitfy-status')
   await page.route('**/api/fruitfy-status',lambda r:r.fulfill(json={"paid":True,"eligible":True}))
   await page.get_by_role('button',name='Já realizei o pagamento').click()
-  await page.wait_for_url('**/obrigado')
+  await page.wait_for_url('**/upsell?kit=k1')
   await page.get_by_role('heading',name='Pedido Recebido!').wait_for()
   assert len(requests)==1
   await page.screenshot(path='/tmp/browser/checkout-refine/confirmed-no-upsell.png')
   for retired in ['upsell','upsell1','oferta']:
    await page.goto(f'http://localhost:8080/{retired}',wait_until='networkidle')
-   await page.wait_for_url('**/obrigado')
+   await page.wait_for_url('**/upsell?kit=k1')
    await page.get_by_role('heading',name='Pedido Recebido!').wait_for()
   for width in [390,320]:
    mobile=await browser.new_page(viewport={"width":width,"height":844})
