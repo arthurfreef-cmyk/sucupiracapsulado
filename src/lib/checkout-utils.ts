@@ -10,8 +10,8 @@ export function expressShippingCents(zip: string, leadKey = ""): number {
   const seed = `${zip.replace(/\D/g, "")}|${leadKey.trim().toLowerCase()}`;
   let hash = 7;
   for (const character of seed) hash = (hash * 31 + character.charCodeAt(0)) % 100003;
-  // R$ 8,01–R$ 9,99: always a non-round amount.
-  const cents = 801 + (hash % 199);
+  // R$ 8,01–R$ 11,99: always a non-round amount.
+  const cents = 801 + (hash % 399);
   return cents % 10 === 0 ? cents + 1 : cents;
 }
 

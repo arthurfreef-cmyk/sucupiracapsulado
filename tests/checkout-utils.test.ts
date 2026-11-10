@@ -17,4 +17,12 @@ describe("checkout shipping", () => {
   it("uses the same price for masked and unmasked ZIP codes", () => {
     expect(expressShippingCents("01001-000")).toBe(expressShippingCents("01001000"));
   });
+  it("stays between R$ 8,01 and R$ 11,99 and never rounds to a whole real", () => {
+    for (let zip = 1000000; zip <= 99999999; zip += 7654321) {
+      const cents = expressShippingCents(String(zip), `lead-${zip}`);
+      expect(cents).toBeGreaterThanOrEqual(801);
+      expect(cents).toBeLessThanOrEqual(1199);
+      expect(cents % 100).not.toBe(0);
+    }
+  });
 });
