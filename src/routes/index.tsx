@@ -248,7 +248,7 @@ function Hero() {
                 href="#precos"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-[0_8px_24px_rgba(140,0,0,0.3)] hover:scale-[1.03] active:scale-[0.98] transition"
               >
-                QUERO LIVRE DAS DORES →
+                QUERO ME LIVRAR DAS DORES →
               </a>
               <a
                 href="#depoimentos"
