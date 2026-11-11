@@ -40,8 +40,19 @@ function ContinuityUpsellPage() {
   const continuityStatus = useOrderPayment(payment?.orderProof);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setLoaded(true), 3000);
-    return () => window.clearTimeout(timer);
+    // Mantém a tela de carregamento visível brevemente, mas nunca deixa a oferta presa nela.
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      setLoaded(true);
+    };
+    const timer = window.setTimeout(release, 1600);
+    const failsafe = window.setTimeout(release, 4500);
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(failsafe);
+    };
   }, []);
 
   useEffect(() => {
