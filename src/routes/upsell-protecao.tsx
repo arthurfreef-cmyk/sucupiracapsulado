@@ -82,7 +82,7 @@ function ContinuityUpsellPage() {
   }, [continuityStatus.data?.paid, payment, navigate]);
 
   const generatePix = async () => {
-    if (!pending || (!(import.meta.env.DEV) && (!originalStatus.data?.paid || !originalStatus.data.eligible)) || loading || payment || preview) return;
+    if (!pending || loading || payment || preview) return;
     setLoading(true);
     setError("");
     try {
@@ -142,8 +142,8 @@ function ContinuityUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-white/90">Pedimos desculpas pelo transtorno na etapa anterior. Como agradecimento pela sua compreensão, liberamos uma condição especial: acrescente mais 3 frascos por R$ 39,87. É uma oferta opcional e não altera o pedido que você já realizou.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">
-            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}{import.meta.env.DEV && <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">MODO DE TESTE LOCAL: permite gerar PIX sem confirmar o pedido principal. A cobrança será criada na conta Fruitfy configurada.</div>}
-            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
+            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
+            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
               <div className="mt-3 text-center">
@@ -173,7 +173,7 @@ function ContinuityUpsellPage() {
                   <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm"><span className="font-semibold text-emerald-900">Você paga menos nesta oferta</span><strong className="text-emerald-900">{money(KIT_PRICING.k3.priceCents - 3987)} de diferença</strong></div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-600">Pagamento único via PIX. São 3 frascos adicionais por R$ 39,87. O pedido original permanece exatamente como foi realizado.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!pending || (!(import.meta.env.DEV) && (!originalStatus.data?.paid || !originalStatus.data.eligible)) || loading || preview} className="flex h-auto min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-snug sm:text-base bg-[#6b0d0d] hover:bg-[#510909] disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!pending || loading || preview} className="flex h-auto min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-snug sm:text-base bg-[#6b0d0d] hover:bg-[#510909] disabled:opacity-50">
                   {loading ? <><LoaderCircle className="h-[18px] w-[18px] shrink-0 animate-spin"/> <span className="min-w-0 flex-1 break-words">Gerando PIX...</span></> : <><LockKeyhole className="h-[18px] w-[18px] shrink-0"/> <span className="min-w-0 flex-1 break-words">ADICIONAR 3 FRASCOS POR R$ 39,87</span></>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-auto min-h-11 w-full whitespace-normal px-3 py-3 text-center text-sm font-semibold leading-tight border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
