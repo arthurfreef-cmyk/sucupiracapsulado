@@ -182,7 +182,7 @@ function ContinuityUpsellPage() {
                 <Button onClick={decline} variant="outline" className="h-auto min-h-11 w-full whitespace-normal px-3 py-3 text-center text-sm font-semibold leading-tight border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
             )}
-            {!preview && pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pedido principal.</p>}
+            {!preview && pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">Esta oferta adicional pode ser paga separadamente, mesmo enquanto o pedido principal estiver pendente.</p>}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
             {preview && <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800">Modo de visualização: nenhuma cobrança PIX será iniciada.</p>}
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Oferta opcional. A compra adicional só é concluída após a confirmação do PIX. Seus direitos legais e a garantia do pedido original permanecem preservados.</div>
