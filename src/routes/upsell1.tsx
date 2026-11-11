@@ -129,14 +129,14 @@ function ContinuityUpsellPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef] font-sans text-base leading-relaxed text-slate-900 antialiased">
+    <div className="min-h-screen bg-[#f7f5ef] font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b border-stone-200 bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-4 py-7 md:py-10">
         <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-900/5">
           <div className="bg-gradient-to-br from-[#5b0808] via-[#7e1010] to-[#4a0505] px-5 py-7 text-white md:px-7">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold"><BadgeCheck size={15}/> CONDIÇÃO ESPECIAL PARA SEU PEDIDO</div>
-            <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">Aproveite para garantir mais 3 frascos junto com seu pedido</h1>
-            <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">Você já escolheu a Sucupira Composta. Agora pode adicionar um kit extra de 3 frascos por um valor especial, sem precisar refazer o pedido.</p>
+            <h1 className="text-2xl font-black leading-tight md:text-3xl">Aproveite para garantir mais 3 frascos junto com seu pedido</h1>
+            <p className="mt-2 text-sm leading-relaxed text-white/85">Você já escolheu a Sucupira Composta. Agora pode adicionar um kit extra de 3 frascos por um valor especial, sem precisar refazer o pedido.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">
             {!shippingStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{shippingStatus.isError ? "Não foi possível validar o pagamento da etapa anterior. Atualize a página." : "Validando o pagamento da etapa anterior..."}</div>}
@@ -155,7 +155,7 @@ function ContinuityUpsellPage() {
                   <p className="mt-2 text-xs text-slate-500">PIX • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
                 </div>
                 {qrUrl ? <img src={qrUrl} alt="QR Code PIX do kit adicional" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
-                <Button onClick={copyPix} className="h-14 w-full rounded-xl bg-emerald-700 text-base font-bold tracking-wide text-white shadow-lg shadow-emerald-900/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-800 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 active:translate-y-0"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX e adicionar os 3 frascos"}</Button>
+                <Button onClick={copyPix} className="h-12 w-full bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX e adicionar os 3 frascos"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{continuityStatus.data?.paid ? "Pagamento confirmado." : "Aguardando confirmação do PIX. A oferta será adicionada após a confirmação."}</div>
               </section>
@@ -164,14 +164,14 @@ function ContinuityUpsellPage() {
                 <div className="rounded-2xl border border-stone-200 p-5">
                   <div className="flex items-end justify-between gap-3">
                     <div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Preço de referência do kit</p><p className="mt-1 text-lg text-slate-400 line-through">{money(19700)}</p></div>
-                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Oferta adicional</p><p className="mt-1 text-4xl font-extrabold tracking-tight text-[#650b0b] md:text-5xl">{money(3987)}</p></div>
+                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Oferta adicional</p><p className="mt-1 text-4xl font-black tracking-tight text-[#650b0b]">{money(3987)}</p></div>
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-500">Pagamento único via PIX. O valor promocional é para este kit adicional de 3 frascos e não altera o pedido original.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading || preview} className="h-16 w-full rounded-xl bg-gradient-to-r from-[#650909] to-[#861414] text-lg font-extrabold tracking-wide text-white shadow-xl shadow-red-950/20 transition-all hover:-translate-y-0.5 hover:from-[#520707] hover:to-[#710e0e] hover:shadow-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR OS 3 FRASCOS</>}
                 </Button>
-                <Button onClick={decline} variant="outline" className="h-12 w-full rounded-xl border-stone-300 bg-white text-sm font-semibold text-slate-600 transition-colors hover:border-stone-400 hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200">Não, obrigado. Continuar sem o kit adicional</Button>
+                <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
             )}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
@@ -179,7 +179,7 @@ function ContinuityUpsellPage() {
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Oferta opcional. A compra adicional só é concluída após a confirmação do PIX. Seus direitos legais e a garantia do pedido original permanecem preservados.</div>
           </div>
         </div>
-        <p className="mt-5 text-center text-xs text-slate-400">Sucupira Composta • Atendimento ao cliente</p>
+        <footer className="mt-8 border-t border-stone-200 px-4 py-5 text-center text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
       </main>
     </div>
   );
