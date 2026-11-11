@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FRUITFY_KITS, fruitfyInput, fruitfyResponse, describeFruitfyRejection } from "@/lib/fruitfy";
 
 const inputSchema = z.object({
-  shippingProof: z.string().min(1).max(2048),
+  originalProof: z.string().min(1).max(2048),
   buyer: fruitfyInput.shape.buyer,
   utm: z.string().max(4096).optional(),
 });
@@ -16,12 +16,12 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
     if (!parsed.success) return Response.json({ error: "Dados do pedido inválidos." }, { status: 400 });
 
     const { verifyOrderProof, checkOrderPaid, signOrderProof } = await import("@/lib/fruitfy-order.server");
-    const shippingOrder = await verifyOrderProof(parsed.data.shippingProof);
-    if (!shippingOrder || shippingOrder.kit !== "upsell5") {
-      return Response.json({ error: "A etapa anterior do pedido não foi validada." }, { status: 403 });
+    const originalOrder = await verifyOrderProof(parsed.data.originalProof);
+    if (!originalOrder || !["k1", "k3", "k5"].includes(originalOrder.kit)) {
+      return Response.json({ error: "O pedido principal não foi validado." }, { status: 403 });
     }
     try {
-      if (!await checkOrderPaid(shippingOrder)) return Response.json({ error: "O pagamento da etapa anterior ainda não foi confirmado." }, { status: 409 });
+      if (!await checkOrderPaid(originalOrder)) return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
     } catch {
       return Response.json({ error: "Não foi possível confirmar a etapa anterior. Tente novamente." }, { status: 502 });
     }
@@ -62,7 +62,7 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
         return Response.json({ error: rejection.userMessage ?? "Não foi possível gerar o PIX da oferta. Tente novamente." }, { status: 502 });
       }
       const data = result.data.data;
-      const orderProof = await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: "k3", amount, buyer: shippingOrder.buyer ?? parsed.data.buyer });
+      const orderProof = await signOrderProof({ id: data.order_uuid ?? data.order_id, kit: "k3", amount, buyer: originalOrder.buyer ?? parsed.data.buyer });
       return Response.json({
         id: data.order_id, status: data.status, amount, orderProof,
         pix: { code: data.pix.code, qrcode_base64: "", expires_at: data.pix.expires_at },
