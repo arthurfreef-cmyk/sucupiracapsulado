@@ -87,9 +87,12 @@ const isValidCPF = (raw: string) => {
 
 const isValidPhone = (raw: string) => {
   const d = onlyDigits(raw);
-  if (d.length !== 11) return false;
+  if (d.length !== 10 && d.length !== 11) return false;
   const ddd = Number(d.slice(0, 2));
-  return ddd >= 11 && ddd <= 99 && d[2] === "9";
+  if (ddd < 11 || ddd > 99) return false;
+  // Accept the same 10–11 digit range supported by the payment provider:
+  // 10 digits for landlines and 11 digits for mobile numbers.
+  return d.length === 11 ? d[2] === "9" : /^[2-5]/.test(d[2]);
 };
 
 const formatBRL = (cents: number) =>
@@ -186,7 +189,7 @@ function CheckoutPage() {
     return () => window.clearTimeout(timer);
   }, [payment.data?.paid, navigate, baseKitId]);
 
-  const nameValid = /^\S{2,}(\s+\S+)+$/.test(form.name.trim());
+  const nameValid = /^\S+(\s+\S+)+$/.test(form.name.trim());
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim());
   const cpfValid = isValidCPF(form.document);
   const phoneValid = isValidPhone(form.phone);
@@ -207,6 +210,8 @@ function CheckoutPage() {
     resolvedCep.current = null;
     setCepFilled(false);
     setManualAddress(false);
+    // A new ZIP invalidates the previous delivery quote/selection.
+    setShipping("free");
     setForm(current => ({ ...current, street: "", neighborhood: "", city: "", state: "" }));
     if (cep.length !== 8) {
       setCepFilled(false);
@@ -299,7 +304,7 @@ function CheckoutPage() {
       city: manualAddress ? readValue("city").trim() : form.city,
       state: manualAddress ? readValue("state").trim().toUpperCase() : form.state,
     };
-    const submittedNameValid = /^\S{2,}(\s+\S+)+$/.test(submittedForm.name);
+    const submittedNameValid = /^\S+(\s+\S+)+$/.test(submittedForm.name);
     const submittedEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(submittedForm.email);
     const submittedPhoneValid = isValidPhone(submittedForm.phone);
     const submittedCpfValid = isValidCPF(submittedForm.document);
@@ -370,7 +375,9 @@ function CheckoutPage() {
     }
     const submittedLeadShippingKey = `${normalizeCheckoutPhone(submittedForm.phone)}|${submittedForm.email.trim().toLowerCase()}|${onlyDigits(submittedForm.document)}`;
     const submittedExpressCents = expressShippingCents(submittedForm.zip, submittedLeadShippingKey);
-    const submittedShippingCents = shipping === "express" ? submittedExpressCents : 0;
+    const submittedShippingCents = shipping === "express" && resolvedCep.current === submittedForm.zip
+      ? submittedExpressCents
+      : 0;
     const submittedShipping = submittedShippingCents > 0 ? "express" : "free";
     const submittedTotalCents = kit.priceCents + submittedShippingCents;
     const fbData = {
@@ -643,7 +650,7 @@ function CheckoutPage() {
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
-      <main className="container mx-auto max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <main className="container mx-auto max-w-6xl px-3 pt-5 pb-24 sm:px-6 sm:py-8 lg:px-8">
         <form
           ref={checkoutForm}
           onSubmit={(event) => {
@@ -678,14 +685,14 @@ function CheckoutPage() {
               <Field id="email" name="email" label="E-mail" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="seu@email.com" value={form.email}
                 onChange={e => setForm({...form, email: e.target.value.trim()})} onBlur={() => touch("email")}
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
-              <Field id="phone" name="phone" label="Celular" type="tel" inputMode="numeric" autoComplete="tel-national" enterKeyHint="next" placeholder="(00) 00000-0000" value={form.phone}
+              <Field id="phone" name="phone" label="Telefone com DDD" type="tel" inputMode="numeric" autoComplete="tel" enterKeyHint="next" placeholder="(00) 00000-0000" value={form.phone}
                 onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
                 error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
             </div>
             <Field id="document" name="document" label="CPF" inputMode="numeric" autoComplete="off" enterKeyHint="next" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
               error={err("document", !cpfValid) ? "CPF inválido" : undefined} ok={cpfValid} />
-            <p className="text-sm leading-relaxed text-muted-foreground flex items-start gap-2"><Lock size={15} className="shrink-0 mt-0.5" aria-hidden="true" />CPF e celular são exigidos pela operadora para gerar o PIX com segurança.</p>
+            <p className="text-sm leading-relaxed text-muted-foreground flex items-start gap-2"><Lock size={15} className="shrink-0 mt-0.5" aria-hidden="true" />CPF e telefone são exigidos pela operadora para gerar o PIX com segurança.</p>
           </section>
 
           <section className={STEP}>
@@ -786,7 +793,7 @@ function CheckoutPage() {
             type="submit"
             disabled={loading || restoringPayment}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
+            className="fixed inset-x-3 bottom-3 z-40 w-auto min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-2xl shadow-[var(--brand)]/30 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99] sm:static sm:w-full sm:shadow-lg sm:shadow-[var(--brand)]/20"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
