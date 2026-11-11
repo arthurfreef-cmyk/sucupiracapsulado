@@ -28,7 +28,6 @@ export const Route = createFileRoute("/upsell-protecao")({
 function ContinuityUpsellPage() {
   const { kit = "k1", preview = false } = Route.useSearch();
   const navigate = useNavigate();
-  const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
 
   const [payment, setPayment] = useState<z.infer<typeof continuitySchema> | null>(null);
@@ -46,8 +45,6 @@ function ContinuityUpsellPage() {
       const saved = continuitySchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_continuity_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Invalid browser state never grants access to the offer. */ }
-    const timer = window.setTimeout(() => setLoaded(true), 3500);
-    return () => window.clearTimeout(timer);
   }, [kit]);
 
   useEffect(() => {
@@ -114,22 +111,6 @@ function ContinuityUpsellPage() {
   };
 
   const decline = () => void navigate({ to: "/obrigado", replace: true });
-
-  if (!loaded) {
-    return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#fbf7f2] via-white to-[#f3e9e4] px-5 py-10" role="status" aria-live="polite">
-        <div className="absolute inset-x-0 top-0 h-1.5 overflow-hidden bg-red-100"><div className="h-full w-1/3 animate-[protection-loading_1.4s_ease-in-out_infinite] rounded-full bg-[#741111]"/></div>
-        <div className="w-full max-w-sm rounded-3xl border border-red-100 bg-white/95 p-8 text-center shadow-2xl shadow-red-950/10">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 ring-8 ring-red-50/70"><ShieldCheck size={36} className="text-[#741111]"/></div>
-          <p className="mt-6 text-xs font-extrabold uppercase tracking-[.18em] text-[#741111]">Sucupira Composta</p>
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Preparando sua condição especial</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos carregando os detalhes da oferta e conferindo as informações do pedido.</p>
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-[#741111]"><LoaderCircle size={17} className="animate-spin"/> Só um instante...</div>
-        </div>
-        <style>{`@keyframes protection-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
-      </main>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#f7f5ef] font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
