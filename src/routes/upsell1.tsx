@@ -127,9 +127,9 @@ function ContinuityUpsellPage() {
       <main className="mx-auto max-w-xl px-4 py-7 md:py-10">
         <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-900/5">
           <div className="bg-gradient-to-br from-[#5b0808] via-[#7e1010] to-[#4a0505] px-5 py-7 text-white md:px-7">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold"><BadgeCheck size={15}/> CONDIÇÃO ESPECIAL PARA SEU PEDIDO</div>
-            <h1 className="text-2xl font-black leading-tight md:text-3xl">Aproveite para garantir mais 3 frascos junto com seu pedido</h1>
-            <p className="mt-2 text-sm leading-relaxed text-white/85">Você já escolheu a Sucupira Composta. Agora pode adicionar um kit extra de 3 frascos por um valor especial, sem precisar refazer o pedido.</p>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold"><BadgeCheck size={15}/> OFERTA DE DESCULPAS PELO TRANSTORNO</div>
+            <h1 className="text-2xl font-black leading-tight md:text-3xl">Uma condição especial para compensar o transtorno na etapa de frete</h1>
+            <p className="mt-2 text-sm leading-relaxed text-white/85">Pedimos desculpas pela inconsistência apresentada na etapa anterior do frete. Para amenizar o transtorno, disponibilizamos uma condição especial para adicionar mais 3 frascos ao seu pedido por R$ 39,87. A oferta é opcional e o pedido original segue válido mesmo se você não aceitar.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">
             {!originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
@@ -157,7 +157,7 @@ function ContinuityUpsellPage() {
                 <div className="rounded-2xl border border-stone-200 p-5">
                   <div className="flex items-end justify-between gap-3">
                     <div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Preço de referência do kit</p><p className="mt-1 text-lg text-slate-400 line-through">{money(19700)}</p></div>
-                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Oferta adicional</p><p className="mt-1 text-4xl font-black tracking-tight text-[#650b0b]">{money(3987)}</p></div>
+                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Oferta de desculpas</p><p className="mt-1 text-4xl font-black tracking-tight text-[#650b0b]">{money(3987)}</p></div>
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-500">Pagamento único via PIX. O valor promocional é para este kit adicional de 3 frascos e não altera o pedido original.</p>
                 </div>
