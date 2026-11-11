@@ -163,7 +163,8 @@ function ProtectionUpsellPage() {
                   <div className="space-y-4">
                     <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Apoio em ocorrências de entrega</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Possibilidade de solicitar análise em caso de extravio, avaria ou divergência comprovada.</p></div></div>
                     <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Até 120% do valor elegível</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Nos casos cobertos e aprovados, conforme os termos da oferta.</p></div></div>
-                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-950">
+                  </div>
+                  <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-950">
                     Esta é uma proteção comercial opcional oferecida pela loja, não um seguro contratado com seguradora. A análise depende da ocorrência, dos documentos apresentados e dos termos aplicáveis. A oferta não limita os direitos previstos na legislação do consumidor. Guarde o comprovante e solicite os termos completos ao atendimento antes de contratar.
                   </div>
                 </div>
