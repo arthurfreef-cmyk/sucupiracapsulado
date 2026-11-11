@@ -149,6 +149,25 @@ function CheckoutPage() {
   const payment = useOrderPayment(result?.orderProof);
 
   useEffect(() => {
+    if (!payment.data?.paid || !result?.id) return;
+    try {
+      const marker = `sucupira_main_purchase_tracked_${result.id}`;
+      if (sessionStorage.getItem(marker)) return;
+      const tracker = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+      if (typeof tracker !== "function") return;
+      tracker("track", "Purchase", {
+        content_ids: [baseKitId],
+        content_type: "product",
+        content_name: kit.title,
+        value: result.amount / 100,
+        currency: "BRL",
+        num_items: baseKitId === "k5" ? 5 : baseKitId === "k3" ? 3 : 1,
+      }, { eventID: `purchase_${result.id}` });
+      sessionStorage.setItem(marker, "1");
+    } catch { /* Pixel/storage failures must never interrupt the paid order flow. */ }
+  }, [payment.data?.paid, result?.id, result?.amount, baseKitId, kit.title]);
+
+  useEffect(() => {
     try {
       const pending = pendingCheckoutSchema.safeParse(JSON.parse(sessionStorage.getItem(pendingCheckoutKey(baseKitId)) || "null"));
       if (pending.success && pending.data.kit === baseKitId) {
