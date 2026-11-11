@@ -153,17 +153,17 @@ function ShippingUpsellPage() {
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">\n        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ÚLTIMA ETAPA ANTES DA EXPEDIÇÃO</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Falta apenas concluir a etapa logística do seu pedido.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pedido principal já foi confirmado. Agora, você pode adicionar o complemento logístico ao pedido. Se preferir não incluir, poderá seguir para a próxima oferta ou continuar sem ela.</p>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Identificamos uma inconsistência na informação do frete do seu pedido.</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Estamos revisando a informação logística apresentada nesta etapa. Caso exista um complemento de frete aplicável ao seu pedido, o valor e a justificativa serão informados antes de qualquer pagamento. Você pode seguir sem contratar esta oferta, sem perder o pedido principal.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-              <p className="font-semibold">COMPLEMENTO LOGÍSTICO DO PEDIDO</p>
-              <p className="mt-1">Você pode incluir o complemento logístico por <strong>R$ 6,78</strong>, em pagamento único via PIX. Esta oferta é opcional e você pode recusá-la para seguir à próxima etapa.</p>
+              <p className="font-semibold">INFORMAÇÃO SOBRE O FRETE</p>
+              <p className="mt-1">Se houver um ajuste de frete realmente devido, confira aqui o motivo e o valor antes de decidir. Esta etapa é opcional e a recusa não cancela nem bloqueia o pedido principal.</p>
             </div>
 
             {payment ? (
@@ -184,12 +184,12 @@ function ShippingUpsellPage() {
             ) : (
               <section className="space-y-4">
                 {individualAmount !== null && <div className="rounded-2xl border p-5">
-                  <p className="text-sm font-semibold text-slate-600">Valor do complemento logístico</p>
+                  <p className="text-sm font-semibold text-slate-600">Valor informado para esta etapa logística</p>
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">Confira a composição e a justificativa do valor antes de pagar. Não efetue o pagamento se o ajuste não corresponder às condições reais do seu pedido.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Confirmar complemento de R$ 6,78</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Continuar com o complemento de R$ 6,78</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pagamento principal.</p>}
                 <Button onClick={continueToContinuity} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar para a próxima oferta</Button>
