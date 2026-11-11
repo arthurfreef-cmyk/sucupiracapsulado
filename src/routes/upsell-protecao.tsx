@@ -128,7 +128,7 @@ function ContinuityUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-white/85">Pedimos desculpas pela inconsistência apresentada na etapa anterior do frete. Para amenizar o transtorno, disponibilizamos uma condição especial para adicionar mais 3 frascos ao seu pedido por R$ 39,87. A oferta é opcional e o pedido original segue válido mesmo se você não aceitar.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">\n            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
-            {!pending && !preview && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">A oferta está disponível para visualização, mas não foi possível recuperar os dados do pedido. Volte à etapa anterior ou acesse pelo link recebido após a confirmação do pedido para liberar o pagamento.</div>}
+            {!pending && !preview && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"></div>}
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
