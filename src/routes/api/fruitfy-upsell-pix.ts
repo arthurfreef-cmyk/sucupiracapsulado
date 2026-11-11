@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
           return Response.json({ error: "Pedido original inválido ou expirado." }, { status: 403 });
         }
 
-        if (process.env.NODE_ENV !== "development") {
+        if (process.env.UPSELL_PIX_TEST_MODE !== "true") {
           try {
             const originalPaid = await checkOrderPaid(originalOrder);
             if (!originalPaid) {
