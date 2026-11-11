@@ -69,11 +69,14 @@ function ShippingUpsellPage() {
       const marker = `sucupira_shipping_upsell_purchase_tracked_${payment.id}`;
       if (!sessionStorage.getItem(marker)) {
         const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
-        if (typeof fbq === "function") fbq("track", "Purchase", {
-          value: payment.amount / 100, currency: "BRL",
-          content_ids: ["a324b199-a25a-4d9d-9aeb-57ba9745ca5b"], content_type: "product",
-        });
-        sessionStorage.setItem(marker, "1");
+        if (typeof fbq === "function") {
+          fbq("track", "Purchase", {
+            value: payment.amount / 100, currency: "BRL",
+            content_ids: ["shipping-addon"], content_type: "product",
+            content_name: "Complemento logístico",
+          }, { eventID: `purchase_shipping_${payment.id}` });
+          sessionStorage.setItem(marker, "1");
+        }
       }
     } catch { /* Tracking must never block the confirmed payment flow. */ }
     setTransitioningToProtection(true);
