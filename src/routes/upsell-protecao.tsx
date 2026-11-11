@@ -117,10 +117,6 @@ function ContinuityUpsellPage() {
     return <main className="flex min-h-screen items-center justify-center bg-stone-50 p-6 text-center text-sm text-slate-600">Conferindo os dados do seu pedido...</main>;
   }
 
-  if (!pending) {
-    return <main className="flex min-h-screen items-center justify-center bg-stone-50 p-6 text-center text-sm text-slate-600">Não foi possível localizar os dados da etapa anterior. <a className="ml-1 underline" href="/obrigado">Continuar</a></main>;
-  }
-
   return (
     <div className="min-h-screen bg-[#f7f5ef] font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b border-stone-200 bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
@@ -132,7 +128,8 @@ function ContinuityUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-white/85">Pedimos desculpas pela inconsistência apresentada na etapa anterior do frete. Para amenizar o transtorno, disponibilizamos uma condição especial para adicionar mais 3 frascos ao seu pedido por R$ 39,87. A oferta é opcional e o pedido original segue válido mesmo se você não aceitar.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">\n            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
-            {!preview && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
+            {!pending && !preview && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">A oferta está disponível para visualização, mas não foi possível recuperar os dados do pedido. Volte à etapa anterior ou acesse pelo link recebido após a confirmação do pedido para liberar o pagamento.</div>}
+            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
               <div className="mt-3 text-center">
@@ -161,7 +158,7 @@ function ContinuityUpsellPage() {
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-500">Pagamento único via PIX. O valor promocional é para este kit adicional de 3 frascos e não altera o pedido original.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR OS 3 FRASCOS</>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
