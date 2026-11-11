@@ -20,7 +20,7 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
     if (!originalOrder || !["k1", "k3", "k5"].includes(originalOrder.kit)) {
       return Response.json({ error: "O pedido principal não foi validado." }, { status: 403 });
     }
-    if (process.env.NODE_ENV !== "development") {
+    if (process.env.UPSELL_PIX_TEST_MODE !== "true") {
       try {
         if (!await checkOrderPaid(originalOrder)) return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
       } catch {
