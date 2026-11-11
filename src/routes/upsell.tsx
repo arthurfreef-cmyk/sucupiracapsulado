@@ -7,7 +7,7 @@ import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pendin
 import { SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 
-const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional() });
+const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional(), preview: z.boolean().optional() });
 type UpsellPayment = {
   id: string; status: string; amount: number; orderProof: string;
   pix: { code: string; qrcode_base64: string; expires_at: string };
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/upsell")({
 });
 
 function ShippingUpsellPage() {
-  const { kit = "k1" } = Route.useSearch();
+  const { kit = "k1", preview = false } = Route.useSearch();
   const navigate = useNavigate();
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
   const [payment, setPayment] = useState<UpsellPayment | null>(null);
@@ -64,7 +64,7 @@ function ShippingUpsellPage() {
   }, [payment?.pix.code]);
 
   useEffect(() => {
-    if (!upsellStatus.data?.paid || !payment) return;
+    if (preview || !upsellStatus.data?.paid || !payment) return;
     try {
       const marker = `sucupira_shipping_upsell_purchase_tracked_${payment.id}`;
       if (!sessionStorage.getItem(marker)) {
@@ -91,7 +91,7 @@ function ShippingUpsellPage() {
     setTransitioningToProtection(true);
     window.setTimeout(() => void navigate({ to: "/upsell1", search: { kit }, replace: true }), 500);
   };
-  const canGenerate = Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
+  const canGenerate = !preview && Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
 
   const generatePix = async () => {
     if (!pending || !canGenerate || loading || payment) return;
@@ -150,7 +150,7 @@ function ShippingUpsellPage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
-      <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
+      <main className="mx-auto max-w-xl px-4 py-8 md:py-12">\n        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ÚLTIMA ETAPA ANTES DA EXPEDIÇÃO</div>
@@ -158,8 +158,8 @@ function ShippingUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pedido principal já foi confirmado. Agora, você pode adicionar o complemento logístico ao pedido. Se preferir não incluir, poderá seguir para a próxima oferta ou continuar sem ela.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
-            {pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
+            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
+            {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
               <p className="font-semibold">COMPLEMENTO LOGÍSTICO DO PEDIDO</p>
