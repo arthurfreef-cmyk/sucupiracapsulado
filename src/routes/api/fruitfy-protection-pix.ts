@@ -15,17 +15,10 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
     const parsed = inputSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) return Response.json({ error: "Dados do pedido inválidos." }, { status: 400 });
 
-    const { verifyOrderProof, checkOrderPaid, signOrderProof } = await import("@/lib/fruitfy-order.server");
+    const { verifyOrderProof, signOrderProof } = await import("@/lib/fruitfy-order.server");
     const originalOrder = await verifyOrderProof(parsed.data.originalProof);
     if (!originalOrder || !["k1", "k3", "k5"].includes(originalOrder.kit)) {
       return Response.json({ error: "O pedido principal não foi validado." }, { status: 403 });
-    }
-    if (process.env.UPSELL_PIX_TEST_MODE !== "true") {
-      try {
-        if (!await checkOrderPaid(originalOrder)) return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
-      } catch {
-        return Response.json({ error: "Não foi possível confirmar a etapa anterior. Tente novamente." }, { status: 502 });
-      }
     }
 
     const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
