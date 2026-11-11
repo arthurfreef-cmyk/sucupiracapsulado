@@ -131,8 +131,8 @@ function ContinuityUpsellPage() {
             <h1 className="text-2xl font-black leading-tight md:text-3xl">Uma condição especial para compensar o transtorno na etapa de frete</h1>
             <p className="mt-2 text-sm leading-relaxed text-white/85">Pedimos desculpas pela inconsistência apresentada na etapa anterior do frete. Para amenizar o transtorno, disponibilizamos uma condição especial para adicionar mais 3 frascos ao seu pedido por R$ 39,87. A oferta é opcional e o pedido original segue válido mesmo se você não aceitar.</p>
           </div>
-          <div className="space-y-5 p-5 md:p-7">
-            {!originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
+          <div className="space-y-5 p-5 md:p-7">\n            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
+            {!preview && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
               <div className="mt-3 text-center">
@@ -167,7 +167,7 @@ function ContinuityUpsellPage() {
                 <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
             )}
-            {pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pedido principal.</p>}
+            {!preview && pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pedido principal.</p>}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
             {preview && <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800">Modo de visualização: nenhuma cobrança PIX será iniciada.</p>}
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Oferta opcional. A compra adicional só é concluída após a confirmação do PIX. Seus direitos legais e a garantia do pedido original permanecem preservados.</div>
