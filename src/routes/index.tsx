@@ -122,6 +122,16 @@ const CHECKOUT = {
 function Index() {
   const router = useRouter();
   useEffect(() => {
+    const w = window as typeof window & { fbq?: (...args: unknown[]) => void };
+    trackStorefrontEvent(w.fbq, "track", "ViewContent", {
+      content_ids: ["sucupira-composta"],
+      content_type: "product",
+      content_category: "suplemento",
+      content_name: "Sucupira Composta",
+      currency: "BRL",
+    }, { eventID: `viewcontent_${Date.now()}` });
+  }, []);
+  useEffect(() => {
     const idle = (cb: () => void) =>
       (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb) : setTimeout(cb, 1500);
     idle(() => {
