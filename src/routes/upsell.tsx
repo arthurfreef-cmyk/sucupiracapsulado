@@ -182,7 +182,6 @@ function ShippingUpsellPage() {
                 {individualAmount !== null && <div className="rounded-2xl border p-5">
                   <p className="text-sm font-semibold text-slate-600">Valor informado para esta etapa logística</p>
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">Confira a composição e a justificativa do valor antes de pagar. Não efetue o pagamento se o ajuste não corresponder às condições reais do seu pedido.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
