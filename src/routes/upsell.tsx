@@ -87,10 +87,6 @@ function ShippingUpsellPage() {
   }, [upsellStatus.data?.paid, payment, navigate, kit]);
 
   const individualAmount = SHIPPING_UPSELL_CENTS;
-  const continueToContinuity = () => {
-    setTransitioningToProtection(true);
-    window.setTimeout(() => void navigate({ to: "/presell", search: { kit }, replace: true }), 500);
-  };
   const canGenerate = !preview && Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
 
   const generatePix = async () => {
