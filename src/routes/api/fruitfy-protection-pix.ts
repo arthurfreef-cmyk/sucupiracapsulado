@@ -26,13 +26,13 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
       return Response.json({ error: "Não foi possível confirmar a etapa anterior. Tente novamente." }, { status: 502 });
     }
 
-    const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\\s+/i, "");
-    const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\\s]?id\\s*[:=]\\s*/i, "");
+    const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
+    const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\s]?id\s*[:=]\s*/i, "");
     if (!token || !storeId) return Response.json({ error: "Pagamento indisponível no momento." }, { status: 503 });
 
     // Oferta adicional: mais 3 frascos da mesma SKU cadastrada no catálogo Fruitfy.
     const amount = 3987;
-    const query = new URLSearchParams(parsed.data.utm?.replace(/^\\?/, "") ?? "");
+    const query = new URLSearchParams(parsed.data.utm?.replace(/^\?/, "") ?? "");
     const utm: Record<string, string> = {};
     for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
       const value = query.get(key);
@@ -41,8 +41,8 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
     const payload = {
       name: parsed.data.buyer.name,
       email: parsed.data.buyer.email.toLowerCase(),
-      cpf: parsed.data.buyer.document.replace(/\\D/g, ""),
-      phone: `55${parsed.data.buyer.phone.replace(/\\D/g, "").replace(/^55/, "")}`,
+      cpf: parsed.data.buyer.document.replace(/\D/g, ""),
+      phone: `55${parsed.data.buyer.phone.replace(/\D/g, "").replace(/^55/, "")}`,
       items: [{ id: FRUITFY_KITS.k3.id, value: amount, quantity: 1 }],
       utm,
     };
