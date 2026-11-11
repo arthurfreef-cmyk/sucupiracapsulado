@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 import { siteImages } from "@/lib/site-media";
+import { KIT_PRICING } from "@/lib/kit-pricing";
 
 const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional(), preview: z.boolean().optional() });
 const continuitySchema = z.object({
@@ -124,17 +125,16 @@ function ContinuityUpsellPage() {
         <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-900/5">
           <div className="bg-gradient-to-br from-[#5b0808] via-[#7e1010] to-[#4a0505] px-5 py-7 text-white md:px-7">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold"><BadgeCheck size={15}/> OFERTA DE DESCULPAS PELO TRANSTORNO</div>
-            <h1 className="text-2xl font-black leading-tight md:text-3xl">Uma condição especial para compensar o transtorno na etapa de frete</h1>
-            <p className="mt-2 text-sm leading-relaxed text-white/85">Pedimos desculpas pela inconsistência apresentada na etapa anterior do frete. Para amenizar o transtorno, disponibilizamos uma condição especial para adicionar mais 3 frascos ao seu pedido por R$ 39,87. A oferta é opcional e o pedido original segue válido mesmo se você não aceitar.</p>
+            <h1 className="text-2xl font-black leading-tight md:text-3xl">Temos uma condição especial para adicionar mais 3 frascos ao seu pedido</h1>
+            <p className="mt-2 text-sm leading-relaxed text-white/90">Pedimos desculpas pelo transtorno na etapa anterior. Como agradecimento pela sua compreensão, liberamos uma condição especial: acrescente mais 3 frascos por R$ 39,87. É uma oferta opcional e não altera o pedido que você já realizou.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">\n            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
-            {!pending && !preview && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"></div>}
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
               <div className="mt-3 text-center">
-                <p className="text-sm font-bold text-slate-800">KIT ADICIONAL • 3 FRASCOS</p>
-                <p className="mt-1 text-xs text-slate-500">Para acrescentar ao pedido que você já fez</p>
+                <p className="text-sm font-extrabold tracking-wide text-[#650b0b]">SUCUPIRA COMPOSTA • KIT COM 3 FRASCOS</p>
+                <p className="mt-1 text-xs text-slate-600">Mais 3 frascos para complementar seu pedido</p>
               </div>
             </div>
             {payment ? (
@@ -153,13 +153,14 @@ function ContinuityUpsellPage() {
               <>
                 <div className="rounded-2xl border border-stone-200 p-5">
                   <div className="flex items-end justify-between gap-3">
-                    <div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Preço de referência do kit</p><p className="mt-1 text-lg text-slate-400 line-through">{money(19700)}</p></div>
-                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Oferta de desculpas</p><p className="mt-1 text-4xl font-black tracking-tight text-[#650b0b]">{money(3987)}</p></div>
+                    <div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Preço do kit de 3 na loja</p><p className="mt-1 text-lg font-semibold text-slate-500">{money(KIT_PRICING.k3.priceCents)}</p></div>
+                    <div className="text-right"><p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Sua condição especial</p><p className="mt-1 text-4xl font-black tracking-tight text-[#650b0b]">{money(3987)}</p></div>
                   </div>
-                  <p className="mt-3 text-xs leading-relaxed text-slate-500">Pagamento único via PIX. O valor promocional é para este kit adicional de 3 frascos e não altera o pedido original.</p>
+                  <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm"><span className="font-semibold text-emerald-900">Você paga menos nesta oferta</span><strong className="text-emerald-900">{money(KIT_PRICING.k3.priceCents - 3987)} de diferença</strong></div>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-600">Pagamento único via PIX. São 3 frascos adicionais por R$ 39,87. O pedido original permanece exatamente como foi realizado.</p>
                 </div>
                 <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR OS 3 FRASCOS</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> ADICIONAR 3 FRASCOS POR R$ 39,87</>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
