@@ -123,8 +123,8 @@ function ProtectionUpsellPage() {
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-950 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><ShieldCheck size={15}/> OFERTA OPCIONAL</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">NÃO DEIXE SEU PEDIDO DESPROTEGIDO!</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Ative uma proteção extra por apenas R$ 15,90 e tenha a possibilidade de solicitar reembolso se ocorrer uma situação coberta com seu pedido.</p>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">UMA CAMADA EXTRA DE TRANQUILIDADE PARA SEU PEDIDO</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Você já concluiu seu pedido. Aproveite esta oferta opcional para adicionar uma proteção comercial contra ocorrências elegíveis no transporte ou no produto recebido — por um pagamento único de R$ 15,90.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {payment ? (
@@ -141,17 +141,20 @@ function ProtectionUpsellPage() {
               </section>
             ) : (
               <>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed"><strong>Mais tranquilidade até a entrega:</strong> em caso de extravio, avaria ou divergência comprovada no produto recebido, você poderá solicitar reembolso conforme as condições da proteção.</p></div>
-                  <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed"><strong>Até 120% do valor elegível:</strong> nos casos cobertos e aprovados, o reembolso comercial poderá chegar a 120% do total elegível pago pelo produto e pelo complemento logístico.</p></div>
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
+                  <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-800">O que esta proteção acrescenta</p>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Suporte em ocorrências de entrega</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Solicite análise em caso de extravio, avaria ou divergência comprovada no produto recebido.</p></div></div>
+                    <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Reembolso comercial de até 120% do valor elegível</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Nos casos cobertos e aprovados, conforme os termos da proteção e a documentação apresentada.</p></div></div>
+                  </div>
                 </div>
                 <div className="rounded-2xl border p-5">
-                  <p className="text-sm font-semibold text-slate-600">ATIVE AGORA — PAGAMENTO ÚNICO</p>
-                  <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(PROTECTION_UPSELL_CENTS)}</p>
-                  <p className="mt-1 text-xs text-slate-500">Apenas R$ 15,90. Sem mensalidade e sem cobrança recorrente.</p>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-800">Oferta especial para este pedido</p>
+                  <p className="mt-2 text-4xl font-black tracking-tight text-slate-950">{money(PROTECTION_UPSELL_CENTS)}</p>
+                  <p className="mt-1 text-xs text-slate-500">Pagamento único. Sem mensalidade e sem cobrança recorrente.</p>
                 </div>
                 <Button onClick={generatePix} disabled={!pending || !shipping || !shippingStatus.data?.paid || loading || preview} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM! QUERO ADICIONAR PROTEÇÃO</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR ESTA PROTEÇÃO</>}
                 </Button>
               </>
             )}
