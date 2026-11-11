@@ -90,7 +90,7 @@ function ShippingUpsellPage() {
   }, [upsellStatus.data?.paid, payment, navigate, kit]);
 
   const individualAmount = SHIPPING_UPSELL_CENTS;
-  const canGenerate = !preview && Boolean(pending && (import.meta.env.DEV || (originalStatus.data?.paid && originalStatus.data.eligible)));
+  const canGenerate = !preview && Boolean(pending);
 
   const generatePix = async () => {
     if (!pending || !canGenerate || loading || payment) return;
@@ -166,7 +166,7 @@ function ShippingUpsellPage() {
     <div className="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
-        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}{import.meta.env.DEV && <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-center text-sm font-semibold text-amber-900">MODO DE TESTE LOCAL: permite gerar PIX sem confirmar o pedido principal. A cobrança será criada na conta Fruitfy configurada.</div>}
+        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
@@ -174,7 +174,7 @@ function ShippingUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Encontramos uma diferença entre o valor de frete calculado inicialmente e o custo necessário para concluir o envio. O saldo de R$ 6,78 corresponde a essa diferença e precisa ser regularizado para que possamos liberar a expedição do pedido.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
-            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
+            {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
