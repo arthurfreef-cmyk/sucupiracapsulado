@@ -4,15 +4,10 @@ import { z } from "zod";
 import { BadgeCheck, Clipboard, LoaderCircle, LockKeyhole, QrCode, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
-import { SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
 import { useOrderPayment } from "@/hooks/use-order-payment";
 import { siteImages } from "@/lib/site-media";
 
 const searchSchema = z.object({ kit: z.enum(["k1", "k3", "k5"]).optional(), preview: z.boolean().optional() });
-const shippingSchema = z.object({
-  id: z.string(), status: z.string(), amount: z.literal(SHIPPING_UPSELL_CENTS), orderProof: z.string().min(1),
-  pix: z.object({ code: z.string().startsWith("000201").min(50), qrcode_base64: z.string(), expires_at: z.string().datetime({ offset: true }) }),
-});
 const continuitySchema = z.object({
   id: z.string(), status: z.string(), amount: z.literal(3987), orderProof: z.string().min(1),
   pix: z.object({ code: z.string().startsWith("000201").min(50), qrcode_base64: z.string(), expires_at: z.string().datetime({ offset: true }) }),
@@ -34,21 +29,19 @@ function ContinuityUpsellPage() {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
-  const [shipping, setShipping] = useState<z.infer<typeof shippingSchema> | null>(null);
+
   const [payment, setPayment] = useState<z.infer<typeof continuitySchema> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
-  const shippingStatus = useOrderPayment(shipping?.orderProof);
+  const originalStatus = useOrderPayment(pending?.original.proof);
   const continuityStatus = useOrderPayment(payment?.orderProof);
 
   useEffect(() => {
     try {
       const p = pendingCheckoutSchema.safeParse(JSON.parse(sessionStorage.getItem(pendingCheckoutKey(kit)) || "null"));
       if (p.success && p.data.kit === kit) setPending(p.data);
-      const s = shippingSchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_shipping_upsell_${kit}`) || "null"));
-      if (s.success) setShipping(s.data);
       const saved = continuitySchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_continuity_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Invalid browser state never grants access to the offer. */ }
@@ -87,14 +80,14 @@ function ContinuityUpsellPage() {
   }, [continuityStatus.data?.paid, payment, navigate]);
 
   const generatePix = async () => {
-    if (!pending || !shipping || !shippingStatus.data?.paid || loading || payment || preview) return;
+    if (!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || payment || preview) return;
     setLoading(true);
     setError("");
     try {
       const response = await fetch("/api/fruitfy-protection-pix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shippingProof: shipping.orderProof, buyer: pending.original.buyer, utm: pending.original.utm }),
+        body: JSON.stringify({ originalProof: pending.original.proof, buyer: pending.original.buyer, utm: pending.original.utm }),
       });
       const json: unknown = await response.json().catch(() => null);
       const parsed = continuitySchema.safeParse(json);
@@ -124,7 +117,7 @@ function ContinuityUpsellPage() {
     return <main className="flex min-h-screen items-center justify-center bg-stone-50 p-6 text-center text-sm text-slate-600">Conferindo os dados do seu pedido...</main>;
   }
 
-  if (!pending || !shipping) {
+  if (!pending) {
     return <main className="flex min-h-screen items-center justify-center bg-stone-50 p-6 text-center text-sm text-slate-600">Não foi possível localizar os dados da etapa anterior. <a className="ml-1 underline" href="/obrigado">Continuar</a></main>;
   }
 
@@ -139,7 +132,7 @@ function ContinuityUpsellPage() {
             <p className="mt-2 text-sm leading-relaxed text-white/85">Você já escolheu a Sucupira Composta. Agora pode adicionar um kit extra de 3 frascos por um valor especial, sem precisar refazer o pedido.</p>
           </div>
           <div className="space-y-5 p-5 md:p-7">
-            {!shippingStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{shippingStatus.isError ? "Não foi possível validar o pagamento da etapa anterior. Atualize a página." : "Validando o pagamento da etapa anterior..."}</div>}
+            {!originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível validar o pagamento do pedido principal. Atualize a página." : "Validando o pagamento do pedido principal..."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
               <img src={siteImages.kit3} alt="Kit Sucupira Composta com três frascos" width={420} height={320} className="mx-auto max-h-64 w-full object-contain" fetchPriority="high" decoding="async"/>
               <div className="mt-3 text-center">
@@ -168,12 +161,13 @@ function ContinuityUpsellPage() {
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-500">Pagamento único via PIX. O valor promocional é para este kit adicional de 3 frascos e não altera o pedido original.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR OS 3 FRASCOS</>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
             )}
+            {pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pedido principal.</p>}
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
             {preview && <p className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800">Modo de visualização: nenhuma cobrança PIX será iniciada.</p>}
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Oferta opcional. A compra adicional só é concluída após a confirmação do PIX. Seus direitos legais e a garantia do pedido original permanecem preservados.</div>
