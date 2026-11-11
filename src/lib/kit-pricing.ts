@@ -1,8 +1,8 @@
 /** Shared integer-cent pricing keeps the storefront and PIX charges aligned. */
 export const KIT_PRICING = {
   k1: { priceCents: 1290, fromCents: 2990 },
-  k3: { priceCents: 4790, fromCents: 8990 },
-  k5: { priceCents: 9700, fromCents: 14990 },
+  k3: { priceCents: 4790, fromCents: 23700 },
+  k5: { priceCents: 9700, fromCents: 39500 },
 } as const;
 
 export const formatKitPrice = (cents: number): string =>
