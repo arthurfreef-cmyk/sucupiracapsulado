@@ -136,9 +136,9 @@ function ShippingUpsellPage() {
         <div className="w-full max-w-sm rounded-3xl border border-emerald-100 bg-white/95 p-8 text-center shadow-2xl shadow-emerald-950/10">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/70"><Truck size={36} className="text-emerald-800"/></div>
           <p className="mt-6 text-xs font-extrabold uppercase tracking-[.18em] text-emerald-800">Sucupira Composta</p>
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Conferindo os detalhes do envio</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos preparando a etapa de regularização do frete e os detalhes necessários para liberar a expedição do seu pedido.</p>
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-emerald-800"><LoaderCircle size={17} className="animate-spin"/> Preparando a etapa de frete...</div>
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Confirmando seu pedido</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos conferindo as informações do seu pedido e preparando os próximos detalhes. Aguarde só um instante.</p>
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-emerald-800"><LoaderCircle size={17} className="animate-spin"/> Conferindo os dados do pedido...</div>
         </div>
         <style>{`@keyframes upsell-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
       </main>
