@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { BadgeCheck, Clipboard, LoaderCircle, LockKeyhole, QrCode, ShieldCheck, PackageCheck } from "lucide-react";
+import { BadgeCheck, Clipboard, LoaderCircle, LockKeyhole, QrCode, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pendingCheckoutKey, pendingCheckoutSchema } from "@/lib/checkout-pending";
 import { SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
