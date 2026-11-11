@@ -21,22 +21,12 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
           return Response.json({ error: "Não foi possível validar o pedido original." }, { status: 400 });
         }
 
-        const { verifyOrderProof, checkOrderPaid, signOrderProof } = await import("@/lib/fruitfy-order.server");
+        const { verifyOrderProof, signOrderProof } = await import("@/lib/fruitfy-order.server");
         const originalOrder = await verifyOrderProof(parsed.data.originalProof);
         if (!originalOrder || originalOrder.kit === "upsell5") {
           return Response.json({ error: "Pedido original inválido ou expirado." }, { status: 403 });
         }
 
-        if (process.env.UPSELL_PIX_TEST_MODE !== "true") {
-          try {
-            const originalPaid = await checkOrderPaid(originalOrder);
-            if (!originalPaid) {
-              return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
-            }
-          } catch {
-            return Response.json({ error: "Não foi possível confirmar o pedido principal. Tente novamente." }, { status: 502 });
-          }
-        }
 
         const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
         const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\s]?id\s*[:=]\s*/i, "");
