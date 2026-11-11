@@ -81,7 +81,7 @@ function ShippingUpsellPage() {
     } catch { /* Tracking must never block the confirmed payment flow. */ }
     setTransitioningToProtection(true);
     const timer = window.setTimeout(() => {
-      void navigate({ to: "/presell", search: { kit }, replace: true });
+      void navigate({ to: "/upsell-protecao", search: { kit }, replace: true });
     }, 1800);
     return () => window.clearTimeout(timer);
   }, [upsellStatus.data?.paid, payment, navigate, kit]);
