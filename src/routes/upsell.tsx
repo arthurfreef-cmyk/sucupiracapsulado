@@ -32,6 +32,7 @@ export const Route = createFileRoute("/upsell")({
 function ShippingUpsellPage() {
   const { kit = "k1", preview = false } = Route.useSearch();
   const navigate = useNavigate();
+  const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
   const [payment, setPayment] = useState<UpsellPayment | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,6 +50,7 @@ function ShippingUpsellPage() {
       const saved = upsellPaymentSchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_shipping_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Preview remains available when browser storage is unavailable. */ }
+    setLoaded(true);
   }, [kit]);
 
   useEffect(() => {
@@ -123,6 +125,22 @@ function ShippingUpsellPage() {
     } catch { setError("Não foi possível copiar automaticamente. Selecione e copie o código PIX."); }
   };
 
+  if (!loaded) {
+    return (
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f3f8f4] via-white to-[#e7f1e9] px-5 py-10" role="status" aria-live="polite">
+        <div className="absolute inset-x-0 top-0 h-1.5 overflow-hidden bg-emerald-100"><div className="h-full w-1/3 animate-[upsell-loading_1.4s_ease-in-out_infinite] rounded-full bg-emerald-700"/></div>
+        <div className="w-full max-w-sm rounded-3xl border border-emerald-100 bg-white/95 p-8 text-center shadow-2xl shadow-emerald-950/10">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/70"><Truck size={36} className="text-emerald-800"/></div>
+          <p className="mt-6 text-xs font-extrabold uppercase tracking-[.18em] text-emerald-800">Sucupira Composta</p>
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Preparando seu pedido</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos carregando as informações da sua compra com segurança.</p>
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-emerald-800"><LoaderCircle size={17} className="animate-spin"/> Só um instante...</div>
+        </div>
+        <style>{`@keyframes upsell-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
+      </main>
+    );
+  }
+
   if (transitioningToProtection) {
     return (
       <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-50 px-5 py-12 text-center" role="status" aria-live="polite">
@@ -144,7 +162,7 @@ function ShippingUpsellPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">\n        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
@@ -171,7 +189,7 @@ function ShippingUpsellPage() {
                 </div>
                 {qrUrl ? <img src={qrUrl} alt="QR Code PIX do complemento" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
                 <p className="flex items-center justify-center gap-2 text-sm text-slate-600"><Clock3 size={16}/> Consulte o prazo no aplicativo do seu banco.</p>
-                <Button onClick={copyPix} className="h-12 w-full bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
+                <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Complemento logístico confirmado." : "Aguardando a confirmação do PIX pela Fruitfy. O pedido principal permanece registrado."}</div>
                 
@@ -183,7 +201,7 @@ function ShippingUpsellPage() {
                   <p className="text-sm font-semibold text-slate-600">Valor informado para esta etapa logística</p>
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
                 </div>}
-                <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pagamento principal.</p>}
