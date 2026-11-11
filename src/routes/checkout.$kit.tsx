@@ -250,13 +250,34 @@ function CheckoutPage() {
     setError(null);
   }, [form.name, form.email, form.phone, form.document, form.zip, form.number]);
 
-  // Meta Pixel: InitiateCheckout ao abrir o checkout
+  // Meta Pixel: consume the click event marker, or track direct checkout visits.
   useEffect(() => {
-      trackCheckout("track", "InitiateCheckout", {
-        content_ids: [baseKitId], content_type: "product", content_name: kit.title,
-        value: kit.priceCents / 100, currency: "BRL", num_items: 1,
-      });
-  }, [baseKitId]);
+    let alreadyTracked = false;
+    try {
+      const key = `sucupira_pending_ic_${baseKitId}`;
+      const raw = sessionStorage.getItem(key);
+      if (raw) {
+        sessionStorage.removeItem(key);
+        const marker = JSON.parse(raw) as { eventID?: string; createdAt?: number };
+        alreadyTracked = typeof marker.eventID === "string"
+          && typeof marker.createdAt === "number"
+          && Date.now() - marker.createdAt < 60_000;
+      }
+    } catch {
+      // Storage may be unavailable; fall back to tracking the checkout page view.
+    }
+    if (alreadyTracked) return;
+
+    const eventID = `initiate_checkout_direct_${baseKitId}_${Date.now()}`;
+    trackCheckout("track", "InitiateCheckout", {
+      content_ids: [baseKitId],
+      content_type: "product",
+      content_name: kit.title,
+      value: kit.priceCents / 100,
+      currency: "BRL",
+      num_items: baseKitId === "k5" ? 5 : baseKitId === "k3" ? 3 : 1,
+    }, { eventID });
+  }, [baseKitId, kit.title, kit.priceCents]);
 
   const submit = async () => {
     if (submitInFlight.current || restoringPayment || result) return;
