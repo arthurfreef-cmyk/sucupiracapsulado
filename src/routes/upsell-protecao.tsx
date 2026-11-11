@@ -171,8 +171,8 @@ function ContinuityUpsellPage() {
                   <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm"><span className="font-semibold text-emerald-900">Você paga menos nesta oferta</span><strong className="text-emerald-900">{money(KIT_PRICING.k3.priceCents - 3987)} de diferença</strong></div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-600">Pagamento único via PIX. São 3 frascos adicionais por R$ 39,87. O pedido original permanece exatamente como foi realizado.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-[#6b0d0d] hover:bg-[#510909] disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> ADICIONAR 3 FRASCOS POR R$ 39,87</>}
+                <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="flex h-auto min-h-14 w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-snug sm:text-base bg-[#6b0d0d] hover:bg-[#510909] disabled:opacity-50">
+                  {loading ? <><LoaderCircle className="h-[18px] w-[18px] shrink-0 animate-spin"/> <span className="min-w-0 flex-1 break-words">Gerando PIX...</span></> : <><LockKeyhole className="h-[18px] w-[18px] shrink-0"/> <span className="min-w-0 flex-1 break-words">ADICIONAR 3 FRASCOS POR R$ 39,87</span></>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-auto min-h-11 w-full whitespace-normal px-3 py-3 text-center text-sm font-semibold leading-tight border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
