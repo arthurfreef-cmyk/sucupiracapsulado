@@ -209,7 +209,7 @@ function ShippingUpsellPage() {
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
                 </Button>
-                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pagamento principal.</p>}
+                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">Esta oferta adicional pode ser paga separadamente, mesmo enquanto o pedido principal estiver pendente.</p>}
                 
               </section>
             )}
