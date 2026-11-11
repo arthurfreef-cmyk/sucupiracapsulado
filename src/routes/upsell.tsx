@@ -32,7 +32,6 @@ export const Route = createFileRoute("/upsell")({
 function ShippingUpsellPage() {
   const { kit = "k1", preview = false } = Route.useSearch();
   const navigate = useNavigate();
-  const [loaded, setLoaded] = useState(false);
   const [pending, setPending] = useState<z.infer<typeof pendingCheckoutSchema> | null>(null);
   const [payment, setPayment] = useState<UpsellPayment | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,8 +49,6 @@ function ShippingUpsellPage() {
       const saved = upsellPaymentSchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_shipping_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Preview remains available when browser storage is unavailable. */ }
-    const timer = window.setTimeout(() => setLoaded(true), 3500);
-    return () => window.clearTimeout(timer);
   }, [kit]);
 
   useEffect(() => {
@@ -125,22 +122,6 @@ function ShippingUpsellPage() {
       window.setTimeout(() => setCopied(false), 1800);
     } catch { setError("Não foi possível copiar automaticamente. Selecione e copie o código PIX."); }
   };
-
-  if (!loaded) {
-    return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f3f8f4] via-white to-[#e7f1e9] px-5 py-10" role="status" aria-live="polite">
-        <div className="absolute inset-x-0 top-0 h-1.5 overflow-hidden bg-emerald-100"><div className="h-full w-1/3 animate-[upsell-loading_1.4s_ease-in-out_infinite] rounded-full bg-emerald-700"/></div>
-        <div className="w-full max-w-sm rounded-3xl border border-emerald-100 bg-white/95 p-8 text-center shadow-2xl shadow-emerald-950/10">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/70"><Truck size={36} className="text-emerald-800"/></div>
-          <p className="mt-6 text-xs font-extrabold uppercase tracking-[.18em] text-emerald-800">Sucupira Composta</p>
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Preparando seu pedido</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos carregando as informações da sua compra com segurança.</p>
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-emerald-800"><LoaderCircle size={17} className="animate-spin"/> Só um instante...</div>
-        </div>
-        <style>{`@keyframes upsell-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
-      </main>
-    );
-  }
 
   if (transitioningToProtection) {
     return (
