@@ -104,6 +104,11 @@
     font-family: "Playfair Display", Georgia, serif;
   }
   html { scroll-behavior: smooth; }
+  /* The fixed sales-page menu must not cover anchor destinations. */
+  main section[id] { scroll-margin-top: 5.5rem; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
 }
 
 /* Refinos visuais de conversão: hierarquia, leitura, foco e interação.

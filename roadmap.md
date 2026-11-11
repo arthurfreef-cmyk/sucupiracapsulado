@@ -13,6 +13,8 @@
 - [x] Testar validação, checkout, QR Code e compilação.
 
 # Verificação da página e checkout
+- [x] Corrigir posicionamento das seções sob o menu e isolar falhas de pixel nos kits; verificar os três checkouts e campanhas em 1280/390/320px, sem cobranças reais.
+- [ ] Substituir links de políticas que apontam ao topo — aguarda URLs ou documentos reais do responsável.
 - [x] Refinar leitura do checkout em computador/celular, permitir correção de endereço, focar campos incompletos e recuperar PIX mesmo com falha de escrita; 31 testes e fluxo simulado completo aprovados, sem nova cobrança real ou publicação.
 - [x] Corrigir frete após endereço manual, recuperar PIX ao atualizar, isolar rastreamento e evitar oferta bloqueada sem armazenamento; 25 testes e geração real de PIX R$ 27 aprovados, sem pagamento ou publicação.
 - [x] Confirmar geração real de PIX Fruitfy de R$ 27, valor, CRC e leitura do QR Code.

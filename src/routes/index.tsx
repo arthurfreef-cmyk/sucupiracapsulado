@@ -47,6 +47,7 @@ import { BadgeCheck, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
 import { siteImages, heroSrcSet, heroSizes, testimonialVideos } from "@/lib/site-media";
 import { LazyVideo } from "@/components/landing/LazyVideo";
 import { KIT_PRICING, formatKitPrice } from "@/lib/kit-pricing";
+import { trackStorefrontEvent } from "@/lib/storefront-tracking";
 
 
 export const Route = createFileRoute("/")({
@@ -792,19 +793,17 @@ function Pricing() {
                 search={true}
                 reloadDocument
                 onClick={() => {
-                  const w = window as any;
+                  const w = window as typeof window & { fbq?: (...args: unknown[]) => void };
                   const value = KIT_PRICING[k.href].priceCents / 100;
                   const num = k.href === "k5" ? 5 : k.href === "k3" ? 3 : 1;
-                  if (typeof w.fbq === "function") {
-                    w.fbq("track", "AddToCart", {
+                  trackStorefrontEvent(w.fbq, "track", "AddToCart", {
                       content_ids: [k.href],
                       content_name: k.title,
                       content_type: "product",
                       value,
                       currency: "BRL",
                       num_items: num,
-                    });
-                  }
+                  });
                 }}
                 className={`mt-auto block text-center font-bold py-4 rounded-full transition ${
                   k.highlight
