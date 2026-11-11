@@ -46,7 +46,8 @@ function ContinuityUpsellPage() {
       const saved = continuitySchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_continuity_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Invalid browser state never grants access to the offer. */ }
-    setLoaded(true);
+    const timer = window.setTimeout(() => setLoaded(true), 3500);
+    return () => window.clearTimeout(timer);
   }, [kit]);
 
   useEffect(() => {
