@@ -50,7 +50,8 @@ function ShippingUpsellPage() {
       const saved = upsellPaymentSchema.safeParse(JSON.parse(sessionStorage.getItem(`sucupira_shipping_upsell_${kit}`) || "null"));
       if (saved.success) setPayment(saved.data);
     } catch { /* Preview remains available when browser storage is unavailable. */ }
-    setLoaded(true);
+    const timer = window.setTimeout(() => setLoaded(true), 3500);
+    return () => window.clearTimeout(timer);
   }, [kit]);
 
   useEffect(() => {
