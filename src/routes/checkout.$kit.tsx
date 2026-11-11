@@ -198,8 +198,8 @@ function CheckoutPage() {
   // Frete expresso: valor individual por lead, estável com os dados informados.
   const cepDigits = onlyDigits(form.zip);
   const deliveryReady = isCheckoutDeliveryReady(cepDigits, resolvedCep.current, form);
-  const leadShippingKey = `${normalizeCheckoutPhone(form.phone)}|${form.email.trim().toLowerCase()}|${onlyDigits(form.document)}`;
-  const expressCents = expressShippingCents(cepDigits, leadShippingKey);
+  // The express quote depends only on destination, never on personal data.
+  const expressCents = expressShippingCents(cepDigits);
   const shippingCents = deliveryReady && shipping === "express" ? expressCents : 0;
   const totalCents = kit.priceCents + shippingCents;
 
@@ -373,8 +373,7 @@ function CheckoutPage() {
       setLoading(false);
       return;
     }
-    const submittedLeadShippingKey = `${normalizeCheckoutPhone(submittedForm.phone)}|${submittedForm.email.trim().toLowerCase()}|${onlyDigits(submittedForm.document)}`;
-    const submittedExpressCents = expressShippingCents(submittedForm.zip, submittedLeadShippingKey);
+    const submittedExpressCents = expressShippingCents(submittedForm.zip);
     const submittedShippingCents = shipping === "express" && resolvedCep.current === submittedForm.zip
       ? submittedExpressCents
       : 0;
