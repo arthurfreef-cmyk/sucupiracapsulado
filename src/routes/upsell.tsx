@@ -144,14 +144,14 @@ function ShippingUpsellPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-base leading-relaxed text-slate-900 antialiased">
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ÚLTIMA ETAPA ANTES DA EXPEDIÇÃO</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Falta apenas concluir a etapa logística do seu pedido.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pedido principal já foi confirmado. Agora, finalize o complemento logístico informado abaixo para que a equipe possa liberar a separação e dar sequência ao envio.</p>
+            <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">Falta apenas concluir a etapa logística do seu pedido.</h1>
+            <p className="mt-3 text-base leading-relaxed text-emerald-50 md:text-lg">O pedido principal já foi confirmado. Agora, finalize o complemento logístico informado abaixo para que a equipe possa liberar a separação e dar sequência ao envio.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
@@ -171,7 +171,7 @@ function ShippingUpsellPage() {
                 </div>
                 {qrUrl ? <img src={qrUrl} alt="QR Code PIX do complemento" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
                 <p className="flex items-center justify-center gap-2 text-sm text-slate-600"><Clock3 size={16}/> Consulte o prazo no aplicativo do seu banco.</p>
-                <Button onClick={copyPix} className="h-12 w-full bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
+                <Button onClick={copyPix} className="h-14 w-full rounded-xl bg-emerald-700 text-base font-bold tracking-wide text-white shadow-lg shadow-emerald-900/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-800 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 active:translate-y-0"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Pagamento logístico confirmado. O pedido pode seguir para separação e envio." : "Envio bloqueado: aguardando a confirmação deste pagamento pela Fruitfy. O pagamento do produto principal permanece registrado."}</div>
                 {upsellStatus.isError && <p className="text-sm text-amber-700">Não foi possível consultar o status agora. A página continuará tentando quando for atualizada.</p>}
@@ -183,7 +183,7 @@ function ShippingUpsellPage() {
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
                 </div>}
-                <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-16 w-full rounded-xl bg-gradient-to-r from-emerald-800 to-emerald-700 text-lg font-extrabold tracking-wide text-white shadow-xl shadow-emerald-900/20 transition-all hover:-translate-y-0.5 hover:from-emerald-900 hover:to-emerald-800 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Confirmar complemento de R$ 6,78</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">O PIX só poderá ser gerado após a confirmação do pagamento principal. O envio depende da confirmação deste complemento.</p>}
