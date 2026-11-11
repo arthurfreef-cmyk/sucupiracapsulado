@@ -315,7 +315,7 @@ function CheckoutPage() {
       const messages: Record<string, string> = {
         name: "Informe seu nome e sobrenome.",
         email: "Confira o e-mail informado.",
-        phone: "Informe um celular válido com DDD.",
+        phone: "Informe um telefone válido com DDD.",
         document: "Confira o CPF informado.",
         zip: cepError || "Informe um CEP válido e aguarde o endereço aparecer.",
         number: "Informe o número do endereço.",
@@ -687,7 +687,7 @@ function CheckoutPage() {
                 error={err("email", !emailValid) ? "E-mail inválido" : undefined} ok={emailValid} />
               <Field id="phone" name="phone" label="Telefone com DDD" type="tel" inputMode="numeric" autoComplete="tel" enterKeyHint="next" placeholder="(00) 00000-0000" value={form.phone}
                 onChange={e => setForm({...form, phone: maskPhone(e.target.value)})} onBlur={() => touch("phone")}
-                error={err("phone", !phoneValid) ? "Celular inválido" : undefined} ok={phoneValid} />
+                error={err("phone", !phoneValid) ? "Telefone inválido" : undefined} ok={phoneValid} />
             </div>
             <Field id="document" name="document" label="CPF" inputMode="numeric" autoComplete="off" enterKeyHint="next" placeholder="000.000.000-00" value={form.document}
               onChange={e => setForm({...form, document: maskCPF(e.target.value)})} onBlur={() => touch("document")}
