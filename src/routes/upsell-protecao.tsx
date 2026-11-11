@@ -115,7 +115,19 @@ function ContinuityUpsellPage() {
   const decline = () => void navigate({ to: "/obrigado", replace: true });
 
   if (!loaded) {
-    return <main className="flex min-h-screen items-center justify-center bg-stone-50 p-6 text-center text-sm text-slate-600">Conferindo os dados do seu pedido...</main>;
+    return (
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#fbf7f2] via-white to-[#f3e9e4] px-5 py-10" role="status" aria-live="polite">
+        <div className="absolute inset-x-0 top-0 h-1.5 overflow-hidden bg-red-100"><div className="h-full w-1/3 animate-[protection-loading_1.4s_ease-in-out_infinite] rounded-full bg-[#741111]"/></div>
+        <div className="w-full max-w-sm rounded-3xl border border-red-100 bg-white/95 p-8 text-center shadow-2xl shadow-red-950/10">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 ring-8 ring-red-50/70"><ShieldCheck size={36} className="text-[#741111]"/></div>
+          <p className="mt-6 text-xs font-extrabold uppercase tracking-[.18em] text-[#741111]">Sucupira Composta</p>
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">Preparando sua condição especial</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600">Estamos carregando os detalhes da oferta e conferindo as informações do pedido.</p>
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-[#741111]"><LoaderCircle size={17} className="animate-spin"/> Só um instante...</div>
+        </div>
+        <style>{`@keyframes protection-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }`}</style>
+      </main>
+    );
   }
 
   return (
@@ -145,7 +157,7 @@ function ContinuityUpsellPage() {
                   <p className="mt-2 text-xs text-slate-500">PIX • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
                 </div>
                 {qrUrl ? <img src={qrUrl} alt="QR Code PIX do kit adicional" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
-                <Button onClick={copyPix} className="h-12 w-full bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX e adicionar os 3 frascos"}</Button>
+                <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX e adicionar os 3 frascos"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{continuityStatus.data?.paid ? "Pagamento confirmado." : "Aguardando confirmação do PIX. A oferta será adicionada após a confirmação."}</div>
               </section>
@@ -159,10 +171,10 @@ function ContinuityUpsellPage() {
                   <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm"><span className="font-semibold text-emerald-900">Você paga menos nesta oferta</span><strong className="text-emerald-900">{money(KIT_PRICING.k3.priceCents - 3987)} de diferença</strong></div>
                   <p className="mt-3 text-xs leading-relaxed text-slate-600">Pagamento único via PIX. São 3 frascos adicionais por R$ 39,87. O pedido original permanece exatamente como foi realizado.</p>
                 </div>
-                <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-14 w-full bg-[#6b0d0d] text-base font-extrabold hover:bg-[#510909] disabled:opacity-50">
+                <Button onClick={generatePix} disabled={!pending || !originalStatus.data?.paid || !originalStatus.data.eligible || loading || preview} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-[#6b0d0d] hover:bg-[#510909] disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> ADICIONAR 3 FRASCOS POR R$ 39,87</>}
                 </Button>
-                <Button onClick={decline} variant="outline" className="h-11 w-full border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
+                <Button onClick={decline} variant="outline" className="h-auto min-h-11 w-full whitespace-normal px-3 py-3 text-center text-sm font-semibold leading-tight border-stone-300 text-slate-600">Não, obrigado. Continuar sem o kit adicional</Button>
               </>
             )}
             {!preview && pending && !originalStatus.data?.paid && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A oferta ficará disponível após a confirmação do pedido principal.</p>}
