@@ -807,13 +807,31 @@ function Pricing() {
                   const value = KIT_PRICING[k.href].priceCents / 100;
                   const num = k.href === "k5" ? 5 : k.href === "k3" ? 3 : 1;
                   trackStorefrontEvent(w.fbq, "track", "AddToCart", {
-                      content_ids: [k.href],
-                      content_name: k.title,
-                      content_type: "product",
-                      value,
-                      currency: "BRL",
-                      num_items: num,
+                    content_ids: [k.href],
+                    content_name: k.title,
+                    content_type: "product",
+                    value,
+                    currency: "BRL",
+                    num_items: num,
                   });
+                  // Register checkout intent before the full-page navigation.
+                  // The checkout route consumes this marker to avoid a duplicate event.
+                  if (typeof w.fbq === "function") {
+                    const eventID = `initiate_checkout_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+                    try {
+                      sessionStorage.setItem(`sucupira_pending_ic_${k.href}`, JSON.stringify({ eventID, createdAt: Date.now() }));
+                      trackStorefrontEvent(w.fbq, "track", "InitiateCheckout", {
+                        content_ids: [k.href],
+                        content_type: "product",
+                        content_name: k.title,
+                        value,
+                        currency: "BRL",
+                        num_items: num,
+                      }, { eventID });
+                    } catch {
+                      // If session storage is unavailable, the checkout page sends the fallback event.
+                    }
+                  }
                 }}
                 className={`mt-auto block text-center font-bold py-4 rounded-full transition ${
                   k.highlight
