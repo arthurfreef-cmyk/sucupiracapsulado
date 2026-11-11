@@ -165,7 +165,8 @@ function ShippingUpsellPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-50 font-sans text-[15px] leading-relaxed text-slate-900 antialiased">
       <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
-      <main className="mx-auto max-w-xl px-4 py-8 md:py-12">\n        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
+      <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
+        {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
