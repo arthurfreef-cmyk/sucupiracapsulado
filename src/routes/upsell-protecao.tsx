@@ -119,8 +119,8 @@ function ProtectionUpsellPage() {
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-950 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><ShieldCheck size={15}/> OFERTA OPCIONAL</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Adicione uma proteção extra ao seu pedido</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Uma camada adicional de proteção comercial para ocorrências comprovadas relacionadas ao transporte ou ao produto.</p>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Dê mais tranquilidade ao seu pedido</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Adicione uma camada extra de proteção comercial para ocorrências elegíveis relacionadas ao transporte ou ao produto recebido.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {!shippingStatus.data?.paid ? (
@@ -141,20 +141,22 @@ function ProtectionUpsellPage() {
               </section>
             ) : (
               <>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed">Possibilidade de solicitar análise em caso de extravio, avaria ou divergência comprovada no produto recebido.</p></div>
-                  <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={21}/><p className="text-sm leading-relaxed">Nos casos cobertos e aprovados, o reembolso comercial poderá corresponder a até 120% do total elegível efetivamente pago pelo produto e pelo complemento logístico, conforme os termos da oferta.</p></div>
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
+                  <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-800">Por que adicionar esta proteção?</p>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3"><Truck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Apoio em ocorrências de entrega</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Possibilidade de solicitar análise em caso de extravio, avaria ou divergência comprovada.</p></div></div>
+                    <div className="flex items-start gap-3"><BadgeCheck className="mt-0.5 shrink-0 text-emerald-700" size={22}/><div><p className="text-sm font-extrabold text-slate-900">Até 120% do valor elegível</p><p className="mt-1 text-sm leading-relaxed text-slate-600">Nos casos cobertos e aprovados, conforme os termos da oferta.</p></div></div>
                   <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-950">
                     Esta é uma proteção comercial opcional oferecida pela loja, não um seguro contratado com seguradora. A análise depende da ocorrência, dos documentos apresentados e dos termos aplicáveis. A oferta não limita os direitos previstos na legislação do consumidor. Guarde o comprovante e solicite os termos completos ao atendimento antes de contratar.
                   </div>
                 </div>
                 <div className="rounded-2xl border p-5">
-                  <p className="text-sm font-semibold text-slate-600">Contratação única</p>
-                  <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(PROTECTION_UPSELL_CENTS)}</p>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-800">Adicione agora por um valor único</p>
+                  <p className="mt-2 text-4xl font-black tracking-tight text-slate-950">{money(PROTECTION_UPSELL_CENTS)}</p>
                   <p className="mt-1 text-xs text-slate-500">Sem recorrência. Pagamento separado do pedido e do complemento logístico.</p>
                 </div>
                 <Button onClick={generatePix} disabled={!shippingStatus.data?.paid || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Quero contratar por R$ 15,90</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> SIM, QUERO ADICIONAR A PROTEÇÃO</>}
                 </Button>
                 <Button onClick={decline} variant="outline" className="h-12 w-full">Não quero contratar, continuar</Button>
               </>
