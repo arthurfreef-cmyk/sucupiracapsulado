@@ -71,8 +71,25 @@ function ProtectionUpsellPage() {
   }, [payment?.pix.code]);
 
   useEffect(() => {
-    if (protectionStatus.data?.paid) void navigate({ to: "/obrigado", replace: true });
-  }, [protectionStatus.data?.paid, navigate]);
+    if (!protectionStatus.data?.paid || !payment) return;
+    try {
+      const marker = `sucupira_protection_purchase_tracked_${payment.id}`;
+      if (!sessionStorage.getItem(marker)) {
+        const tracker = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+        if (typeof tracker === "function") {
+          tracker("track", "Purchase", {
+            value: payment.amount / 100,
+            currency: "BRL",
+            content_ids: ["commercial-protection"],
+            content_type: "product",
+            content_name: "Proteção comercial opcional",
+          }, { eventID: `purchase_protection_${payment.id}` });
+          sessionStorage.setItem(marker, "1");
+        }
+      }
+    } catch { /* Tracking must never block the confirmed payment flow. */ }
+    void navigate({ to: "/obrigado", replace: true });
+  }, [protectionStatus.data?.paid, payment, navigate]);
 
   const generatePix = async () => {
     if (!pending || !shipping || !shippingStatus.data?.paid || loading || payment) return;
