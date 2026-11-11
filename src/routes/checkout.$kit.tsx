@@ -649,7 +649,7 @@ function CheckoutPage() {
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
-      <main className="container mx-auto max-w-6xl px-3 pt-5 pb-24 sm:px-6 sm:py-8 lg:px-8">
+      <main className="container mx-auto max-w-6xl px-3 pt-5 pb-5 sm:px-6 sm:py-8 lg:px-8">
         <form
           ref={checkoutForm}
           onSubmit={(event) => {
@@ -754,7 +754,7 @@ function CheckoutPage() {
                   <label key={o.id} htmlFor={`shipping-${o.id}`} className={cn("w-full p-4 rounded-lg border flex items-center justify-between text-left transition-colors cursor-pointer gap-3 focus-within:ring-2 focus-within:ring-ring", shipping === o.id ? "border-[var(--brand)] bg-[var(--gold-light)]/35 ring-1 ring-[var(--brand)] shadow-sm" : "border-border bg-white hover:border-[var(--brand)]/50")}>
                     <div className="flex items-center gap-3">
                       <RadioGroupItem id={`shipping-${o.id}`} value={o.id} aria-label={o.title} className="shrink-0 border-[var(--brand)] text-[var(--brand)] [&_svg]:fill-[var(--brand)]" />
-                      <div><p className="text-sm font-bold">{o.title}</p><p className="text-xs text-muted-foreground">{o.eta}</p></div>
+                      <div><div className="flex flex-wrap items-center gap-2"><p className="text-sm font-bold">{o.title}</p>{o.id === "express" && <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Sedex_logo.png" alt="SEDEX — Correios" width={76} height={18} loading="lazy" decoding="async" className="h-[18px] w-[76px] object-contain" />}</div><p className="text-xs text-muted-foreground">{o.eta}</p></div>
                     </div>
                     <span className={cn("font-bold text-sm shrink-0", o.cents === 0 && "text-primary")}>{o.cents === 0 ? "Sem adicional" : formatBRL(o.cents)}</span>
                   </label>
@@ -792,7 +792,7 @@ function CheckoutPage() {
             type="submit"
             disabled={loading || restoringPayment}
             aria-busy={loading}
-            className="fixed inset-x-3 bottom-3 z-40 w-auto min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-2xl shadow-[var(--brand)]/30 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99] sm:static sm:w-full sm:shadow-lg sm:shadow-[var(--brand)]/20"
+            className="w-full min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
