@@ -146,17 +146,17 @@ function ShippingUpsellPage() {
       <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ETAPA DE PAGAMENTO LOGÍSTICO</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Seu pedido está quase pronto para envio!</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Conclua a etapa logística para liberar a separação e o envio do seu pedido. O valor é único e informado com clareza antes de gerar o PIX.</p>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ÚLTIMA ETAPA ANTES DA EXPEDIÇÃO</div>
+            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Falta apenas concluir a etapa logística do seu pedido.</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O pedido principal já foi confirmado. Agora, finalize o complemento logístico informado abaixo para que a equipe possa liberar a separação e dar sequência ao envio.</p>
           </div>
           <div className="space-y-6 p-6 md:p-8">
             {pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. Atualize a página para tentar novamente." : "Validando a confirmação do pedido principal..."}</div>}
             {pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-              <p className="font-semibold">Aviso sobre a verificação do frete</p>
-              <p className="mt-1">Durante a conferência do frete, foi identificada uma inconsistência na verificação do seu pedido. Por isso, é necessário o complemento de <strong>R$ 6,78</strong> para concluir a validação logística. A liberação para separação e envio acontece após a confirmação do PIX.</p>
+              <p className="font-semibold">COMPLEMENTO LOGÍSTICO DO PEDIDO</p>
+              <p className="mt-1">Para concluir a etapa logística deste pedido, é necessário o complemento de <strong>R$ 6,78</strong>. O valor é cobrado uma única vez e a liberação da separação e do envio ocorre após a confirmação do PIX. Se precisar, consulte o atendimento antes de pagar.</p>
             </div>
 
             {payment ? (
@@ -181,7 +181,7 @@ function ShippingUpsellPage() {
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.</p>
                 </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-14 w-full bg-emerald-700 text-base font-bold hover:bg-emerald-800 disabled:opacity-50">
-                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Pagar R$ 6,78 e liberar envio</>}
+                  {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> Confirmar complemento de R$ 6,78</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">O PIX só poderá ser gerado após a confirmação do pagamento principal. O envio depende da confirmação deste complemento.</p>}
               </section>
