@@ -126,15 +126,15 @@ function ContinuityUpsellPage() {
         <style>{`@keyframes protection-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } } @keyframes protection-screen-out { 0%, 92% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; pointer-events: none; } }`}</style>
       </div>
 
-      <header className="border-b border-stone-200 bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
-      <main className="mx-auto max-w-xl px-4 py-7 md:py-10">
-        <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-900/5">
-          <div className="bg-gradient-to-br from-[#5b0808] via-[#7e1010] to-[#4a0505] px-5 py-7 text-white md:px-7">
+      <header className="border-b border-stone-200 bg-white px-3 py-3 sm:px-4 sm:py-4 text-center text-sm sm:text-base font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
+      <main className="mx-auto max-w-xl px-3 py-4 sm:px-4 sm:py-7 md:py-10">
+        <div className="overflow-hidden rounded-2xl sm:rounded-3xl border border-stone-200 bg-white shadow-lg sm:shadow-xl shadow-stone-900/5">
+          <div className="bg-gradient-to-br from-[#5b0808] via-[#7e1010] to-[#4a0505] px-4 py-5 text-white sm:px-5 sm:py-7 md:px-7">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold"><BadgeCheck size={15}/> OFERTA DE DESCULPAS PELO TRANSTORNO</div>
-            <h1 className="text-2xl font-black leading-tight md:text-3xl">Temos uma condição especial para adicionar mais 3 frascos ao seu pedido</h1>
+            <h1 className="text-xl font-black leading-tight sm:text-2xl md:text-3xl">Temos uma condição especial para adicionar mais 3 frascos ao seu pedido</h1>
             <p className="mt-2 text-sm leading-relaxed text-white/90">Pedimos desculpas pelo transtorno na etapa anterior. Como agradecimento pela sua compreensão, liberamos uma condição especial: acrescente mais 3 frascos por R$ 39,87. É uma oferta opcional e não altera o pedido que você já realizou.</p>
           </div>
-          <div className="space-y-5 p-5 md:p-7">
+          <div className="space-y-4 sm:space-y-5 p-3.5 sm:p-5 md:p-7">
             {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Pré-visualização: a página está aberta sem pagamento. A geração de PIX permanece desativada neste modo.</div>}
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             <div className="rounded-2xl border border-stone-200 bg-[#fbfaf7] p-4">
@@ -151,7 +151,7 @@ function ContinuityUpsellPage() {
                   <p className="mt-1 text-4xl font-black tabular-nums text-emerald-800">{money(payment.amount)}</p>
                   <p className="mt-2 text-xs text-slate-500">PIX • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
                 </div>
-                {qrUrl ? <img src={qrUrl} alt="QR Code PIX do kit adicional" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
+                {qrUrl ? <img src={qrUrl} alt="QR Code PIX do kit adicional" className="mx-auto h-48 w-48 max-w-full rounded-lg border bg-white p-2 sm:h-56 sm:w-56"/> : <div className="mx-auto flex h-48 w-48 max-w-full items-center justify-center rounded-lg border bg-slate-50 sm:h-56 sm:w-56"><QrCode size={48} className="text-slate-400"/></div>}
                 <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX e adicionar os 3 frascos"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{continuityStatus.data?.paid ? "Pagamento confirmado." : "Aguardando confirmação do PIX. A oferta será adicionada após a confirmação."}</div>
@@ -178,7 +178,7 @@ function ContinuityUpsellPage() {
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Oferta opcional. A compra adicional só é concluída após a confirmação do PIX. Seus direitos legais e a garantia do pedido original permanecem preservados.</div>
           </div>
         </div>
-        <footer className="mt-8 border-t border-stone-200 px-4 py-5 text-center text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
+        <footer className="mt-5 border-t border-stone-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
       </main>
     </div>
   );
