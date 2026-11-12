@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { buildShippingUpsellPayload, fruitfyInput, fruitfyResponse, describeFruitfyRejection, SHIPPING_UPSELL_CENTS } from "@/lib/fruitfy";
+import { checkOrderPaid } from "@/lib/fruitfy-order.server";
 
 const upsellInput = z.object({
   originalProof: z.string().min(1).max(2048),
@@ -23,10 +24,16 @@ export const Route = createFileRoute("/api/fruitfy-upsell-pix")({
 
         const { verifyOrderProof, signOrderProof } = await import("@/lib/fruitfy-order.server");
         const originalOrder = await verifyOrderProof(parsed.data.originalProof);
-        if (!originalOrder || originalOrder.kit === "upsell5") {
+        if (!originalOrder || !["k1", "k3", "k5"].includes(originalOrder.kit)) {
           return Response.json({ error: "Pedido original inválido ou expirado." }, { status: 403 });
         }
-
+        try {
+          if (!await checkOrderPaid(originalOrder)) {
+            return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
+          }
+        } catch {
+          return Response.json({ error: "Não foi possível confirmar o pagamento principal. Tente novamente em instantes." }, { status: 503 });
+        }
 
         const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
         const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\s]?id\s*[:=]\s*/i, "");
