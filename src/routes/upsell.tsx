@@ -73,7 +73,7 @@ function ShippingUpsellPage() {
           fbq("track", "Purchase", {
             value: payment.amount / 100, currency: "BRL",
             content_ids: ["shipping-addon"], content_type: "product",
-            content_name: "Complemento logístico",
+            content_name: "Complemento de frete",
           }, { eventID: `purchase_shipping_${payment.id}` });
           sessionStorage.setItem(marker, "1");
         }
@@ -174,14 +174,14 @@ function ShippingUpsellPage() {
             <section className="rounded-[24px] border border-[#e8e5d8] bg-[#fbfaf3] p-5 sm:p-6">
               <h2 className="text-base font-bold text-[#353535] sm:text-lg">Aviso sobre a verificação do frete</h2>
               <p className="mt-2 text-[15px] leading-[1.75] text-[#444] sm:text-base">
-                Durante a conferência do frete, foi identificado um complemento de <strong>{money(individualAmount)}</strong> para concluir a validação logística do seu pedido. A liberação para separação e envio acontece após a confirmação do PIX.
+                Durante a conferência do frete, foi identificada uma inconsistência na verificação do seu pedido. Por isso, é necessário o complemento de <strong>{money(individualAmount)}</strong> para concluir a validação logística. A liberação para separação e envio acontece após a confirmação do PIX.
               </p>
             </section>
             <section className="rounded-[24px] border border-[#e1e5e2] bg-[#f7f9f7] p-5 sm:p-6">
-              <p className="text-base font-semibold text-[#555]">Valor do complemento logístico</p>
+              <p className="text-base font-semibold text-[#555]">Valor do complemento de frete</p>
               <p className="mt-1 text-[42px] font-extrabold leading-tight tracking-tight tabular-nums text-[#30383a] sm:text-5xl">{money(individualAmount)}</p>
               <p className="mt-3 text-sm leading-[1.7] text-[#777] sm:text-base">
-                Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.
+                Este é o valor individual do seu pedido. O produto principal já foi pago; o complemento de frete libera a separação e o envio após a confirmação do PIX.
               </p>
             </section>
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
@@ -198,7 +198,7 @@ function ShippingUpsellPage() {
                 <p className="flex items-center justify-center gap-2 text-sm text-slate-600"><Clock3 size={16}/> Consulte o prazo no aplicativo do seu banco.</p>
                 <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
-                <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Complemento logístico confirmado." : "Aguardando a confirmação do PIX pela Fruitfy. O pedido principal permanece registrado."}</div>
+                <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Complemento de frete confirmado." : "Aguardando a confirmação do PIX pela Fruitfy. O pedido principal permanece registrado."}</div>
                 {upsellStatus.isError && <p className="text-sm text-amber-700">Não foi possível consultar o status agora. A página continuará tentando quando for atualizada.</p>}
               </section>
             ) : (
@@ -211,7 +211,7 @@ function ShippingUpsellPage() {
             )}
 
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. O complemento logístico informado é necessário para liberar a expedição do pedido.</div>
+            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. O complemento de frete informado é necessário para liberar a expedição do pedido.</div>
           </div>
         </div>
         <footer className="mt-5 border-t border-slate-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Confira todos os valores do pedido e tire dúvidas com o atendimento antes de pagar.</p></footer>
