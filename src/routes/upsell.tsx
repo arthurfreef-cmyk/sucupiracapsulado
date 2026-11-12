@@ -164,16 +164,11 @@ function ShippingUpsellPage() {
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-4 py-5 text-white sm:px-6 sm:py-8">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ATENÇÃO • AJUSTE NO FRETE</div>
             <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">O valor do frete do seu pedido precisa de um ajuste.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Na conferência do pedido, foi apontada uma diferença de R$ 6,78 no valor do frete. Este é o complemento informado para a expedição. Confira o valor antes de prosseguir.</p>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Na conferência do pedido, identificamos uma inconsistência no valor do frete. Para concluir a expedição e enviar seu produto, é necessário regularizar o complemento de R$ 6,78.</p>
           </div>
           <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
-
-            <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-              <p className="font-semibold">DIFERENÇA IDENTIFICADA NO FRETE</p>
-              <p className="mt-1">O ajuste informado é de R$ 6,78. Revise o complemento logístico e as condições desta cobrança antes de confirmar. Não conclua o pagamento sem conferir o valor.</p>
-            </div>
 
             {payment ? (
               <section className="space-y-4 text-center">
