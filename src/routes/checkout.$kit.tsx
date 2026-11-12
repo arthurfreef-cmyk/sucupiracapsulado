@@ -649,7 +649,7 @@ function CheckoutPage() {
         </div>
         <span className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0"><Lock size={14} aria-hidden="true" /> SSL</span>
       </header>
-      <main className="container mx-auto max-w-6xl px-3 pt-5 pb-5 sm:px-6 sm:py-8 lg:px-8">
+      <main className="container mx-auto max-w-6xl px-3 pt-3 pb-6 sm:px-6 sm:py-8 lg:px-8">
         <form
           ref={checkoutForm}
           onSubmit={(event) => {
@@ -658,14 +658,14 @@ function CheckoutPage() {
             void submit();
           }}
           noValidate
-          className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-x-8 lg:gap-y-7"
+          className="grid min-w-0 grid-cols-1 gap-3 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-x-8 lg:gap-y-7"
         >
           <div className="lg:col-span-2">
-            <h1 className="text-xl font-bold font-sans tracking-normal">Resumo do Pedido</h1>
+            <h1 className="text-lg font-bold font-sans tracking-normal sm:text-xl">Resumo do Pedido</h1>
             <p className="text-sm leading-relaxed text-muted-foreground mt-1">Finalize em menos de 1 minuto — seus dados ficam 100% protegidos</p>
           </div>
-          <div className="flex gap-3 sm:gap-4 items-center rounded-2xl border border-[var(--brand)]/10 bg-white p-3 sm:p-4 shadow-sm lg:col-span-2">
-            <img src={kit.image} alt={kit.title} width={80} height={80} decoding="async" className="w-20 h-20 object-contain shrink-0" />
+          <div className="flex min-w-0 gap-3 sm:gap-4 items-center rounded-xl sm:rounded-2xl border border-[var(--brand)]/10 bg-white p-3 sm:p-4 shadow-sm lg:col-span-2">
+            <img src={kit.image} alt={kit.title} width={80} height={80} decoding="async" className="h-16 w-16 sm:h-20 sm:w-20 object-contain shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="font-bold text-sm">{kit.title}</div>
               <div className="text-xs text-muted-foreground">{kit.sub}</div>
@@ -674,7 +674,7 @@ function CheckoutPage() {
             <div className="text-base sm:text-lg font-bold text-primary shrink-0 tabular-nums">{kit.price}</div>
           </div>
 
-          <fieldset disabled={loading || restoringPayment} className="min-w-0 space-y-4 sm:space-y-5 border-0 p-0 m-0 disabled:opacity-75">
+          <fieldset disabled={loading || restoringPayment} className="min-w-0 space-y-3 sm:space-y-5 border-0 p-0 m-0 disabled:opacity-75">
           <section className={STEP}>
             <StepTitle n={1}>Dados Pessoais</StepTitle>
             <Field id="name" name="name" label="Nome Completo" autoComplete="name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" placeholder="Nome e sobrenome" value={form.name}
@@ -771,7 +771,7 @@ function CheckoutPage() {
           </fieldset>
           <aside className="min-w-0 space-y-4 sm:space-y-5 lg:sticky lg:top-24 lg:self-start" aria-label="Resumo e finalização do pedido">
           <h2 className="text-base font-bold text-foreground">Resumo do pedido</h2>
-          <div className="rounded-2xl border border-[var(--brand)]/15 bg-white p-4 sm:p-5 shadow-md shadow-[var(--brand)]/5 text-sm space-y-4 tabular-nums">
+          <div className="rounded-xl sm:rounded-2xl border border-[var(--brand)]/15 bg-white p-3.5 sm:p-5 shadow-md shadow-[var(--brand)]/5 text-sm space-y-3 sm:space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">Entrega escolhida (nesta etapa)</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Sem adicional" : formatBRL(shippingCents)}</span></div>
             <div className="flex justify-between gap-3 text-primary font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
@@ -792,7 +792,7 @@ function CheckoutPage() {
             type="submit"
             disabled={loading || restoringPayment}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
+            className="w-full min-h-14 py-4 text-base bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
@@ -810,7 +810,7 @@ function CheckoutPage() {
   );
 }
 
-const STEP = "space-y-4 rounded-2xl border border-[var(--brand)]/10 bg-white p-4 shadow-sm sm:p-5 lg:p-6";
+const STEP = "min-w-0 space-y-3 sm:space-y-4 rounded-xl sm:rounded-2xl border border-[var(--brand)]/10 bg-white p-3.5 sm:p-5 lg:p-6 shadow-sm";
 
 function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
   return (
