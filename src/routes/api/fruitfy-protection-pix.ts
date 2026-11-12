@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { FRUITFY_KITS, fruitfyInput, fruitfyResponse, describeFruitfyRejection } from "@/lib/fruitfy";
+import { checkOrderPaid } from "@/lib/fruitfy-order.server";
 
 const inputSchema = z.object({
   originalProof: z.string().min(1).max(2048),
