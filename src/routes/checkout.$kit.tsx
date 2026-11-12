@@ -774,7 +774,6 @@ function CheckoutPage() {
           <div className="rounded-xl sm:rounded-2xl border border-[var(--brand)]/15 bg-white p-3.5 sm:p-5 shadow-md shadow-[var(--brand)]/5 text-sm space-y-3 sm:space-y-4 tabular-nums">
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">{kit.title}</span><span>{formatBRL(kit.priceCents)}</span></div>
             <div className="flex justify-between gap-3"><span className="text-muted-foreground">Entrega escolhida (nesta etapa)</span><span>{!deliveryReady ? "Informe o CEP" : shippingCents === 0 ? "Sem adicional" : formatBRL(shippingCents)}</span></div>
-            <div className="flex justify-between gap-3 text-primary font-semibold"><span>Você economiza</span><span>{formatBRL(kit.fromCents - kit.priceCents)}</span></div>
             <div className="flex justify-between items-baseline font-bold text-lg pt-3 border-t"><span>Total nesta etapa</span><span className="text-2xl text-primary">{formatBRL(totalCents)}</span></div>
           </div>
 
