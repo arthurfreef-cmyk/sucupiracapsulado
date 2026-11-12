@@ -2,14 +2,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createMangofyPayment } from "./mangofy.server";
+import { KIT_PRICING } from "./kit-pricing";
 
 const PaymentInputSchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
   document: z.string().min(11),
   phone: z.string().min(10),
-  amount: z.number(),
-  kit: z.string(),
+  amount: z.number().optional(),
+  kit: z.enum(["k1", "k3", "k5"]),
   method: z.enum(["pix", "credit_card"]),
   card: z.object({
     number: z.string(),
@@ -31,7 +32,7 @@ export const generatePayment = createServerFn({ method: "POST" })
     }
 
     try {
-      const result = await createMangofyPayment(data, apiToken, storeCode);
+      const result = await createMangofyPayment({ ...data, amount: KIT_PRICING[data.kit].priceCents }, apiToken, storeCode);
       return {
         id: result.payment_code || "pending",
         status: result.payment_status,

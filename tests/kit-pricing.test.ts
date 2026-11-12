@@ -1,3 +1,4 @@
+import { expressShippingCents } from "../src/lib/checkout-utils";
 import { describe, expect, it } from "bun:test";
 import { KIT_PRICING } from "../src/lib/kit-pricing";
 import { buildFruitfyPayload, fruitfyInput } from "../src/lib/fruitfy";
@@ -16,9 +17,9 @@ describe("Black Friday pricing", () => {
       const input = fruitfyInput.parse({ kit, buyer, address, shipping: { method: "free", amount: 0 } });
       expect(buildFruitfyPayload(input).items[0]?.value).toBe(cents);
     });
-    it(`${kit} adds only the selected express shipping to the campaign price`, () => {
+    it(`${kit} adds server-derived express shipping, ignoring the submitted amount`, () => {
       const input = fruitfyInput.parse({ kit, buyer, address, shipping: { method: "express", amount: 691 } });
-      expect(buildFruitfyPayload(input).items[0]?.value).toBe(cents + 691);
+      expect(buildFruitfyPayload(input).items[0]?.value).toBe(cents + expressShippingCents(input.address.zip));
     });
   }
 });

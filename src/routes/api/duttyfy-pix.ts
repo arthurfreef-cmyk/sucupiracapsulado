@@ -1,6 +1,7 @@
 // Cria cobrança PIX via Duttyfy (gateway principal). BuckPay permanece em /api/buckpay-pix.
 import { createFileRoute } from "@tanstack/react-router";
 import { KIT_PRICING } from "@/lib/kit-pricing";
+import { expressShippingCents } from "@/lib/checkout-utils";
 
 const KITS = {
   k1: { amount: KIT_PRICING.k1.priceCents, name: "Sucupira Composta - 1 Frasco" },
@@ -13,6 +14,7 @@ type KitId = keyof typeof KITS;
 type Body = {
   kit: KitId;
   shipping?: { method: "free" | "express"; amount: number };
+  address?: { zip?: string };
   buyer: { name: string; email: string; document: string; phone: string };
   utm?: string;
 };
@@ -63,10 +65,13 @@ export const Route = createFileRoute("/api/duttyfy-pix")({
           return Response.json({ error: "Celular inválido." }, { status: 400 });
         }
 
-        const shipping =
-          body.shipping && Number.isFinite(body.shipping.amount) &&
-          body.shipping.amount >= 0 && body.shipping.amount <= 5000
-            ? Math.round(body.shipping.amount) : 0;
+        // Shipping is always derived server-side from the destination ZIP.
+        let shipping = 0;
+        if (body.shipping?.method === "express") {
+          const zip = onlyDigits(body.address?.zip ?? "");
+          if (zip.length !== 8) return Response.json({ error: "CEP inválido." }, { status: 400 });
+          shipping = expressShippingCents(zip);
+        }
         const total = kit.amount + shipping;
         const email = isValidEmail(b.email) ? b.email.trim().toLowerCase() : `${cpf}@sucupiracapsulados.com.br`;
 

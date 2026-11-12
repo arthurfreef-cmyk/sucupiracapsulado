@@ -1,6 +1,7 @@
 // Cria cobrança PIX via BuckPay.
 import { createFileRoute } from "@tanstack/react-router";
 import { KIT_PRICING } from "@/lib/kit-pricing";
+import { expressShippingCents } from "@/lib/checkout-utils";
 
 const KITS = {
   k1: { amount: KIT_PRICING.k1.priceCents, name: "Sucupira Composta - 1 Frasco", qty: 1 },
@@ -115,11 +116,13 @@ export const Route = createFileRoute("/api/buckpay-pix")({
         }
         const phoneWithCountry = phoneDigits.length <= 11 ? `55${phoneDigits}` : phoneDigits;
 
-        const shippingAmount =
-          body.shipping && Number.isFinite(body.shipping.amount) &&
-          body.shipping.amount >= 0 && body.shipping.amount <= 5000
-            ? Math.round(body.shipping.amount)
-            : 0;
+        // Shipping is always derived server-side from the destination ZIP.
+        let shippingAmount = 0;
+        if (body.shipping?.method === "express") {
+          const zip = onlyDigits(body.address?.zip ?? "");
+          if (zip.length !== 8) return Response.json({ error: "CEP inválido." }, { status: 400 });
+          shippingAmount = expressShippingCents(zip);
+        }
         const bumpAddCents =
           body.kit === "k1" && body.bumpAddCents === 2000
             ? 2000

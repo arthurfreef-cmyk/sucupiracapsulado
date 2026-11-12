@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { KIT_PRICING } from "./kit-pricing";
+import { expressShippingCents } from "./checkout-utils";
 
 export const FRUITFY_UPSELL_ID = "a324b199-a25a-4d9d-9aeb-57ba9745ca5b";
 export const FRUITFY_PROTECTION_ID = "a324c713-3b2a-42f1-a281-30790ae17e6d";
@@ -40,7 +41,8 @@ export const fruitfyInput = z.object({
 
 export function buildFruitfyPayload(input: z.infer<typeof fruitfyInput>) {
   const kit = FRUITFY_KITS[input.kit];
-  const shipping = input.shipping?.method === "express" ? input.shipping.amount : 0;
+  // Never trust the submitted amount: derive express shipping from the ZIP.
+  const shipping = input.shipping?.method === "express" ? expressShippingCents(input.address.zip) : 0;
   const amount = kit.amount + shipping;
   const query = new URLSearchParams(input.utm?.replace(/^\?/, ""));
   const utm: Record<string, string> = {};
