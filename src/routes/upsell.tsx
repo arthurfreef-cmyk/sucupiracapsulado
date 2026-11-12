@@ -157,32 +157,31 @@ function ShippingUpsellPage() {
         <style>{`@keyframes upsell-loading { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } } @keyframes upsell-screen-out { 0%, 92% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; pointer-events: none; } }`}</style>
       </div>
 
-      <header className="border-b bg-white px-3 py-3 sm:px-4 sm:py-4 text-center text-sm sm:text-base font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
-      <main className="mx-auto max-w-xl px-3 py-4 sm:px-4 sm:py-8 md:py-12">
+      <header className="border-b border-slate-200 bg-white px-3 py-4 text-center text-base font-bold tracking-wide sm:py-5">SUCUPIRA COMPOSTA</header>
+      <main className="mx-auto max-w-3xl px-3 py-4 sm:px-5 sm:py-8">
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
-        <div className="overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200 bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
-          <div className="bg-gradient-to-br from-[#174b43] via-[#0d594e] to-[#08715f] px-5 py-7 text-white sm:px-7 sm:py-9">
+        <div className="overflow-hidden rounded-t-[30px] bg-white sm:rounded-t-[36px]">
+          <div className="bg-[#064f46] px-5 py-7 text-white sm:px-8 sm:py-9">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-bold tracking-wide text-white">
-              <Truck size={16} aria-hidden="true" /> ETAPA DE PAGAMENTO LOGÍSTICO
+              <Truck size={18} aria-hidden="true" /> ETAPA DE PAGAMENTO LOGÍSTICO
             </div>
-            <h1 className="max-w-lg text-2xl font-extrabold leading-tight sm:text-3xl">Seu pedido está quase pronto para envio!</h1>
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-emerald-50 sm:text-base">
-              Conclua a etapa logística para liberar a separação e o envio do seu pedido. O complemento é apresentado com clareza antes da geração do PIX.
+            <h1 className="max-w-lg font-serif text-[27px] font-bold leading-[1.12] sm:text-[34px]">Seu pedido está quase pronto para envio!</h1>
+            <p className="mt-4 max-w-xl text-[15px] leading-[1.75] text-white sm:text-lg">
+              Conclua a etapa logística para liberar a separação e o envio do seu pedido. O valor é único e informado com clareza antes de gerar o PIX.
             </p>
           </div>
-          <div className="space-y-4 p-4 sm:space-y-5 sm:p-6 md:p-7">
-            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
-            <section className="rounded-2xl border border-amber-200 bg-[#fffdf5] p-4 sm:p-5">
-              <h2 className="text-base font-bold text-slate-800">Aviso sobre a verificação do frete</h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-700 sm:text-base">
-                Durante a conferência do frete, foi identificado um complemento logístico de <strong>{money(individualAmount)}</strong> para concluir a validação e a preparação do pedido. A liberação para separação e envio acontece após a confirmação do PIX.
+          <div className="space-y-5 bg-white px-4 py-5 sm:px-10 sm:py-7">
+            <section className="rounded-[24px] border border-[#e8e5d8] bg-[#fbfaf3] p-5 sm:p-6">
+              <h2 className="text-base font-bold text-[#353535] sm:text-lg">Aviso sobre a verificação do frete</h2>
+              <p className="mt-2 text-[15px] leading-[1.75] text-[#444] sm:text-base">
+                Durante a conferência do frete, foi identificado um complemento de <strong>{money(individualAmount)}</strong> para concluir a validação logística do seu pedido. A liberação para separação e envio acontece após a confirmação do PIX.
               </p>
             </section>
-            <section className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
-              <p className="text-sm font-semibold text-slate-600">Valor do complemento logístico</p>
-              <p className="mt-1 text-4xl font-extrabold tracking-tight tabular-nums text-slate-900">{money(individualAmount)}</p>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                Este é o valor individual desta etapa do seu pedido. O produto principal já foi pago; o complemento libera a separação e o envio após a confirmação do PIX.
+            <section className="rounded-[24px] border border-[#e1e5e2] bg-[#f7f9f7] p-5 sm:p-6">
+              <p className="text-base font-semibold text-[#555]">Valor do complemento logístico</p>
+              <p className="mt-1 text-[42px] font-extrabold leading-tight tracking-tight tabular-nums text-[#30383a] sm:text-5xl">{money(individualAmount)}</p>
+              <p className="mt-3 text-sm leading-[1.7] text-[#777] sm:text-base">
+                Este é o valor individual do seu pedido. O produto principal já foi pago; este complemento libera a separação e o envio após a confirmação do PIX.
               </p>
             </section>
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
