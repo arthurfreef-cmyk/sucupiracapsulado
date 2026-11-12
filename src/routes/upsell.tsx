@@ -22,8 +22,8 @@ const money = (cents: number) => (cents / 100).toLocaleString("pt-BR", { style: 
 export const Route = createFileRoute("/upsell")({
   validateSearch: searchSchema,
   head: () => ({ meta: [
-    { title: "Complemento de Frete — Sucupira Composta" },
-    { name: "description", content: "Pague o complemento logístico por PIX para liberar a separação e o envio do pedido." },
+    { title: "Ajuste do Frete — Sucupira Composta" },
+    { name: "description", content: "Confira o ajuste informado no valor do frete antes da expedição do seu pedido." },
     { name: "robots", content: "noindex" },
   ] }),
   component: ShippingUpsellPage,
@@ -162,23 +162,23 @@ function ShippingUpsellPage() {
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-2xl sm:rounded-3xl border bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-4 py-5 text-white sm:px-6 sm:py-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ATUALIZAÇÃO DO FRETE</div>
-            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">Encontramos uma divergência no cálculo do frete.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O valor apresentado nesta etapa é de R$ 6,78, referente ao complemento logístico para o envio. Confira o valor e as condições antes de pagar.</p>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ATENÇÃO • AJUSTE NO FRETE</div>
+            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">O valor do frete do seu pedido precisa de um ajuste.</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Na conferência do pedido, foi apontada uma diferença de R$ 6,78 no valor do frete. Este é o complemento informado para a expedição. Confira o valor antes de prosseguir.</p>
           </div>
           <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
             <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-              <p className="font-semibold">INFORMAÇÃO SOBRE O FRETE</p>
-              <p className="mt-1">A regularização de R$ 6,78 corresponde à diferença do frete necessária para concluir a expedição. Confira o valor antes de realizar o pagamento.</p>
+              <p className="font-semibold">DIFERENÇA IDENTIFICADA NO FRETE</p>
+              <p className="mt-1">O ajuste informado é de R$ 6,78. Revise o complemento logístico e as condições desta cobrança antes de confirmar. Não conclua o pagamento sem conferir o valor.</p>
             </div>
 
             {payment ? (
               <section className="space-y-4 text-center">
                 <div className="rounded-xl sm:rounded-2xl border-2 border-emerald-100 p-4 sm:p-5">
-                  <p className="text-sm text-slate-500">Complemento logístico para liberar o envio</p>
+                  <p className="text-sm text-slate-500">Complemento de frete informado para a expedição</p>
                   <p className="mt-1 text-4xl font-extrabold tabular-nums text-emerald-800">{money(payment.amount)}</p>
                   <p className="mt-2 text-xs text-slate-500">PIX gerado pela Fruitfy • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
                 </div>
@@ -208,7 +208,7 @@ function ShippingUpsellPage() {
             <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. A regularização do saldo de frete é necessária para liberar a expedição do pedido.</div>
           </div>
         </div>
-        <footer className="mt-5 border-t border-slate-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Atendimento ao cliente • Informações e suporte sobre seu pedido</p></footer>
+        <footer className="mt-5 border-t border-slate-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Confira todos os valores do pedido e tire dúvidas com o atendimento antes de pagar.</p></footer>
       </main>
     </div>
   );
