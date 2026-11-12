@@ -142,7 +142,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-[var(--cream)] text-foreground">
       <Header />
-      <main className="pb-24 md:pb-0">
+      <main>
         <Hero />
         <Pains />
         <Product />
@@ -159,7 +159,6 @@ function Index() {
         <FinalCTA />
       </main>
 
-      <MobileStickyCTA />
       <Footer />
       
       
@@ -1049,15 +1048,3 @@ function Footer() {
   );
 }
 
-function MobileStickyCTA() {
-  return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-[var(--border)] px-3 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-      <a
-        href="#precos"
-        className="flex items-center justify-center gap-2 w-full min-h-12 bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
-      >
-        APROVEITAR DESCONTO NO CHECKOUT →
-      </a>
-    </div>
-  );
-}
