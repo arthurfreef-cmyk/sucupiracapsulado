@@ -142,7 +142,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-[var(--cream)] text-foreground">
       <Header />
-      <main className="pb-20 md:pb-0">
+      <main className="pb-24 md:pb-0">
         <Hero />
         <Pains />
         <Product />
@@ -170,7 +170,7 @@ function Index() {
 function Header() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-[var(--brand-dark)]/95 backdrop-blur border-b border-white/10">
-      <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between h-14 sm:h-16">
+      <div className="container mx-auto px-3 sm:px-4 max-w-7xl flex items-center justify-between h-14 sm:h-16 gap-2">
         <a href="#" className="flex items-center gap-2 text-white font-bold min-w-0">
           <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--gold)] flex items-center justify-center text-[var(--brand)] shrink-0">
             ✦
@@ -186,7 +186,7 @@ function Header() {
         </nav>
         <a
           href="#precos"
-          className="inline-flex items-center gap-1 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-[11px] sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:scale-[1.03] active:scale-[0.98] transition shrink-0"
+          className="inline-flex items-center gap-1 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-[11px] sm:text-sm px-3 sm:px-4 py-2 sm:py-2 rounded-full shadow-lg hover:scale-[1.03] active:scale-[0.98] transition shrink-0 min-h-10"
         >
           <span className="hidden sm:inline">QUERO LIVRE DE DORES</span>
           <span className="sm:hidden">COMPRAR</span> →
@@ -213,18 +213,18 @@ function Hero() {
     "Reumatismo",
   ];
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#5a0000] via-[#8B0000] to-[#5a0000] pt-32 pb-12 md:pt-36 md:pb-24">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#5a0000] via-[#8B0000] to-[#5a0000] pt-24 pb-10 sm:pt-28 sm:pb-12 md:pt-36 md:pb-24">
       <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0px)", backgroundSize: "40px 40px" }} />
       <div className="hidden md:block absolute top-20 right-10 w-[500px] h-[500px] bg-yellow-400/10 rounded-full blur-[150px]" />
       <div className="hidden md:block absolute bottom-20 left-10 w-[400px] h-[400px] bg-white/5 rounded-full blur-[100px]" />
 
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center">
           <div className="order-2 lg:order-1 text-center lg:text-left">
             <span className="inline-flex items-center gap-2 bg-[var(--gold)] text-[var(--brand)] px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider shadow-lg mb-4">
               ✦ Black Friday Sucupira
             </span>
-            <h1 className="text-[28px] sm:text-4xl md:text-5xl font-bold text-white leading-[1.15] mb-4">
+            <h1 className="text-[26px] leading-[1.12] sm:text-4xl md:text-5xl font-bold text-white mb-4">
               O composto 100% natural que cura as <span className="text-[var(--gold)]">dores crônicas</span> e trata as <span className="text-[var(--gold)]">dificuldades</span> do dia a dia já nas <span className="text-[var(--gold)]">primeiras 24h!</span>
             </h1>
             <p className="text-white/90 text-base md:text-lg mb-5 max-w-xl mx-auto lg:mx-0">
@@ -257,7 +257,7 @@ function Hero() {
             <div className="flex flex-col items-center lg:items-start gap-3">
               <a
                 href="#precos"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-7 md:px-8 py-4 rounded-full shadow-[0_8px_24px_rgba(140,0,0,0.3)] hover:scale-[1.03] active:scale-[0.98] transition"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-[var(--gold)] text-[var(--brand)] font-bold text-base md:text-lg px-6 md:px-8 py-4 rounded-full shadow-[0_8px_24px_rgba(140,0,0,0.3)] hover:scale-[1.03] active:scale-[0.98] transition"
               >
                 QUERO ME LIVRAR DAS DORES →
               </a>
@@ -281,7 +281,7 @@ function Hero() {
               height={520}
               fetchPriority="high"
               decoding="async"
-              className="w-full max-w-[280px] sm:max-w-md mx-auto drop-shadow-2xl"
+              className="w-full max-w-[240px] sm:max-w-md mx-auto drop-shadow-2xl"
             />
             <div className="absolute -top-2 -left-2 md:-top-4 md:-left-4 bg-white rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl text-center">
               <div className="text-[var(--brand)] font-bold text-xs md:text-sm">1 cápsula por dia</div>
@@ -307,7 +307,7 @@ function Pains() {
     { t: "Limitações diárias", d: "Deixar de fazer o que ama por causa da dor" },
   ];
   return (
-    <section className="py-12 md:py-20 bg-white">
+    <section className="py-10 sm:py-12 md:py-20 bg-white">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-12">
           <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">Você se identifica?</p>
@@ -342,7 +342,7 @@ function Formula() {
     { img: IMG.calcio, tag: "Fortalecimento", t: "Cálcio", d: "Mineral essencial para a manutenção da estrutura óssea, contribuindo para ossos mais fortes e resistentes." },
   ];
   return (
-    <section id="formula" className="py-12 md:py-20 bg-[var(--cream)]">
+    <section id="formula" className="py-10 sm:py-12 md:py-20 bg-[var(--cream)]">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-12">
           <p className="text-[var(--brand)] font-bold uppercase text-sm tracking-wider">A Solução Natural</p>
@@ -743,7 +743,7 @@ function Pricing() {
   ];
 
   return (
-    <section id="precos" className="py-12 md:py-20 bg-[var(--cream)]">
+    <section id="precos" className="py-10 sm:py-12 md:py-20 bg-[var(--cream)]">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-8">
           <p className="text-primary font-bold uppercase text-sm">Black Friday Sucupira Composta</p>
@@ -757,7 +757,7 @@ function Pricing() {
           {kits.map((k) => (
             <div
               key={k.title}
-              className={`relative bg-white rounded-3xl p-6 border-2 flex flex-col ${
+              className={`relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 flex flex-col ${
                 k.highlight ? "border-[var(--brand)] shadow-2xl md:-translate-y-4" : "border-[var(--border)] shadow-sm hover:shadow-md transition"
               }`}
             >
@@ -866,7 +866,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     <div className="bg-white border border-[var(--border)] rounded-2xl shadow-sm hover:border-[var(--brand)]/30 transition-colors">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between text-left p-5 font-semibold"
+        className="w-full min-h-14 flex items-center justify-between text-left p-4 sm:p-5 font-semibold gap-3"
       >
         <span>{q}</span>
         <span className="text-[var(--brand)] text-xl">{open ? "−" : "+"}</span>
@@ -1050,10 +1050,10 @@ function Footer() {
 
 function MobileStickyCTA() {
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-[var(--border)] px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-[var(--border)] px-3 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
       <a
         href="#precos"
-        className="flex items-center justify-center gap-2 w-full bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
+        className="flex items-center justify-center gap-2 w-full min-h-12 bg-[var(--brand)] text-white font-bold py-3 rounded-full text-sm"
       >
         APROVEITAR DESCONTO NO CHECKOUT →
       </a>
