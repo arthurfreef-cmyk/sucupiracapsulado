@@ -160,14 +160,31 @@ function ShippingUpsellPage() {
       <header className="border-b bg-white px-3 py-3 sm:px-4 sm:py-4 text-center text-sm sm:text-base font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-3 py-4 sm:px-4 sm:py-8 md:py-12">
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
-        <div className="overflow-hidden rounded-2xl sm:rounded-3xl border bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
-          <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-4 py-5 text-white sm:px-6 sm:py-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ATENÇÃO • AJUSTE NO FRETE</div>
-            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">O valor do frete do seu pedido precisa de um ajuste.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Na conferência do pedido, identificamos uma inconsistência no valor do frete. Para concluir a expedição e enviar seu produto, é necessário regularizar o complemento de R$ 6,78.</p>
-            <p className="mt-3 text-sm leading-relaxed text-emerald-50">Atenção: essa regularização é necessária para a expedição. Para que o envio seja concluído, confira o complemento de frete de R$ 6,78 e finalize a regularização. Após a confirmação do pagamento, o pedido será liberado para envio.</p>
+        <div className="overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200 bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
+          <div className="bg-gradient-to-br from-[#174b43] via-[#0d594e] to-[#08715f] px-5 py-7 text-white sm:px-7 sm:py-9">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-bold tracking-wide text-white">
+              <Truck size={16} aria-hidden="true" /> ETAPA DE PAGAMENTO LOGÍSTICO
+            </div>
+            <h1 className="max-w-lg text-2xl font-extrabold leading-tight sm:text-3xl">Seu pedido está quase pronto para envio!</h1>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-emerald-50 sm:text-base">
+              Conclua a etapa logística para liberar a separação e o envio do seu pedido. O complemento é apresentado com clareza antes da geração do PIX.
+            </p>
           </div>
-          <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
+          <div className="space-y-4 p-4 sm:space-y-5 sm:p-6 md:p-7">
+            {preview && <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
+            <section className="rounded-2xl border border-amber-200 bg-[#fffdf5] p-4 sm:p-5">
+              <h2 className="text-base font-bold text-slate-800">Aviso sobre a verificação do frete</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-700 sm:text-base">
+                Durante a conferência do frete, foi identificado um complemento logístico de <strong>{money(individualAmount)}</strong> para concluir a validação e a preparação do pedido. A liberação para separação e envio acontece após a confirmação do PIX.
+              </p>
+            </section>
+            <section className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
+              <p className="text-sm font-semibold text-slate-600">Valor do complemento logístico</p>
+              <p className="mt-1 text-4xl font-extrabold tracking-tight tabular-nums text-slate-900">{money(individualAmount)}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                Este é o valor individual desta etapa do seu pedido. O produto principal já foi pago; o complemento libera a separação e o envio após a confirmação do PIX.
+              </p>
+            </section>
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
             {!preview && pending && originalStatus.data?.paid && !originalStatus.data.eligible && <div className="rounded-xl border p-4 text-sm text-slate-600">Este pedido não está elegível para gerar um novo complemento.</div>}
 
@@ -183,25 +200,19 @@ function ShippingUpsellPage() {
                 <Button onClick={copyPix} className="h-auto min-h-12 w-full whitespace-normal px-3 py-3 text-center text-sm font-bold leading-tight bg-emerald-700 hover:bg-emerald-800"><Clipboard size={17} className="mr-2"/>{copied ? "PIX copiado!" : "Copiar PIX para pagar e confirmar pedido"}</Button>
                 <div className="rounded-xl bg-slate-50 p-3 text-left"><p className="mb-2 text-xs font-bold uppercase text-slate-500">Código PIX copia e cola</p><textarea readOnly value={payment.pix.code} className="min-h-24 w-full resize-y break-all rounded-lg border bg-white p-3 text-xs text-slate-700"/></div>
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">{upsellStatus.data?.paid ? "Complemento logístico confirmado." : "Aguardando a confirmação do PIX pela Fruitfy. O pedido principal permanece registrado."}</div>
-                
                 {upsellStatus.isError && <p className="text-sm text-amber-700">Não foi possível consultar o status agora. A página continuará tentando quando for atualizada.</p>}
               </section>
             ) : (
               <section className="space-y-4">
-                {individualAmount !== null && <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-5">
-                  <p className="text-sm font-semibold text-slate-600">Valor informado para esta etapa logística</p>
-                  <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
-                </div>}
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
                 </Button>
                 {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A geração do PIX será liberada após a confirmação do pagamento principal.</p>}
-                
               </section>
             )}
 
             {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. A regularização do saldo de frete é necessária para liberar a expedição do pedido.</div>
+            <div className="flex items-start gap-2 border-t pt-4 text-xs leading-relaxed text-slate-500"><ShieldCheck size={16} className="shrink-0 text-emerald-700"/> Pagamento processado pela Fruitfy. O complemento logístico informado é necessário para liberar a expedição do pedido.</div>
           </div>
         </div>
         <footer className="mt-5 border-t border-slate-200 px-3 py-4 text-center text-xs sm:text-sm leading-relaxed text-slate-500"><p className="font-semibold text-slate-600">Sucupira Composta</p><p className="mt-1 text-xs">Confira todos os valores do pedido e tire dúvidas com o atendimento antes de pagar.</p></footer>
