@@ -134,6 +134,28 @@
   /* Checkout: fundo mais limpo e cartões com profundidade discreta. */
   body:has(form.grid) {
     background: linear-gradient(180deg, #fffaf4 0%, #f7f8fa 340px, #f7f8fa 100%);
+    /* Stronger checkout contrast, scoped to the checkout route only. */
+    --muted-foreground: oklch(0.36 0.025 30);
+    --border: oklch(0.76 0.018 75);
+    --input: oklch(0.70 0.018 75);
+  }
+
+  body:has(form.grid) form.grid input:not([type="radio"]):not([type="checkbox"])::placeholder {
+    color: #57534e;
+    opacity: 1;
+  }
+
+  body:has(form.grid) form.grid label > span:first-child {
+    color: #29211d;
+    font-weight: 650;
+  }
+
+  body:has(form.grid) form.grid section.space-y-4.rounded-2xl {
+    border-color: color-mix(in oklab, var(--brand) 24%, white);
+  }
+
+  body:has(form.grid) form.grid aside .border-t {
+    border-color: #b9aaa0;
   }
 
   form.grid section.space-y-4.rounded-2xl {
