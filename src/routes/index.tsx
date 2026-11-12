@@ -159,6 +159,7 @@ function Index() {
         <FinalCTA />
       </main>
 
+      <MobileStickyCTA />
       <Footer />
       
       
