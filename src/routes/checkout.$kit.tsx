@@ -792,7 +792,7 @@ function CheckoutPage() {
             type="submit"
             disabled={loading || restoringPayment}
             aria-busy={loading}
-            className="w-full min-h-14 py-4 text-base bg-[var(--brand)] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[var(--brand)]/20 hover:bg-[var(--brand-dark)] focus-visible:ring-4 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
+            className="w-full min-h-14 py-4 text-base bg-[#16803c] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg shadow-[#16803c]/25 hover:bg-[#116530] focus-visible:ring-4 focus-visible:ring-[#86efac] focus-visible:ring-offset-2 disabled:opacity-70 flex items-center justify-center gap-2 transition-all active:scale-[.99]"
           >
             {loading ? <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <Lock size={18} aria-hidden="true" />}
             {loading ? "Gerando PIX..." : "COMPRAR AGORA"}
