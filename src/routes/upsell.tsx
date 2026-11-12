@@ -87,7 +87,7 @@ function ShippingUpsellPage() {
   }, [upsellStatus.data?.paid, payment, navigate, kit]);
 
   const individualAmount = SHIPPING_UPSELL_CENTS;
-  const canGenerate = !preview && Boolean(pending);
+  const canGenerate = !preview && Boolean(pending) && originalStatus.data?.paid === true && originalStatus.data.eligible === true;
 
   const generatePix = async () => {
     if (!pending || !canGenerate || loading || payment) return;
@@ -162,9 +162,9 @@ function ShippingUpsellPage() {
         {preview && <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-900">Pré-visualização: esta tela abre sem validar pagamento e não permite gerar cobranças.</div>}
         <div className="overflow-hidden rounded-2xl sm:rounded-3xl border bg-white shadow-lg sm:shadow-xl shadow-slate-900/5">
           <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 px-4 py-5 text-white sm:px-6 sm:py-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> AVISO SOBRE A ETAPA DE FRETE</div>
-            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">Identificamos uma divergência no valor calculado do frete do seu pedido.</h1>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-50">Pedimos desculpas pelo transtorno. Encontramos uma diferença entre o valor de frete calculado inicialmente e o custo necessário para concluir o envio. O saldo de R$ 6,78 corresponde a essa diferença e precisa ser regularizado para que possamos liberar a expedição do pedido.</p>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><Truck size={14}/> ATUALIZAÇÃO DO FRETE</div>
+            <h1 className="text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">Encontramos uma divergência no cálculo do frete.</h1>
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50">O valor apresentado nesta etapa é de R$ 6,78, referente ao complemento logístico para o envio. Confira o valor e as condições antes de pagar.</p>
           </div>
           <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
             {!preview && pending && !originalStatus.data?.paid && <div className="rounded-xl border p-4 text-sm text-slate-600">{originalStatus.isError ? "Não foi possível consultar o pedido principal. A geração em modo de teste depende da configuração do servidor." : "Pedido principal ainda não confirmado. A geração de teste depende da configuração do servidor."}</div>}
@@ -199,7 +199,7 @@ function ShippingUpsellPage() {
                 <Button onClick={generatePix} disabled={!canGenerate || loading} className="h-auto min-h-14 w-full whitespace-normal px-3 py-3 text-center text-sm font-extrabold leading-tight sm:text-base bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50">
                   {loading ? <><LoaderCircle className="mr-2 animate-spin" size={18}/> Gerando PIX...</> : <><LockKeyhole className="mr-2" size={18}/> PAGAR E LIBERAR ENVIO</>}
                 </Button>
-                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">Esta oferta adicional pode ser paga separadamente, mesmo enquanto o pedido principal estiver pendente.</p>}
+                {pending && !canGenerate && !originalStatus.isError && <p className="text-center text-xs text-slate-500">A geração do PIX será liberada após a confirmação do pagamento principal.</p>}
                 
               </section>
             )}
