@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 112" role="img" aria-labelledby="title desc">
+  <title id="title">Sucupira Composta</title>
+  <desc id="desc">Logotipo Sucupira Composta com folha dourada e sementes estilizadas.</desc>
+  <g transform="translate(8 8)">
+    <path d="M48 88C12 62 13 24 57 8c3 34-1 58-9 80Z" fill="#E7C56A"/>
+    <path d="M48 87C52 51 72 28 103 24c-2 33-22 57-55 63Z" fill="#F3D98F"/>
+    <path d="M48 88C42 57 27 42 8 36c-1 25 12 43 40 52Z" fill="#C99B3C"/>
+    <path d="M48 89 57 21M48 89 91 32M48 89 17 43" fill="none" stroke="#7A1118" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="30" cy="91" rx="13" ry="8" transform="rotate(-22 30 91)" fill="#A96A36"/>
+    <ellipse cx="54" cy="98" rx="13" ry="8" transform="rotate(13 54 98)" fill="#C18445"/>
+  </g>
+  <text x="132" y="62" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="800" letter-spacing="-1.5">Sucupira</text>
+  <text x="135" y="91" fill="#E7C56A" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" letter-spacing="4">COMPOSTA</text>
+  <path d="M365 77h18" stroke="#E7C56A" stroke-width="2" stroke-linecap="round"/>
+  <text x="393" y="82" fill="#FFFFFF" opacity=".9" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="600" letter-spacing="1">NATURAL</text>
+</svg>
