@@ -171,11 +171,8 @@ function Header() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-[var(--brand-dark)]/95 backdrop-blur border-b border-white/10">
       <div className="container mx-auto px-3 sm:px-4 max-w-7xl flex items-center justify-between h-14 sm:h-16 gap-2">
-        <a href="#" className="flex items-center gap-2 text-white font-bold min-w-0">
-          <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--gold)] flex items-center justify-center text-[var(--brand)] shrink-0">
-            ✦
-          </span>
-          <span className="text-sm sm:text-base truncate">Sucupira Composta</span>
+        <a href="#" aria-label="Sucupira Composta — página inicial" className="flex items-center min-w-0 shrink-0">
+          <img src="/logo-sucupira.svg" alt="Sucupira Composta" width="190" height="42" decoding="async" className="h-9 w-auto max-w-[164px] sm:h-11 sm:max-w-[190px] object-contain object-left" />
         </a>
         <nav className="hidden md:flex items-center gap-6 text-white/90 text-sm font-medium">
           <a href="#beneficios" className="hover:text-[var(--gold)]">Benefícios</a>
