@@ -21,6 +21,13 @@ export const Route = createFileRoute("/api/fruitfy-protection-pix")({
     if (!originalOrder || !["k1", "k3", "k5"].includes(originalOrder.kit)) {
       return Response.json({ error: "O pedido principal não foi validado." }, { status: 403 });
     }
+    try {
+      if (!await checkOrderPaid(originalOrder)) {
+        return Response.json({ error: "O pagamento do pedido principal ainda não foi confirmado." }, { status: 409 });
+      }
+    } catch {
+      return Response.json({ error: "Não foi possível confirmar o pagamento principal. Tente novamente em instantes." }, { status: 503 });
+    }
 
     const token = process.env.FRUITFY_TOKEN?.trim().replace(/^Bearer\s+/i, "");
     const storeId = process.env.FRUITFY_STORE_ID?.trim().replace(/^store[-_\s]?id\s*[:=]\s*/i, "");
