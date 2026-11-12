@@ -56,17 +56,17 @@ function ObrigadoPage() {
   return (
     <div className="min-h-screen bg-[var(--cream)]">
       <header className="border-b border-[var(--brand)]/10 bg-white px-4 py-4 text-center font-bold tracking-wide text-[var(--brand)]">SUCUPIRA COMPOSTA</header>
-      <main className="container mx-auto max-w-2xl px-4 py-8 md:py-12">
-        <div className="relative space-y-7 overflow-hidden rounded-3xl border border-[var(--brand)]/10 bg-white p-6 text-center shadow-xl shadow-[var(--brand)]/5 md:p-10">
+      <main className="container mx-auto max-w-2xl px-3 py-4 sm:px-4 sm:py-8 md:py-12">
+        <div className="relative space-y-5 sm:space-y-7 overflow-hidden rounded-2xl sm:rounded-3xl border border-[var(--brand)]/10 bg-white p-4 sm:p-6 text-center shadow-lg sm:shadow-xl shadow-[var(--brand)]/5 md:p-10">
           <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-emerald-400 to-emerald-600"/>
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><CheckCircle2 size={46}/></div>
+          <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><CheckCircle2 size={38} className="sm:hidden"/><CheckCircle2 size={46} className="hidden sm:block"/></div>
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Sucupira Composta</p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Obrigado pela sua compra!</h1>
+            <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl md:text-4xl">Obrigado pela sua compra!</h1>
             <p className="mt-3 text-base leading-relaxed text-slate-600">Estamos acompanhando as confirmações e preparando as próximas etapas do seu pedido.</p>
           </div>
 
-          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left">
+          <section className="rounded-xl sm:rounded-2xl border border-slate-200 bg-slate-50 p-3.5 sm:p-5 text-left">
             <h2 className="mb-4 flex items-center gap-2 font-extrabold text-slate-900"><Package size={19}/> Status das etapas</h2>
             <div className="space-y-3 text-sm">
               <StatusRow label="Pedido principal" loaded={loaded} paid={mainStatus.data?.paid}/>
@@ -77,13 +77,13 @@ function ObrigadoPage() {
             {anyError && <p className="mt-3 text-xs text-amber-800">Não conseguimos atualizar um dos status agora. Atualize esta página em alguns instantes.</p>}
           </section>
 
-          <section className="grid gap-3 text-left sm:grid-cols-3">
+          <section className="grid grid-cols-1 gap-2.5 text-left sm:grid-cols-3 sm:gap-3">
             <InfoCard icon={<Package size={21}/>} title="Preparação" text="Após a confirmação do pagamento, o pedido segue para separação."/>
             <InfoCard icon={<Truck size={21}/>} title="Entrega" text="O código de rastreio será enviado quando o pacote for postado."/>
             <InfoCard icon={<ShieldCheck size={21}/>} title="Garantia" text="Consulte as condições de garantia enviadas com a confirmação do pedido."/>
           </section>
 
-          <section className="rounded-2xl bg-[var(--cream)] p-5 text-left">
+          <section className="rounded-xl sm:rounded-2xl bg-[var(--cream)] p-3.5 sm:p-5 text-left">
             <h2 className="mb-3 font-extrabold text-slate-900">O que acontece agora?</h2>
             <ul className="space-y-3 text-sm leading-relaxed text-slate-700">
               <li className="flex gap-3"><Mail size={17} className="mt-0.5 shrink-0 text-emerald-700"/><span>Confira sua caixa de entrada e a pasta de spam para localizar os detalhes do pedido.</span></li>
